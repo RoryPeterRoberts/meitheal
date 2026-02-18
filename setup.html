@@ -73,6 +73,14 @@
       border: 1px solid var(--border);
     }
     .link-note a { color: var(--primary); }
+    .sql-block {
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px; font-family: var(--mono, monospace);
+      font-size: 11px; color: var(--text-2); white-space: pre; overflow-x: auto;
+      max-height: 200px; overflow-y: auto; margin-bottom: 8px;
+    }
+    .sql-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+    .sql-actions .btn { flex: 1; margin-top: 0; font-size: 13px; padding: 9px; }
   </style>
 </head>
 <body>
@@ -155,21 +163,19 @@
     <!-- Step 3: Database (Supabase) -->
     <div class="step" id="step-3">
       <div class="step-label">Step 3 of 4</div>
-      <div class="step-title">Connect your database</div>
+      <div class="step-title">Set up your database</div>
       <div class="step-desc">
-        Your community's data lives in your own Supabase project — you own it completely.
-        You'll need to run the migration SQL once in the Supabase SQL editor.
+        Copy this SQL and run it in your Supabase SQL editor.
+        It creates the tables your community needs — you can see exactly what it does.
       </div>
-      <div class="form-group">
-        <label>Service Role Key</label>
-        <input type="password" id="service-key" placeholder="eyJhbGci...">
-        <div class="link-note">
-          Find this in your Supabase dashboard → Project Settings → API → Service Role Key.
-          It's used once to initialise the database and is never stored.
-        </div>
+      <pre class="sql-block" id="sql-display">Loading…</pre>
+      <div class="sql-actions">
+        <button class="btn btn-ghost" onclick="copySql()">Copy SQL</button>
+        <a class="btn btn-ghost" id="sql-editor-link" href="https://supabase.com/dashboard" target="_blank" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">Open SQL Editor ↗</a>
       </div>
+      <div class="step-desc">Once you've run the SQL, click Continue.</div>
       <div class="error-msg" id="err-3"></div>
-      <button class="btn btn-primary" id="init-btn" onclick="step3Init()">Initialise database →</button>
+      <button class="btn btn-primary" id="init-btn" onclick="step3Init()">I've run the SQL → Continue</button>
       <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
     </div>
 
@@ -208,14 +214,40 @@
       el.style.display = 'none';
     }
 
-    function goStep(n) {
+    let _sqlText = null;
+
+    async function goStep(n) {
       document.getElementById(`step-${currentStep}`).classList.remove('active');
       document.getElementById(`step-${n}`).classList.add('active');
-      // Update progress dots
       for (let i = 1; i <= 4; i++) {
         document.getElementById(`dot-${i}`).classList.toggle('done', i <= n);
       }
       currentStep = n;
+
+      if (n === 3) {
+        // Load migration SQL and set the SQL editor deep link
+        if (!_sqlText) {
+          try {
+            _sqlText = await fetch('migrations/00_base.sql').then(r => r.text());
+          } catch { _sqlText = '-- Could not load SQL. Fetch migrations/00_base.sql manually.'; }
+        }
+        document.getElementById('sql-display').textContent = _sqlText;
+        const ref = (window._SUPABASE_URL || '').replace('https://','').split('.')[0];
+        if (ref) {
+          document.getElementById('sql-editor-link').href =
+            `https://supabase.com/dashboard/project/${ref}/sql/new`;
+        }
+      }
+    }
+
+    async function copySql() {
+      if (!_sqlText) return;
+      try {
+        await navigator.clipboard.writeText(_sqlText);
+        const btn = event.target;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy SQL', 2000);
+      } catch { }
     }
 
     function step1Next() {
@@ -292,79 +324,23 @@
 
     async function step3Init() {
       clearErr('err-3');
-      const serviceKey = document.getElementById('service-key').value.trim();
-      if (!serviceKey) return showErr('err-3', 'Please enter your Supabase service role key.');
-
       const btn = document.getElementById('init-btn');
       btn.disabled = true;
-      btn.textContent = 'Initialising…';
+      btn.textContent = 'Setting up…';
 
       try {
-        const supabaseUrl = window._SUPABASE_URL || document.querySelector('meta[name="supabase-url"]')?.content;
-        const ref = supabaseUrl.replace('https://','').split('.')[0];
-
-        // Run migration SQL via Management API
-        const migrationSql = await fetch('migrations/00_base.sql').then(r => r.text());
-        const mgmtR = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+        const r = await fetch('/api/setup', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${serviceKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ query: migrationSql })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
         });
-        if (!mgmtR.ok) {
-          const t = await mgmtR.text();
-          throw new Error(`Database init failed: ${t}`);
-        }
-
-        // Upsert community settings
-        const sbHeaders = {
-          'apikey': serviceKey,
-          'Authorization': `Bearer ${serviceKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates'
-        };
-        await fetch(`${supabaseUrl}/rest/v1/settings`, {
-          method: 'POST', headers: sbHeaders,
-          body: JSON.stringify([
-            { key: 'community_name', value: formData.communityName },
-            { key: 'ai_provider',    value: formData.provider },
-            { key: 'ai_model',       value: formData.model },
-            { key: 'ai_api_key',     value: formData.apiKey || '' },
-            { key: 'ollama_url',     value: formData.ollamaUrl || '' },
-            { key: 'initialized',    value: 'true' }
-          ])
-        });
-
-        // Create admin member via Supabase auth invite
-        const sb = supabase.createClient(supabaseUrl, window._SUPABASE_ANON_KEY || '');
-
-        // Send magic link to admin email
-        const { error: authErr } = await sb.auth.signInWithOtp({
-          email: formData.adminEmail,
-          options: { emailRedirectTo: window.location.origin + '/auth.html' }
-        });
-        if (authErr) throw new Error(`Auth error: ${authErr.message}`);
-
-        // Pre-create member record (will be linked when they first log in)
-        await fetch(`${supabaseUrl}/rest/v1/members`, {
-          method: 'POST',
-          headers: { ...sbHeaders, 'Prefer': 'return=minimal' },
-          body: JSON.stringify({
-            email: formData.adminEmail,
-            display_name: formData.adminName,
-            role: 'admin',
-            status: 'active'
-          })
-        });
-
+        const json = await r.json();
+        if (!r.ok) throw new Error(json.error || 'Setup failed');
         goStep(4);
-
       } catch (e) {
         showErr('err-3', e.message);
         btn.disabled = false;
-        btn.textContent = 'Initialise database →';
+        btn.textContent = "I've run the SQL → Continue";
       }
     }
   </script>
