@@ -543,6 +543,83 @@
     .cost-label { color: var(--color-text-muted); }
     .cost-value { font-family: var(--font-family-mono); font-weight: var(--font-weight-semibold); }
 
+    /* ---- Build history ---------------------------------- */
+    .build-history {
+      margin-top: var(--space-8);
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-6);
+    }
+
+    .build-history-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-4);
+    }
+
+    .build-history-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .build-history-item:last-child { border-bottom: none; }
+
+    .build-history-info { flex: 1; min-width: 0; }
+
+    .build-history-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .build-history-meta {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .build-history-tag {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    .build-history-tag.rolled-back {
+      background: var(--color-status-hold-bg);
+      color: var(--color-status-hold);
+    }
+
+    .rollback-btn {
+      font-size: 11px;
+      font-weight: var(--font-weight-semibold);
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all var(--transition-fast);
+    }
+
+    .rollback-btn:hover:not(:disabled) {
+      border-color: var(--color-status-hold);
+      color: var(--color-status-hold);
+    }
+
+    .rollback-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
     /* ---- Members panel ---------------------------------- */
     .members-panel { max-width: 760px; }
 
@@ -947,6 +1024,11 @@
           <div class="empty-state">Loading…</div>
         </div>
 
+        <div class="build-history" id="build-history" style="display:none">
+          <div class="build-history-title">Recent builds</div>
+          <div id="build-history-list"></div>
+        </div>
+
         <div class="build-console" id="build-console">
           <div class="console-header">
             <span class="console-title" id="console-title">Building…</span>
@@ -1245,6 +1327,89 @@
       });
     }
 
+    // ---- Build history + rollback ----
+
+    async function loadBuildHistory() {
+      const sb = getSupabase();
+      const { data: entries } = await sb
+        .from('changelog')
+        .select('id, description, ts, files_changed, rollback_snapshots, rolled_back')
+        .order('ts', { ascending: false })
+        .limit(8);
+
+      const container = document.getElementById('build-history');
+      const list      = document.getElementById('build-history-list');
+
+      if (!entries || entries.length === 0) return;
+
+      list.innerHTML = entries.map(entry => {
+        const filesCount = entry.files_changed?.length || 0;
+        const canRollback = entry.rollback_snapshots?.length > 0 && !entry.rolled_back;
+        const rolledBack  = entry.rolled_back;
+        const date = new Date(entry.ts).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <div class="build-history-item" id="bh-${entry.id}">
+            <div class="build-history-info">
+              <div class="build-history-name">${escHtml(entry.description || 'Unnamed build')}</div>
+              <div class="build-history-meta">${date}${filesCount ? ` · ${filesCount} file${filesCount !== 1 ? 's' : ''}` : ''}</div>
+            </div>
+            ${rolledBack
+              ? '<span class="build-history-tag rolled-back">Rolled back</span>'
+              : canRollback
+                ? `<button class="rollback-btn" onclick="rollbackBuild('${entry.id}', this)">Roll back</button>`
+                : '<span style="font-size:11px;color:var(--color-text-light)">No snapshot</span>'
+            }
+          </div>
+        `;
+      }).join('');
+
+      container.style.display = 'block';
+    }
+
+    async function rollbackBuild(changelogId, btn) {
+      if (!confirm('Roll back this build? This will restore the previous file versions and trigger a new deployment (~30s).')) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Rolling back…';
+
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/rollback', {
+          method: 'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ changelog_id: changelogId }),
+        });
+
+        const result = await r.json();
+
+        if (!r.ok) throw new Error(result.error || `Rollback failed ${r.status}`);
+
+        // Replace button with status
+        const row = document.getElementById(`bh-${changelogId}`);
+        if (row) {
+          const btnEl = row.querySelector('.rollback-btn');
+          if (btnEl) {
+            const tag = document.createElement('span');
+            tag.className = 'build-history-tag rolled-back';
+            tag.textContent = 'Rolled back';
+            btnEl.replaceWith(tag);
+          }
+        }
+
+        alert(result.message);
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Roll back';
+        alert('Rollback error: ' + e.message);
+      }
+    }
+
     // ---- Costs ----
 
     async function loadCosts() {
@@ -1475,6 +1640,7 @@
       document.getElementById('main-title').textContent = titles[panelId] || panelId;
       if (panelId === 'members' && !membersLoaded) loadMembers();
       if (panelId === 'settings') loadSettings();
+      if (panelId === 'build') loadBuildHistory();
     }
 
     // ---- Settings ----

@@ -210,14 +210,24 @@ async function executeTool(name, args, env) {
       if (escapedNL > 10 && realNL === 0) {
         content = content.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\'/g, "'").replace(/\\"/g, '"');
       }
-      let sha;
+      // Capture pre-build SHA for rollback (null if file is new)
+      let sha = null;
       try { const f = await ghGet(args.path); sha = f.sha; } catch {}
       await ghPut(args.path, content, args.commit_message, sha);
-      return { written: args.path, message: args.commit_message };
+      return { written: args.path, message: args.commit_message, _pre_sha: sha };
     }
 
     case 'delete_file': {
-      return ghDelete(args.path, args.commit_message);
+      // Capture pre-build SHA before deleting (for rollback restore)
+      const file = await ghGet(args.path);
+      const preSha = file.sha;
+      const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${args.path}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: args.commit_message, sha: preSha, branch })
+      });
+      if (!r.ok) throw new Error(`GitHub DELETE ${args.path}: ${r.status}`);
+      return { deleted: args.path, _pre_sha: preSha };
     }
 
     case 'list_files': {
@@ -559,9 +569,20 @@ async function runAgent(userMessage, conversationId, env) {
     body: JSON.stringify({ messages: updatedHistory, updated_at: new Date().toISOString() })
   });
 
+  // Collect pre-build snapshots for rollback
+  // Each write_file/delete_file result carries _pre_sha (null = file was new)
+  const rollbackSnapshots = toolLog
+    .filter(t => (t.tool === 'write_file' || t.tool === 'delete_file') && t.result && !t.result.error)
+    .map(t => ({
+      path:    t.args.path,
+      sha:     t.result._pre_sha || null,   // null = file didn't exist before this build
+      existed: t.result._pre_sha != null
+    }));
+
   return {
     text: finalText,
     toolLog,
+    rollbackSnapshots,
     conversationId: conversation.id,
     usage: { promptTokens: totalPromptTokens, completionTokens: totalCompletionTokens, costUsd }
   };
@@ -788,14 +809,15 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { ...sbHeaders, 'Prefer': 'return=minimal' },
         body: JSON.stringify({
-          admin_id:          member.id,
-          description:       buildTitle,
-          files_changed:     filesChanged.length ? filesChanged : null,
-          sql_run:           sqlRun,
-          conversation_id:   result.conversationId,
-          proposal_id:       buildProposalId,
-          suggested_by:      buildSuggestedById,
-          suggested_by_name: buildSuggestedByName,
+          admin_id:            member.id,
+          description:         buildTitle,
+          files_changed:       filesChanged.length ? filesChanged : null,
+          sql_run:             sqlRun,
+          conversation_id:     result.conversationId,
+          proposal_id:         buildProposalId,
+          suggested_by:        buildSuggestedById,
+          suggested_by_name:   buildSuggestedByName,
+          rollback_snapshots:  result.rollbackSnapshots?.length ? result.rollbackSnapshots : null,
         })
       });
     }
