@@ -642,7 +642,10 @@ export default async function handler(req, res) {
 
   try {
     let agentMessage = message;
-    let buildProposalId = null;
+    let buildProposalId    = null;
+    let buildTitle         = null;
+    let buildSuggestedById = null;
+    let buildSuggestedByName = null;
 
     // If proposal_id provided: load proposal and build structured brief
     if (proposal_id) {
@@ -683,7 +686,10 @@ export default async function handler(req, res) {
       };
 
       agentMessage = `You have been given an approved proposal to build.\n\nProposal brief:\n${JSON.stringify(brief, null, 2)}\n\nPlease build this feature now. Read the existing codebase first to understand the design system and conventions, then implement the feature. Remember: update navigation so the feature is reachable from the site.`;
-      buildProposalId = proposal_id;
+      buildProposalId      = proposal_id;
+      buildTitle           = proposal.title;
+      buildSuggestedById   = origFeedback?.author_id || null;
+      buildSuggestedByName = (suggestedBy !== 'a community member') ? suggestedBy : null;
 
       // Mark proposal as 'building'
       await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${proposal_id}`, {
@@ -695,17 +701,43 @@ export default async function handler(req, res) {
 
     const result = await runAgent(agentMessage, conversationId, env);
 
-    // If this was a proposal build, mark as done
+    // If this was a proposal build, mark as done and write changelog
     if (buildProposalId) {
       const sbHeaders = {
         'apikey': SUPABASE_SERVICE_KEY,
         'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
         'Content-Type': 'application/json',
       };
+
       await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${buildProposalId}`, {
         method: 'PATCH',
         headers: sbHeaders,
         body: JSON.stringify({ status: 'done', build_finished_at: new Date().toISOString() }),
+      });
+
+      // Write changelog entry — extract what the agent actually did
+      const filesChanged = result.toolLog
+        .filter(t => t.tool === 'write_file' || t.tool === 'delete_file')
+        .map(t => ({ action: t.tool === 'write_file' ? 'write' : 'delete', path: t.args.path }));
+
+      const sqlRun = result.toolLog
+        .filter(t => t.tool === 'run_sql')
+        .map(t => t.args.sql)
+        .join('\n\n---\n\n') || null;
+
+      await fetch(`${SUPABASE_URL}/rest/v1/changelog`, {
+        method: 'POST',
+        headers: { ...sbHeaders, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+          admin_id:          member.id,
+          description:       buildTitle,
+          files_changed:     filesChanged.length ? filesChanged : null,
+          sql_run:           sqlRun,
+          conversation_id:   result.conversationId,
+          proposal_id:       buildProposalId,
+          suggested_by:      buildSuggestedById,
+          suggested_by_name: buildSuggestedByName,
+        })
       });
     }
 
