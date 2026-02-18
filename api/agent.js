@@ -13,6 +13,9 @@ const COSTS = {
   'gpt-4o-mini':              { input:  0.15, output:  0.60 },
   'deepseek-chat':            { input:  0.27, output:  1.10 }, // DeepSeek V3
   'deepseek-reasoner':        { input:  0.55, output:  2.19 }, // DeepSeek R1
+  'gemini-2.0-flash':         { input:  0.10, output:  0.40 }, // Gemini 2.0 Flash
+  'gemini-2.0-flash-lite':    { input:  0.075,output:  0.30 }, // Gemini 2.0 Flash Lite
+  'gemini-1.5-flash':         { input:  0.075,output:  0.30 }, // Gemini 1.5 Flash
   'llama3':                   { input:  0,    output:  0    }, // local
 };
 
@@ -432,9 +435,10 @@ async function runAgent(userMessage, conversationId, env) {
     if (provider === 'anthropic') {
       response = await callAnthropic(messages, systemPrompt, model, apiKey);
     } else {
-      // openai-compatible: openai, groq, ollama
+      // openai-compatible: openai, groq, deepseek, gemini, ollama
       const baseUrl = provider === 'groq'     ? 'https://api.groq.com/openai'
                     : provider === 'deepseek' ? 'https://api.deepseek.com'
+                    : provider === 'gemini'   ? 'https://generativelanguage.googleapis.com/v1beta/openai'
                     : provider === 'ollama'   ? ollamaUrl
                     : null; // default openai
       response = await callOpenAI(messages, systemPrompt, model, apiKey, baseUrl);

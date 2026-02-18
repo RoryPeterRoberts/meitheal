@@ -900,6 +900,7 @@
             <select class="field-input" id="s-ai-provider" onchange="updateModelPlaceholder()">
               <option value="anthropic">Anthropic (Claude)</option>
               <option value="openai">OpenAI (GPT)</option>
+              <option value="gemini">Google Gemini</option>
               <option value="deepseek">DeepSeek</option>
               <option value="groq">Groq</option>
               <option value="ollama">Ollama (local)</option>
@@ -1375,6 +1376,7 @@
     const MODEL_DEFAULTS = {
       anthropic: 'claude-sonnet-4-6',
       openai:    'gpt-4o-mini',
+      gemini:    'gemini-2.0-flash',
       deepseek:  'deepseek-chat',
       groq:      'llama3-8b-8192',
       ollama:    'llama3',
