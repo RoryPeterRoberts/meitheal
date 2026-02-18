@@ -11,6 +11,18 @@ Meitheal is a community-governed, AI-built platform. A group of people — a hou
 
 ---
 
+## The Person We're Building For
+
+Before any governance decision is made, run it through this person:
+
+**Máire** is 67. She lives in a housing co-op in a small Irish town. She joined Meitheal because her neighbour — who set the whole thing up — told her it would help the group organise better. She has a smartphone but finds new apps a bit daunting. She types slowly. She doesn't know what a "bug" is in a software context. She has never heard the word "proposal" used the way it's used in product management. She has real, genuine needs: she wants to know when the boiler maintenance is scheduled, she wants to flag that the front gate latch is broken, and she'd love a way to share her apple tart recipe with the group.
+
+Máire will never read the PRD. She will never look at GitHub. She will never think about governance. She will just try to use the platform, and either it will help her or it won't.
+
+**Every feature, every piece of copy, every workflow step gets held against Máire.** If she couldn't figure it out alone in two minutes, it needs to be simpler.
+
+---
+
 ## Domain 1: The Governance Loop
 
 ### The loop
@@ -54,6 +66,24 @@ The AI sits **between "approved" and "deployed"**. It has no role in deciding wh
 - **Proposals are public.** Every member can see what's been proposed, who proposed it, and its current status.
 - **Community votes are binding.** If a vote passes, the admin cannot override it except for safety reasons (and must log their reason if they do).
 - **Simple fixes bypass the proposal stage.** Typos, broken links, minor UX fixes — admin can send these directly to the build queue without a public proposal. The changelog still records them.
+
+### The feedback widget — language matters
+
+The four feedback types (Idea / Bug / Question / Other) are product-team categories. Máire does not think in these categories. She just knows something isn't working, or she has a thought.
+
+The widget must use plain language, not product jargon:
+- **Idea** → "I'd like to suggest something" 💡
+- **Bug** → "Something isn't working" 🔧
+- **Question** → "I have a question" ❓
+- **Other** → "Something else" 💬
+
+The category is a triage aid for the admin — it is not the member's primary experience. Copy should invite, not sort.
+
+### Member recourse on proposals
+
+When a member's feedback is promoted to a proposal, the admin writes the title and description. They may misunderstand what the member actually meant.
+
+The member who suggested it must have a way to say "that's not quite what I meant" before the agent builds it. This is handled through OQ-02 (endorsement notes) — but specifically: the member who submitted the original feedback must always be able to add a clarification note to their own proposal, regardless of whether general member commenting is enabled.
 
 ### Open questions
 
@@ -123,9 +153,21 @@ A build is "done" when:
 2. Vercel deployment is confirmed successful
 3. Changelog entry is created
 4. The member who suggested it is notified (in-app notification or email)
-5. Proposal status is updated to `done`
+5. Admin has checked it works and marked it validated
+6. **The member who suggested it has had the opportunity to confirm it met their need**
+7. Proposal status is updated to `done`
 
-"Done" is NOT just "deployed." The loop closes when the community knows about it.
+"Done" is NOT just "deployed." The loop closes when the community knows about it **and the person who asked for it has been heard.**
+
+#### Member validation — the lightest possible mechanism
+
+When a build is deployed and the member is notified, their notification includes two options:
+- ✅ "Yes, this is what I meant"
+- 🔄 "Not quite — here's what I actually needed" (opens feedback widget pre-filled with the original proposal as context)
+
+This response is stored on the proposal record (`member_validated: boolean`, `member_validation_note: text`). It feeds directly back into the feedback queue if negative — creating a genuine agile loop rather than a one-way delivery.
+
+If the member doesn't respond within 14 days, the proposal is marked done anyway. Silence is not failure — but the opportunity to respond must exist.
 
 ### How the platform learns
 
@@ -154,8 +196,10 @@ Why it matters: Deployed doesn't mean working. Who checks that the feature actua
 Options:
   A. Deployment success = done (no human validation)
   B. Admin manually marks as validated after checking
-  C. The member who suggested it confirms it works
-Recommendation: **Option B** for v1. Admin is accountable. They check before marking done. Option C is better UX but requires a notification system that doesn't exist yet.
+  C. Both — admin checks it works, then member confirms it met their need
+Recommendation: **Option C**. Admin validates technically (it deploys, it loads, it doesn't break). Member validates meaningfully (it actually helped). Both signals are stored. Neither is blocking — the loop continues regardless — but both are captured.
+
+*Updated following partner review: the original recommendation of Option B was output-focused, not outcome-focused. The member who asked for something is the only person who knows if it actually helped.*
 
 ---
 
@@ -173,11 +217,30 @@ Recommendation: **Option B** for v1. Admin is accountable. They check before mar
 
 ### For v1
 
-Only two levels matter initially: **Member** and **Admin**.
+Three levels matter: **Member**, **Steward**, and **Admin**.
 
-The steward role and active member designation are important long-term — they distribute the governance load as the community grows — but they add complexity that isn't needed for a community of 5-20 people.
+The Active Member designation (trust level 2) can be deferred — it's about voting weight and is only meaningful once voting exists.
 
-**For v1: build Member and Admin only. Design the schema to accommodate the full trust model later.**
+**The Steward role cannot be deferred.** Here is why:
+
+A healthy Meitheal instance requires an admin to triage feedback regularly, respond to members, promote proposals, approve builds, and validate outcomes. Conservatively, this is **1-2 hours per week** for a community of 20-40 people. At 80+ members, it becomes a part-time job.
+
+No volunteer runs a community platform for years without burning out. If there is only one admin and they disappear — holiday, illness, life — the feedback queue backs up, members stop submitting because nothing happens, and the platform dies. This is not a hypothetical. It is the most common failure mode of community technology.
+
+The Steward role exists to distribute this load before it becomes a crisis. A Steward can triage feedback, write notes, set priorities, and flag items for the admin's attention. They cannot approve or build. They are trusted deputies, not decision-makers.
+
+**For v1: build Member, Steward, and Admin. The schema already accommodates all five levels — the Steward UI is not much more work than the Member UI, and it is far cheaper than rebuilding a dead platform.**
+
+### Admin load model
+
+| Community size | Estimated weekly admin time | Recommended stewards |
+|---------------|----------------------------|----------------------|
+| 5–20 members | 30–60 min | 0 (admin alone is fine) |
+| 20–50 members | 1–2 hours | 1 steward |
+| 50–100 members | 2–4 hours | 2–3 stewards |
+| 100–200 members | 4–8 hours | 3–5 stewards, consider co-admin |
+
+*These are estimates. Communities vary. The point is: model the load honestly, build the safety valve before it's needed.*
 
 ### What the AI knows about trust
 
@@ -302,13 +365,33 @@ Admins see: cost broken down per build, per provider, per conversation.
 | OQ-02 | Can members comment on proposals? | Governance | Medium — needs decision before proposals page is built |
 | OQ-03 | Can proposals be withdrawn/edited? | Governance | Low — admin can edit for v1 |
 | OQ-04 | Maximum build queue depth? | Agile loop | Low — one at a time for v1 |
-| OQ-05 | Who validates "done"? | Agile loop | Medium — affects changelog and notification design |
+| OQ-05 | Who validates "done"? | Agile loop | **Resolved** — admin (technical) + member (meaningful) |
 | OQ-06 | How is initial admin set / multi-admin? | Trust | High — affects setup wizard and DB schema |
 | OQ-07 | What if the agent breaks the site? | Safety | High — affects agent.js constraints |
 | OQ-08 | Who can see the agent's system prompt? | Safety / Transparency | Low — default to public (it's in GitHub) |
+| OQ-09 | How does the member validation notification work? | Agile loop | Medium — needs notification mechanism (email or in-app) |
+| OQ-10 | How is a Steward designated and can they be removed? | Trust | Medium — needs decision before Steward UI is built |
 
-**Decisions needed before building proposals page:** OQ-02, OQ-05
-**Decisions needed before building trust system:** OQ-06
+**OQ-09: How does member validation notification work?**
+Domain: Agile loop
+Why it matters: The member validation loop requires the member to be notified when their suggestion is built. Supabase doesn't send emails by default — this requires either an email provider integration or an in-app notification system.
+Options:
+  A. In-app only — member sees a "needs your feedback" badge on home.html
+  B. Email via Supabase (requires configuring an SMTP provider)
+  C. In-app for v1, email as a near-term upgrade
+Recommendation: **Option C**. In-app is buildable now. Email requires setup that creates a barrier for new deployers. Add email when the notification system matures.
+
+**OQ-10: How is a Steward designated and can they be removed?**
+Domain: Trust
+Why it matters: The Steward role is powerful. Designating the wrong person — or failing to remove a steward who becomes harmful — is a governance risk.
+Options:
+  A. Admin designates and removes stewards freely, no process required
+  B. Admin designates, but removal requires a logged reason visible to the community
+  C. Steward designation requires a community vote; removal by admin with logged reason
+Recommendation: **Option A** for v1. The community is small and the admin is accountable. Add process as communities grow and governance matures.
+
+**Decisions needed before building proposals page:** OQ-02, OQ-09
+**Decisions needed before building trust system:** OQ-06, OQ-10
 **Decisions needed before next agent build:** OQ-07
 
 ---
@@ -388,13 +471,19 @@ Everything else — voting, stewards, trust levels, comments, starter packs — 
 
 ### Recommended first sprint
 
-1. Run `migrations/01_proposals.sql` (unblocks everything)
-2. Port `feedback-widget.js` to Meitheal, wire into all member pages
+1. Run `migrations/01_proposals.sql` (unblocks everything) + add `trust_level`, `member_validated`, `member_validation_note` columns
+2. Port `feedback-widget.js` to Meitheal — rewrite labels in plain language (Máire test), wire into all member pages
 3. Build `triage.html` — admin can see feedback queue and promote to proposals
-4. Build `proposals.html` — all members can see what's been proposed
-5. Rebuild `admin.html` — triage / proposals / build queue (replace freeform chat)
+4. Build `proposals.html` — all members can see what's been proposed; original submitter can add clarification note
+5. Rebuild `admin.html` — triage / proposals / build queue (replace freeform chat); add Steward management
 6. Update `api/agent.js` — structured brief input, meta-rule in system prompt
-7. Build `/feedback` skill — Claude Code command for developer triage workflow
-8. Build `/build` skill — Claude Code command to pass approved proposal to agent
+7. Build `my-feedback.html` — member sees their submissions, responses, and validation prompt for built features
+8. Build `/feedback` skill — Claude Code command for developer triage workflow
+9. Build `/build` skill — Claude Code command to pass approved proposal to agent
 
-This sprint delivers the complete minimum viable governance loop.
+This sprint delivers the complete minimum viable governance loop, with Máire able to participate at every step.
+
+---
+
+*Document updated following Altruistic Business Partner review, Session 002, 2026-02-18.*
+*Changes: added human anchor (Máire), plain language for feedback widget, member recourse on proposals, Steward role promoted to v1 with admin load model, "done" redefined to include member validation with lightweight confirmation mechanism.*
