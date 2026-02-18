@@ -349,7 +349,7 @@ async function callOpenAI(messages, systemPrompt, model, apiKey, baseUrl) {
     messages: oaiMessages,
     tools: TOOLS.map(t => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } })),
     tool_choice: 'auto',
-    max_tokens: 16000   // prevent output truncation mid-tool-call
+    max_tokens: 8192    // prevent output truncation mid-tool-call; 8192 is the lowest common ceiling across providers
   };
   const headers = { 'Content-Type': 'application/json' };
   if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
