@@ -305,10 +305,10 @@
         <h1 class="page-title">Proposals</h1>
       </div>
     </header>
-    <p class="page-sub">Ideas from your community that have been put forward to build.</p>
+    <p class="page-sub">Ideas from your community — approved proposals are built by an AI agent on the community's behalf.</p>
 
     <div class="filter-tabs">
-      <button class="tab-btn active" data-filter="active" onclick="setFilter('active')">Active</button>
+      <button class="tab-btn active" data-filter="active" onclick="setFilter('active')">Open</button>
       <button class="tab-btn" data-filter="proposed" onclick="setFilter('proposed')">Proposed</button>
       <button class="tab-btn" data-filter="building" onclick="setFilter('building')">Building</button>
       <button class="tab-btn" data-filter="done" onclick="setFilter('done')">Done</button>
@@ -376,7 +376,7 @@
       if (items.length === 0) {
         list.style.display = 'none';
         const labels = {
-          active:   'No active proposals yet.',
+          active:   'No open proposals yet.',
           proposed: 'No proposals waiting for approval.',
           building: 'Nothing being built right now.',
           done:     'Nothing completed yet.',
