@@ -633,6 +633,69 @@
     .member-action-btn.danger { color: #dc2626; border-color: #fecaca; }
     .member-action-btn.danger:hover { background: #fef2f2; }
 
+    /* Settings panel */
+    .settings-form { max-width: 520px; }
+    .settings-section { margin-bottom: var(--space-8); }
+    .settings-section-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-light);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .field-row { margin-bottom: var(--space-4); }
+    .field-label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+    .field-input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      box-sizing: border-box;
+      transition: border-color var(--transition-fast);
+    }
+    .field-input:focus { outline: none; border-color: var(--color-primary); }
+    .settings-hint {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: var(--space-2);
+    }
+    .settings-save-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .settings-save-btn {
+      padding: var(--space-2) var(--space-6);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .settings-save-btn:hover { background: var(--color-primary-dark); }
+    .settings-saved-msg {
+      font-size: var(--font-size-sm);
+      color: var(--color-status-accepted);
+    }
+
     @media (max-width: 768px) {
       body { grid-template-columns: 1fr; }
       .sidebar { display: none; }
@@ -674,6 +737,9 @@
       </a>
       <button class="nav-item" data-panel="members" onclick="showPanel('members', this)">
         <span class="nav-icon">👥</span> Members
+      </button>
+      <button class="nav-item" data-panel="settings" onclick="showPanel('settings', this)">
+        <span class="nav-icon">⚙️</span> Settings
       </button>
     </nav>
 
@@ -812,6 +878,47 @@
             <div class="console-spinner" id="console-spinner"></div>
             <span id="console-status-text">Waiting</span>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-settings">
+      <div class="settings-form">
+
+        <div class="settings-section">
+          <div class="settings-section-title">Community</div>
+          <div class="field-row">
+            <label class="field-label">Community name</label>
+            <input class="field-input" type="text" id="s-community-name" placeholder="e.g. Blackwater Residents">
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">AI Agent</div>
+          <div class="field-row">
+            <label class="field-label">Provider</label>
+            <select class="field-input" id="s-ai-provider" onchange="updateModelPlaceholder()">
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI (GPT)</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="groq">Groq</option>
+              <option value="ollama">Ollama (local)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Model</label>
+            <input class="field-input" type="text" id="s-ai-model" placeholder="e.g. gpt-4o-mini">
+          </div>
+          <div class="field-row">
+            <label class="field-label">API key</label>
+            <input class="field-input" type="password" id="s-ai-api-key" placeholder="Paste your API key" autocomplete="off">
+          </div>
+          <p class="settings-hint">The key is stored in your own Supabase project and never leaves it.</p>
+        </div>
+
+        <div class="settings-save-row">
+          <button class="settings-save-btn" onclick="saveSettings()">Save settings</button>
+          <span class="settings-saved-msg" id="settings-saved-msg"></span>
         </div>
       </div>
     </div>
@@ -1257,9 +1364,64 @@
       document.querySelectorAll('.nav-item[data-panel]').forEach(b => b.classList.remove('active'));
       document.getElementById(`panel-${panelId}`).classList.add('active');
       if (btn) btn.classList.add('active');
-      const titles = { overview: 'Overview', build: 'Build queue', members: 'Members' };
+      const titles = { overview: 'Overview', build: 'Build queue', members: 'Members', settings: 'Settings' };
       document.getElementById('main-title').textContent = titles[panelId] || panelId;
       if (panelId === 'members' && !membersLoaded) loadMembers();
+      if (panelId === 'settings') loadSettings();
+    }
+
+    // ---- Settings ----
+
+    const MODEL_DEFAULTS = {
+      anthropic: 'claude-sonnet-4-6',
+      openai:    'gpt-4o-mini',
+      deepseek:  'deepseek-chat',
+      groq:      'llama3-8b-8192',
+      ollama:    'llama3',
+    };
+
+    async function loadSettings() {
+      const sb = getSupabase();
+      const { data } = await sb.from('settings').select('key,value');
+      if (!data) return;
+      const s = Object.fromEntries(data.map(r => [r.key, r.value]));
+      if (s.community_name) document.getElementById('s-community-name').value = s.community_name;
+      if (s.ai_provider)    document.getElementById('s-ai-provider').value    = s.ai_provider;
+      if (s.ai_model)       document.getElementById('s-ai-model').value       = s.ai_model;
+      if (s.ai_api_key)     document.getElementById('s-ai-api-key').value     = s.ai_api_key;
+    }
+
+    function updateModelPlaceholder() {
+      const provider = document.getElementById('s-ai-provider').value;
+      const modelInput = document.getElementById('s-ai-model');
+      if (!modelInput.value || Object.values(MODEL_DEFAULTS).includes(modelInput.value)) {
+        modelInput.value = MODEL_DEFAULTS[provider] || '';
+      }
+    }
+
+    async function saveSettings() {
+      const sb = getSupabase();
+      const updates = [
+        { key: 'community_name', value: document.getElementById('s-community-name').value.trim() },
+        { key: 'ai_provider',   value: document.getElementById('s-ai-provider').value },
+        { key: 'ai_model',      value: document.getElementById('s-ai-model').value.trim() },
+        { key: 'ai_api_key',    value: document.getElementById('s-ai-api-key').value.trim() },
+      ].filter(u => u.value);
+
+      const msg = document.getElementById('settings-saved-msg');
+      try {
+        for (const u of updates) {
+          await sb.from('settings').upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+        }
+        msg.textContent = 'Saved ✓';
+        setTimeout(() => msg.textContent = '', 3000);
+        // Refresh community name in sidebar
+        const name = document.getElementById('s-community-name').value.trim();
+        if (name) document.getElementById('community-name').textContent = name;
+      } catch (e) {
+        msg.style.color = 'var(--color-status-hold)';
+        msg.textContent = 'Error saving — ' + e.message;
+      }
     }
 
     // ---- Utils ----
