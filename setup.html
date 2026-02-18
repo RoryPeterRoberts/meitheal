@@ -3,139 +3,327 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Set up your Cell — Meitheal</title>
+  <title>Set up Meitheal</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0f0f0f; --bg-card: #1a1a1a; --bg-input: #242424;
-      --border: #2e2e2e; --text: #e8e8e8; --text-2: #999; --text-3: #555;
-      --primary: #4f8ef7; --green: #3dd68c; --red: #f87171;
-      --radius: 10px; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --bg:       #0d0d0d;
+      --bg-card:  #161616;
+      --bg-input: #1e1e1e;
+      --bg-muted: #1a1a1a;
+      --border:   #2a2a2a;
+      --border-hi:#3a3a3a;
+      --text:     #efefef;
+      --text-2:   #999;
+      --text-3:   #555;
+      --primary:  #4b8cf5;
+      --primary-d:#3a7ae8;
+      --green:    #34d399;
+      --red:      #f87171;
+      --yellow:   #fbbf24;
+      --radius:   10px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
     }
     body {
       background: var(--bg); color: var(--text); font-family: var(--font);
       min-height: 100dvh; display: flex; align-items: center; justify-content: center;
       padding: 24px;
     }
-    .card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 40px; max-width: 480px; width: 100%;
+
+    /* ---- Loading ------------------------------------------ */
+    #screen-loading {
+      text-align: center;
+      color: var(--text-2);
+      font-size: 14px;
     }
-    .logo { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-    .subtitle { color: var(--text-2); font-size: 14px; margin-bottom: 32px; line-height: 1.5; }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Env vars guide ----------------------------------- */
+    #screen-noenv {
+      max-width: 560px; width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    /* ---- Main card --------------------------------------- */
+    #card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .logo {
+      font-size: 20px; font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .logo-sub {
+      font-size: 13px; color: var(--text-2);
+      margin-bottom: 28px;
+    }
+
+    /* Progress */
+    .progress {
+      display: flex; gap: 5px; margin-bottom: 28px;
+    }
+    .pd {
+      height: 3px; flex: 1; border-radius: 2px;
+      background: var(--border); transition: background 0.3s;
+    }
+    .pd.done { background: var(--primary); }
+
+    /* Steps */
     .step { display: none; }
     .step.active { display: block; }
+
     .step-label {
       font-size: 11px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 16px;
+      letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 14px;
     }
-    .step-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-    .step-desc { font-size: 13px; color: var(--text-2); margin-bottom: 24px; line-height: 1.5; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-2); }
+    .step-title {
+      font-size: 20px; font-weight: 700; margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .step-desc {
+      font-size: 13px; color: var(--text-2); margin-bottom: 22px;
+      line-height: 1.55;
+    }
+
+    /* Form */
+    .fg { margin-bottom: 14px; }
+    label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-2); margin-bottom: 5px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
     input, select {
       width: 100%; padding: 10px 12px;
       background: var(--bg-input); border: 1px solid var(--border);
-      border-radius: var(--radius); color: var(--text); font-size: 14px;
+      border-radius: var(--radius); color: var(--text);
+      font-size: 14px; font-family: var(--font);
       outline: none; transition: border-color 0.15s;
     }
     input:focus, select:focus { border-color: var(--primary); }
     input::placeholder { color: var(--text-3); }
     select option { background: var(--bg-card); }
+
+    /* Hint under input */
+    .hint {
+      font-size: 12px; color: var(--text-3);
+      margin-top: 6px; line-height: 1.4;
+    }
+    .hint a { color: var(--primary); text-decoration: none; }
+    .hint a:hover { text-decoration: underline; }
+
+    /* Buttons */
     .btn {
-      width: 100%; padding: 12px; border-radius: var(--radius);
+      width: 100%; padding: 11px 16px; border-radius: var(--radius);
       font-size: 14px; font-weight: 600; cursor: pointer;
-      border: none; transition: all 0.15s; margin-top: 8px;
+      border: none; transition: all 0.15s; font-family: var(--font);
+      margin-top: 6px;
     }
     .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-d); }
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-ghost {
       background: none; border: 1px solid var(--border); color: var(--text-2);
-      margin-top: 8px;
     }
-    .btn-ghost:hover { border-color: var(--text-3); color: var(--text); }
-    .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
-    .progress {
-      display: flex; gap: 6px; margin-bottom: 28px;
+    .btn-ghost:hover { border-color: var(--border-hi); color: var(--text); }
+    .btn-row { display: flex; gap: 8px; margin-top: 6px; }
+    .btn-row .btn { margin-top: 0; }
+
+    /* Errors */
+    .err {
+      font-size: 13px; color: var(--red);
+      margin-top: 10px; display: none; line-height: 1.4;
     }
-    .progress-dot {
-      height: 4px; flex: 1; border-radius: 2px;
-      background: var(--border); transition: background 0.3s;
+
+    /* SQL block */
+    .sql-wrap {
+      position: relative; margin-bottom: 8px;
     }
-    .progress-dot.done { background: var(--primary); }
-    .success-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
-    .success-title { font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 8px; }
-    .success-text { font-size: 14px; color: var(--text-2); text-align: center; line-height: 1.6; }
-    .link-note {
-      font-size: 12px; color: var(--text-3); margin-top: 12px;
-      padding: 10px; background: var(--bg-input); border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-    .link-note a { color: var(--primary); }
     .sql-block {
       background: var(--bg-input); border: 1px solid var(--border);
-      border-radius: 8px; padding: 12px; font-family: var(--mono, monospace);
-      font-size: 11px; color: var(--text-2); white-space: pre; overflow-x: auto;
-      max-height: 200px; overflow-y: auto; margin-bottom: 8px;
+      border-radius: var(--radius); padding: 12px 12px 12px 14px;
+      font-family: var(--mono); font-size: 11px; color: var(--text-2);
+      white-space: pre; overflow: auto; max-height: 180px;
+      line-height: 1.5;
     }
-    .sql-actions { display: flex; gap: 8px; margin-bottom: 16px; }
-    .sql-actions .btn { flex: 1; margin-top: 0; font-size: 13px; padding: 9px; }
+    .sql-copy {
+      position: absolute; top: 8px; right: 8px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 10px;
+      font-size: 11px; font-weight: 600; color: var(--text-2);
+      cursor: pointer; transition: all 0.15s; font-family: var(--font);
+    }
+    .sql-copy:hover { border-color: var(--border-hi); color: var(--text); }
+    .sql-copy.copied { color: var(--green); border-color: var(--green); }
+
+    /* Check pill */
+    .check-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600;
+      padding: 4px 10px; border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .check-pill.ok { background: rgba(52,211,153,0.12); color: var(--green); }
+    .check-pill.fail { background: rgba(248,113,113,0.12); color: var(--red); }
+    .check-pill.checking { background: var(--bg-input); color: var(--text-3); }
+
+    /* Env vars table */
+    .env-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+    .env-table th {
+      text-align: left; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-3); padding: 0 0 8px;
+    }
+    .env-table td { padding: 6px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .env-table td:first-child {
+      font-family: var(--mono); font-size: 12px; color: var(--primary);
+      white-space: nowrap; padding-right: 16px;
+    }
+    .env-table td:last-child { color: var(--text-2); }
+    .env-table tr:last-child td { border-bottom: none; }
+
+    /* Step 4 done */
+    .done-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+    .done-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .done-text { font-size: 14px; color: var(--text-2); text-align: center; line-height: 1.6; margin-bottom: 24px; }
+    .done-note {
+      font-size: 12px; color: var(--text-3); text-align: center;
+      padding: 12px; background: var(--bg-input);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 8px; line-height: 1.5;
+    }
   </style>
 </head>
 <body>
   <script src="/api/init"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
 
-  <div class="card">
+  <!-- Loading -->
+  <div id="screen-loading">
+    <div class="spinner"></div>
+    Checking your setup…
+  </div>
+
+  <!-- No Supabase URL — deployer needs to set Vercel env vars -->
+  <div id="screen-noenv" style="display:none">
     <div class="logo">Meitheal</div>
-    <div class="subtitle">Let's set up your community. This takes about 5 minutes.</div>
+    <div class="logo-sub">Almost there — one step before the wizard.</div>
 
-    <div class="progress" id="progress">
-      <div class="progress-dot done" id="dot-1"></div>
-      <div class="progress-dot" id="dot-2"></div>
-      <div class="progress-dot" id="dot-3"></div>
-      <div class="progress-dot" id="dot-4"></div>
+    <p style="font-size:14px;line-height:1.6;margin-bottom:20px;">
+      Your Vercel deployment needs five environment variables before setup can begin.
+      Add them in Vercel, redeploy, then come back to this page.
+    </p>
+
+    <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-3);margin-bottom:10px;">
+      Vercel → Project → Settings → Environment Variables
+    </p>
+
+    <table class="env-table">
+      <thead>
+        <tr><th>Variable</th><th>Where to find it</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SUPABASE_URL</td>
+          <td>Supabase → Project Settings → API → Project URL</td>
+        </tr>
+        <tr>
+          <td>SUPABASE_ANON_KEY</td>
+          <td>Supabase → Project Settings → API → anon public key</td>
+        </tr>
+        <tr>
+          <td>SUPABASE_SERVICE_KEY</td>
+          <td>Supabase → Project Settings → API → service_role key</td>
+        </tr>
+        <tr>
+          <td>GITHUB_TOKEN</td>
+          <td>GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained token with Contents: read &amp; write on this repo</td>
+        </tr>
+        <tr>
+          <td>GITHUB_REPO</td>
+          <td>Your repo in <code style="font-family:var(--mono);font-size:11px;color:var(--primary)">owner/repo</code> format, e.g. <code style="font-family:var(--mono);font-size:11px;color:var(--primary)">acmecorp/acme-community</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:20px;line-height:1.5;">
+      After adding the variables, trigger a redeploy in Vercel (Deployments → Redeploy).
+      Then refresh this page.
+    </p>
+
+    <button class="btn btn-primary" onclick="location.reload()">Refresh →</button>
+  </div>
+
+  <!-- Main wizard -->
+  <div id="card" style="display:none">
+    <div class="logo">Meitheal</div>
+    <div class="logo-sub">Set up your community in a few minutes.</div>
+
+    <div class="progress">
+      <div class="pd done" id="pd1"></div>
+      <div class="pd" id="pd2"></div>
+      <div class="pd" id="pd3"></div>
+      <div class="pd" id="pd4"></div>
     </div>
 
-    <!-- Step 1: Community name + admin email -->
+    <!-- Step 1: Community -->
     <div class="step active" id="step-1">
       <div class="step-label">Step 1 of 4</div>
       <div class="step-title">Your community</div>
-      <div class="step-desc">Give your community a name, and enter your email to become the founding admin.</div>
-      <div class="form-group">
+      <div class="step-desc">Give your community a name. You'll become the founding admin — anyone you invite joins as a member.</div>
+
+      <div class="fg">
         <label>Community name</label>
         <input type="text" id="community-name" placeholder="e.g. Stoneybatter Mutual Aid">
       </div>
-      <div class="form-group">
+      <div class="fg">
         <label>Your email</label>
         <input type="email" id="admin-email" placeholder="you@example.com">
       </div>
-      <div class="form-group">
+      <div class="fg">
         <label>Your name</label>
         <input type="text" id="admin-name" placeholder="How members will see you">
       </div>
-      <div class="error-msg" id="err-1"></div>
-      <button class="btn btn-primary" onclick="step1Next()">Continue →</button>
+
+      <div class="err" id="err-1"></div>
+      <button class="btn btn-primary" onclick="s1Next()">Continue →</button>
     </div>
 
     <!-- Step 2: AI provider -->
     <div class="step" id="step-2">
       <div class="step-label">Step 2 of 4</div>
       <div class="step-title">Choose your AI</div>
-      <div class="step-desc">The AI builds and evolves your platform. You can change provider any time from the admin panel.</div>
-      <div class="form-group">
+      <div class="step-desc">The AI builds and evolves your platform when the community votes to add something. You can change provider any time from the admin panel.</div>
+
+      <div class="fg">
         <label>Provider</label>
-        <select id="ai-provider" onchange="updateProviderFields()">
+        <select id="ai-provider" onchange="updateAiFields()">
           <option value="anthropic">Anthropic (Claude) — Recommended</option>
-          <option value="deepseek">DeepSeek — Best value</option>
-          <option value="openai">OpenAI (GPT)</option>
-          <option value="groq">Groq (fast, free tier)</option>
-          <option value="ollama">Ollama (local, free)</option>
+          <option value="deepseek">DeepSeek — Best value (~$0.28 / million tokens)</option>
+          <option value="openai">OpenAI (GPT-4o)</option>
+          <option value="groq">Groq — Fast, free tier available</option>
+          <option value="ollama">Ollama — Local, fully free</option>
         </select>
       </div>
-      <div class="form-group" id="model-group">
+
+      <div class="fg" id="model-group">
         <label>Model</label>
         <select id="ai-model">
           <option value="claude-sonnet-4-6">Claude Sonnet 4.6 — Best balance</option>
@@ -143,206 +331,384 @@
           <option value="claude-opus-4-6">Claude Opus 4.6 — Most capable</option>
         </select>
       </div>
-      <div class="form-group" id="apikey-group">
+
+      <div class="fg" id="apikey-group">
         <label>API Key</label>
         <input type="password" id="ai-api-key" placeholder="sk-ant-...">
-        <div class="link-note" id="apikey-hint">
+        <div class="hint" id="apikey-hint">
           Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. New accounts get free credits.
         </div>
       </div>
-      <div class="form-group" id="ollama-group" style="display:none;">
+
+      <div class="fg" id="ollama-group" style="display:none">
         <label>Ollama URL</label>
-        <input type="text" id="ollama-url" placeholder="http://localhost:11434" value="http://localhost:11434">
-        <div class="link-note">Ollama must be running locally or on a server you control. Cost: free.</div>
+        <input type="text" id="ollama-url" value="http://localhost:11434">
+        <div class="hint">Ollama must be running and accessible from your Vercel functions. Works best if you're self-hosting.</div>
       </div>
-      <div class="error-msg" id="err-2"></div>
-      <button class="btn btn-primary" onclick="step2Next()">Continue →</button>
+
+      <div class="err" id="err-2"></div>
+      <button class="btn btn-primary" onclick="s2Next()">Continue →</button>
       <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
     </div>
 
-    <!-- Step 3: Database (Supabase) -->
+    <!-- Step 3: Database setup -->
     <div class="step" id="step-3">
       <div class="step-label">Step 3 of 4</div>
-      <div class="step-title">Set up your database</div>
+      <div class="step-title">Set up the database</div>
       <div class="step-desc">
-        Copy this SQL and run it in your Supabase SQL editor.
-        It creates the tables your community needs — you can see exactly what it does.
+        Copy this SQL and run it in your Supabase SQL editor. It creates the tables your community needs — you can read exactly what it does.
       </div>
-      <pre class="sql-block" id="sql-display">Loading…</pre>
-      <div class="sql-actions">
-        <button class="btn btn-ghost" onclick="copySql()">Copy SQL</button>
-        <a class="btn btn-ghost" id="sql-editor-link" href="https://supabase.com/dashboard" target="_blank" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">Open SQL Editor ↗</a>
+
+      <div class="sql-wrap">
+        <pre class="sql-block" id="sql-block">Loading migrations…</pre>
+        <button class="sql-copy" id="sql-copy-btn" onclick="copySql()">Copy</button>
       </div>
-      <div class="step-desc">Once you've run the SQL, click Continue.</div>
-      <div class="error-msg" id="err-3"></div>
-      <button class="btn btn-primary" id="init-btn" onclick="step3Init()">I've run the SQL → Continue</button>
+
+      <div class="btn-row" style="margin-bottom:16px">
+        <a class="btn btn-ghost" id="sql-editor-link" href="https://supabase.com/dashboard" target="_blank"
+           style="text-decoration:none;display:flex;align-items:center;justify-content:center;flex:1">
+          Open SQL Editor ↗
+        </a>
+      </div>
+
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;line-height:1.5;">
+        Once you've run the SQL, click the button below. The wizard will verify the database is ready.
+      </p>
+
+      <div id="db-check-pill" style="display:none"></div>
+
+      <div class="err" id="err-3"></div>
+      <button class="btn btn-primary" id="btn-verify" onclick="s3Verify()">I've run the SQL → Verify &amp; continue</button>
       <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
     </div>
 
     <!-- Step 4: Done -->
     <div class="step" id="step-4">
-      <div class="success-icon">✅</div>
-      <div class="success-title">You're all set!</div>
-      <div class="success-text">
-        Check your email for a login link. Once you're in, open the Admin panel and start building.
+      <div class="done-icon">✅</div>
+      <div class="done-title">You're all set!</div>
+      <div class="done-text">
+        A login link is on its way to <strong id="done-email"></strong>.<br>
+        Open it to sign in as admin and start building with your community.
       </div>
-      <button class="btn btn-primary" style="margin-top:24px;" onclick="window.location.href='auth.html'">Go to login →</button>
+      <div class="done-note" id="done-note">
+        Didn't get the email? Check your spam folder, or visit
+        <a href="auth.html" style="color:var(--primary)">auth.html</a>
+        to request a new one.
+      </div>
+      <button class="btn btn-primary" onclick="window.location.href='auth.html'">Go to login →</button>
     </div>
   </div>
 
   <script>
-    let formData = {};
-    let currentStep = 1;
+    // ---- State ----
+    let step = 1;
+    let form = {};
+    let sqlText = null;
 
-    function getSupabase() {
-      if (!window._sb) {
-        window._sb = supabase.createClient(
-          document.querySelector('meta[name="supabase-url"]')?.content || window._SUPABASE_URL || '',
-          document.querySelector('meta[name="supabase-anon"]')?.content || window._SUPABASE_ANON_KEY || ''
-        );
+    const MIGRATIONS = [
+      'migrations/00_base.sql',
+      'migrations/01_proposals.sql',
+      'migrations/02_trust_validation.sql',
+      'migrations/03_admin_rls.sql',
+      'migrations/04_member_proposal_rls.sql',
+    ];
+
+    // ---- Boot: detect state ----
+
+    async function boot() {
+      const supabaseUrl  = window._SUPABASE_URL  || '';
+      const supabaseAnon = window._SUPABASE_ANON_KEY || '';
+
+      // Supabase not configured — deployer needs to set env vars
+      if (!supabaseUrl || supabaseUrl.includes('YOUR_PROJECT')) {
+        show('screen-noenv');
+        return;
       }
-      return window._sb;
+
+      // Try to read settings to detect setup state
+      try {
+        const r = await fetch(`${supabaseUrl}/rest/v1/settings?key=eq.initialized&select=value`, {
+          headers: {
+            'apikey':        supabaseAnon,
+            'Authorization': `Bearer ${supabaseAnon}`,
+          }
+        });
+
+        if (r.ok) {
+          const rows = await r.json();
+          if (rows?.[0]?.value === 'true') {
+            // Already initialised — redirect to auth
+            window.location.replace('auth.html');
+            return;
+          }
+          // Tables exist but not yet initialised — skip SQL step
+          form._dbReady = true;
+        }
+        // If r is not ok: tables probably don't exist yet (expected on first run)
+      } catch {}
+
+      // Restore form data from sessionStorage (so refreshes don't lose progress)
+      try {
+        const saved = JSON.parse(sessionStorage.getItem('mth_setup') || '{}');
+        Object.assign(form, saved);
+        if (form.communityName) document.getElementById('community-name').value = form.communityName;
+        if (form.adminEmail)    document.getElementById('admin-email').value    = form.adminEmail;
+        if (form.adminName)     document.getElementById('admin-name').value     = form.adminName;
+      } catch {}
+
+      show('card');
+      // If DB is already ready, we only need to collect config then submit
+      // Stay on step 1 regardless — still need to collect community name etc.
     }
 
-    function showErr(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg;
-      el.style.display = 'block';
-    }
-    function clearErr(id) {
-      const el = document.getElementById(id);
-      el.style.display = 'none';
+    function show(id) {
+      document.getElementById('screen-loading').style.display = 'none';
+      document.getElementById('screen-noenv').style.display   = 'none';
+      document.getElementById('card').style.display           = 'none';
+      document.getElementById(id).style.display = '';
     }
 
-    let _sqlText = null;
+    // ---- Navigation ----
 
-    async function goStep(n) {
-      document.getElementById(`step-${currentStep}`).classList.remove('active');
+    function goStep(n) {
+      document.getElementById(`step-${step}`).classList.remove('active');
       document.getElementById(`step-${n}`).classList.add('active');
       for (let i = 1; i <= 4; i++) {
-        document.getElementById(`dot-${i}`).classList.toggle('done', i <= n);
+        document.getElementById(`pd${i}`).classList.toggle('done', i <= n);
       }
-      currentStep = n;
+      step = n;
 
-      if (n === 3) {
-        // Load migration SQL and set the SQL editor deep link
-        if (!_sqlText) {
-          try {
-            _sqlText = await fetch('migrations/00_base.sql').then(r => r.text());
-          } catch { _sqlText = '-- Could not load SQL. Fetch migrations/00_base.sql manually.'; }
+      if (n === 3) initSqlStep();
+    }
+
+    // ---- Step 1 ----
+
+    function s1Next() {
+      clearErr('err-1');
+      const name      = v('community-name');
+      const email     = v('admin-email');
+      const adminName = v('admin-name');
+      if (!name)  return err('err-1', 'Please enter a community name.');
+      if (!email || !email.includes('@')) return err('err-1', 'Please enter a valid email address.');
+      if (!adminName) return err('err-1', 'Please enter your name.');
+      Object.assign(form, { communityName: name, adminEmail: email, adminName });
+      save();
+      goStep(2);
+    }
+
+    // ---- Step 2 ----
+
+    function updateAiFields() {
+      const provider = v('ai-provider');
+
+      const models = {
+        anthropic: [
+          ['claude-sonnet-4-6',        'Claude Sonnet 4.6 — Best balance'],
+          ['claude-haiku-4-5-20251001', 'Claude Haiku 4.5 — Faster, cheaper'],
+          ['claude-opus-4-6',          'Claude Opus 4.6 — Most capable'],
+        ],
+        deepseek: [
+          ['deepseek-chat',     'DeepSeek V3 — ~$0.28/M tokens'],
+          ['deepseek-reasoner', 'DeepSeek R1 — reasoning model'],
+        ],
+        openai: [
+          ['gpt-4o',      'GPT-4o — Best'],
+          ['gpt-4o-mini', 'GPT-4o Mini — Cheaper'],
+        ],
+        groq: [
+          ['llama-3.3-70b-versatile', 'Llama 3.3 70B'],
+          ['mixtral-8x7b-32768',      'Mixtral 8x7B'],
+        ],
+        ollama: [
+          ['llama3',   'llama3'],
+          ['mistral',  'mistral'],
+          ['codellama','codellama'],
+        ],
+      };
+
+      const hints = {
+        anthropic: 'Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. New accounts get free credits.',
+        deepseek:  'Get your key at <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a>. Very affordable.',
+        openai:    'Get your key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a>.',
+        groq:      'Free API key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>.',
+      };
+
+      const sel = document.getElementById('ai-model');
+      sel.innerHTML = (models[provider] || []).map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
+
+      document.getElementById('ollama-group').style.display  = provider === 'ollama' ? 'block' : 'none';
+      document.getElementById('apikey-group').style.display  = provider === 'ollama' ? 'none'  : 'block';
+
+      const hint = document.getElementById('apikey-hint');
+      if (hints[provider]) hint.innerHTML = hints[provider];
+    }
+
+    function s2Next() {
+      clearErr('err-2');
+      const provider  = v('ai-provider');
+      const model     = v('ai-model');
+      const apiKey    = v('ai-api-key');
+      const ollamaUrl = v('ollama-url');
+      if (provider !== 'ollama' && !apiKey) return err('err-2', 'Please enter your API key.');
+      Object.assign(form, { provider, model, apiKey, ollamaUrl });
+      save();
+      goStep(3);
+    }
+
+    // ---- Step 3: SQL ----
+
+    async function initSqlStep() {
+      // Load and combine all migrations if not already done
+      if (!sqlText) {
+        try {
+          const parts = await Promise.all(
+            MIGRATIONS.map(async (path) => {
+              const r = await fetch(path);
+              if (!r.ok) throw new Error(`Could not load ${path}`);
+              return `-- ============================================================\n-- ${path}\n-- ============================================================\n` + await r.text();
+            })
+          );
+          sqlText = parts.join('\n\n');
+        } catch (e) {
+          sqlText = '-- Error loading migrations: ' + e.message + '\n-- Fetch the files manually from the migrations/ folder.';
         }
-        document.getElementById('sql-display').textContent = _sqlText;
-        const ref = (window._SUPABASE_URL || '').replace('https://','').split('.')[0];
-        if (ref) {
-          document.getElementById('sql-editor-link').href =
-            `https://supabase.com/dashboard/project/${ref}/sql/new`;
-        }
+      }
+
+      document.getElementById('sql-block').textContent = sqlText;
+
+      // Set deep link to their Supabase SQL editor
+      const ref = (window._SUPABASE_URL || '').replace('https://', '').split('.')[0];
+      if (ref && ref !== 'YOUR_PROJECT') {
+        document.getElementById('sql-editor-link').href =
+          `https://supabase.com/dashboard/project/${ref}/sql/new`;
+      }
+
+      // If DB was already ready on boot, skip verification UI
+      if (form._dbReady) {
+        showDbPill('ok', '✓ Database already set up');
+        document.getElementById('btn-verify').textContent = 'Continue →';
       }
     }
 
     async function copySql() {
-      if (!_sqlText) return;
+      if (!sqlText) return;
+      const btn = document.getElementById('sql-copy-btn');
       try {
-        await navigator.clipboard.writeText(_sqlText);
-        const btn = event.target;
+        await navigator.clipboard.writeText(sqlText);
         btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = 'Copy SQL', 2000);
-      } catch { }
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2500);
+      } catch {
+        btn.textContent = 'Select + copy manually';
+        document.getElementById('sql-block').select?.();
+      }
     }
 
-    function step1Next() {
-      clearErr('err-1');
-      const name  = document.getElementById('community-name').value.trim();
-      const email = document.getElementById('admin-email').value.trim();
-      const adminName = document.getElementById('admin-name').value.trim();
-      if (!name)  return showErr('err-1', 'Please enter a community name.');
-      if (!email || !email.includes('@')) return showErr('err-1', 'Please enter a valid email.');
-      if (!adminName) return showErr('err-1', 'Please enter your name.');
-      formData = { ...formData, communityName: name, adminEmail: email, adminName };
-      goStep(2);
-    }
+    async function s3Verify() {
+      clearErr('err-3');
+      const btn = document.getElementById('btn-verify');
 
-    function updateProviderFields() {
-      const provider = document.getElementById('ai-provider').value;
-      const modelGroup = document.getElementById('model-group');
-      const apiKeyGroup = document.getElementById('apikey-group');
-      const ollamaGroup = document.getElementById('ollama-group');
-      const hint = document.getElementById('apikey-hint');
-
-      const modelOptions = {
-        anthropic: [
-          ['claude-sonnet-4-6', 'Claude Sonnet 4.6 — Best balance'],
-          ['claude-haiku-4-5-20251001', 'Claude Haiku 4.5 — Faster, cheaper'],
-          ['claude-opus-4-6', 'Claude Opus 4.6 — Most capable'],
-        ],
-        deepseek: [
-          ['deepseek-chat', 'DeepSeek V3 — ~$0.28/M tokens'],
-          ['deepseek-reasoner', 'DeepSeek R1 — reasoning model'],
-        ],
-        openai: [
-          ['gpt-4o', 'GPT-4o — Best'],
-          ['gpt-4o-mini', 'GPT-4o Mini — Cheaper'],
-        ],
-        groq: [
-          ['llama-3.3-70b-versatile', 'Llama 3.3 70B — Fast'],
-          ['mixtral-8x7b-32768', 'Mixtral 8x7B'],
-        ],
-      };
-
-      ollamaGroup.style.display = provider === 'ollama' ? 'block' : 'none';
-      apiKeyGroup.style.display = provider === 'ollama' ? 'none' : 'block';
-
-      if (provider !== 'ollama' && modelOptions[provider]) {
-        const sel = document.getElementById('ai-model');
-        sel.innerHTML = modelOptions[provider].map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
-        modelGroup.style.display = 'block';
-      } else if (provider === 'ollama') {
-        const sel = document.getElementById('ai-model');
-        sel.innerHTML = '<option value="llama3">llama3</option><option value="mistral">mistral</option>';
-        modelGroup.style.display = 'block';
+      // If already confirmed, just submit
+      if (form._dbReady) {
+        return submitSetup();
       }
 
-      const hints = {
-        anthropic: 'Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.',
-        deepseek: 'Get your key at <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a>. Very cheap — ~$0.28 per million tokens.',
-        openai: 'Get your key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a>.',
-        groq: 'Get a free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>.',
-      };
-      if (hint && hints[provider]) hint.innerHTML = hints[provider];
-    }
-
-    function step2Next() {
-      clearErr('err-2');
-      const provider = document.getElementById('ai-provider').value;
-      const model    = document.getElementById('ai-model').value;
-      const apiKey   = document.getElementById('ai-api-key').value.trim();
-      const ollamaUrl = document.getElementById('ollama-url').value.trim();
-      if (provider !== 'ollama' && !apiKey) return showErr('err-2', 'Please enter your API key.');
-      formData = { ...formData, provider, model, apiKey, ollamaUrl };
-      goStep(3);
-    }
-
-    async function step3Init() {
-      clearErr('err-3');
-      const btn = document.getElementById('init-btn');
       btn.disabled = true;
-      btn.textContent = 'Setting up…';
+      btn.textContent = 'Checking…';
+      showDbPill('checking', 'Checking database…');
 
       try {
         const r = await fetch('/api/setup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+          body: JSON.stringify({ action: 'check' }),
+        });
+        const json = await r.json();
+
+        if (!r.ok || !json.ok) throw new Error(json.error || 'Database not ready');
+
+        form._dbReady = true;
+        showDbPill('ok', '✓ Database ready');
+        await submitSetup();
+      } catch (e) {
+        showDbPill('fail', '✗ Tables not found');
+        err('err-3', 'The database tables weren\'t found. Make sure you copied and ran the full SQL block above, then try again.');
+        btn.disabled = false;
+        btn.textContent = 'Try again →';
+      }
+    }
+
+    function showDbPill(state, text) {
+      const el = document.getElementById('db-check-pill');
+      el.style.display = 'block';
+      el.innerHTML = `<span class="check-pill ${state}">${text}</span>`;
+    }
+
+    // ---- Submit to /api/setup ----
+
+    async function submitSetup() {
+      const btn = document.getElementById('btn-verify');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      const siteUrl = window.location.origin;
+
+      try {
+        const r = await fetch('/api/setup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            communityName: form.communityName,
+            adminEmail:    form.adminEmail,
+            adminName:     form.adminName,
+            provider:      form.provider,
+            model:         form.model,
+            apiKey:        form.apiKey,
+            ollamaUrl:     form.ollamaUrl,
+            siteUrl,
+          }),
         });
         const json = await r.json();
         if (!r.ok) throw new Error(json.error || 'Setup failed');
+
+        // Clear saved form data — setup complete
+        sessionStorage.removeItem('mth_setup');
+
+        document.getElementById('done-email').textContent = form.adminEmail;
         goStep(4);
       } catch (e) {
-        showErr('err-3', e.message);
         btn.disabled = false;
-        btn.textContent = "I've run the SQL → Continue";
+        btn.textContent = 'I\'ve run the SQL → Verify & continue';
+        err('err-3', e.message);
       }
     }
+
+    // ---- Helpers ----
+
+    function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
+
+    function err(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg; el.style.display = 'block';
+    }
+
+    function clearErr(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+
+    function save() {
+      try {
+        sessionStorage.setItem('mth_setup', JSON.stringify({
+          communityName: form.communityName,
+          adminEmail:    form.adminEmail,
+          adminName:     form.adminName,
+        }));
+      } catch {}
+    }
+
+    // ---- Start ----
+    boot();
   </script>
 </body>
 </html>

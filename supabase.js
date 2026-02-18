@@ -70,7 +70,7 @@ async function createProposal({ feedback_id, title, description, promoted_by }) 
 async function getAllProposals() {
   const { data, error } = await getSupabase()
     .from('proposals')
-    .select('*, members!proposals_promoted_by_fkey(display_name), feedback(message, ref_number)')
+    .select('*, members!proposals_promoted_by_fkey(display_name), feedback(message, ref_number, author_id)')
     .order('created_at', { ascending: false });
   if (error) throw error;
   return data || [];
