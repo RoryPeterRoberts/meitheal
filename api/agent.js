@@ -13,9 +13,13 @@ const COSTS = {
   'gpt-4o-mini':              { input:  0.15, output:  0.60 },
   'deepseek-chat':            { input:  0.27, output:  1.10 }, // DeepSeek V3
   'deepseek-reasoner':        { input:  0.55, output:  2.19 }, // DeepSeek R1
-  'gemini-2.0-flash':         { input:  0.10, output:  0.40 }, // Gemini 2.0 Flash
-  'gemini-2.0-flash-lite':    { input:  0.075,output:  0.30 }, // Gemini 2.0 Flash Lite
-  'gemini-1.5-flash':         { input:  0.075,output:  0.30 }, // Gemini 1.5 Flash
+  'gemini-2.5-flash':         { input:  0.15, output:  0.60 }, // Gemini 2.5 Flash
+  'gemini-2.5-flash-lite':    { input:  0.075,output:  0.30 }, // Gemini 2.5 Flash Lite
+  'gemini-2.0-flash':         { input:  0.10, output:  0.40 }, // Gemini 2.0 Flash (legacy)
+  'qwen3-max':                { input:  0.40, output:  1.20 }, // Qwen3 Max
+  'qwen3-plus':               { input:  0.07, output:  0.21 }, // Qwen3 Plus
+  'kimi-k2-turbo':            { input:  0.60, output:  2.50 }, // Kimi K2 Turbo
+  'kimi-k2.5':                { input:  0.80, output:  3.00 }, // Kimi K2.5
   'llama3':                   { input:  0,    output:  0    }, // local
 };
 
@@ -439,6 +443,8 @@ async function runAgent(userMessage, conversationId, env) {
       const baseUrl = provider === 'groq'     ? 'https://api.groq.com/openai'
                     : provider === 'deepseek' ? 'https://api.deepseek.com'
                     : provider === 'gemini'   ? 'https://generativelanguage.googleapis.com/v1beta/openai'
+                    : provider === 'qwen'     ? 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1'
+                    : provider === 'kimi'     ? 'https://api.moonshot.ai/v1'
                     : provider === 'ollama'   ? ollamaUrl
                     : null; // default openai
       response = await callOpenAI(messages, systemPrompt, model, apiKey, baseUrl);
