@@ -245,15 +245,24 @@ async function executeTool(name, args, env) {
     case 'run_sql': {
       // Calls a SECURITY DEFINER Postgres function (migration 05) via the service key.
       // Locked to service_role only — see migrations/05_run_sql_function.sql.
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/run_sql_admin`, {
-        method: 'POST',
-        headers: { ...sbHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sql: args.sql })
-      });
-      if (!r.ok) { const t = await r.text(); throw new Error(`run_sql failed: ${t}`); }
-      const result = await r.json();
-      if (result?.error) throw new Error(result.error);
-      return { ok: true };
+      // EXECUTE in PL/pgSQL runs one statement at a time, so we split on semicolons
+      // and call the RPC once per statement.
+      const statements = (args.sql || '')
+        .split(/;/)
+        .map(s => s.replace(/--[^\n]*/g, '').trim()) // strip line comments
+        .filter(s => s.length > 0);
+
+      for (const stmt of statements) {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/run_sql_admin`, {
+          method: 'POST',
+          headers: { ...sbHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sql: stmt })
+        });
+        if (!r.ok) { const t = await r.text(); throw new Error(`run_sql failed: ${t}`); }
+        const result = await r.json();
+        if (result?.error) throw new Error(`SQL error: ${result.error}\nStatement: ${stmt.slice(0, 120)}`);
+      }
+      return { ok: true, statements_run: statements.length };
     }
 
     case 'query_data': {
