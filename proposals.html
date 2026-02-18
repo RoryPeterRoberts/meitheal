@@ -304,6 +304,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script src="js/auth.js"></script>
+  <script src="feedback-widget.js"></script>
 
   <div class="page">
     <header class="page-header">
@@ -361,6 +362,8 @@
       const member = await requireAuthAsync();
       if (!member) return;
       currentMember = member;
+
+      initFeedbackWidget(member.id);
 
       try {
         allProposals = await getAllProposals();
