@@ -208,7 +208,7 @@ async function executeTool(name, args, env) {
       const realNL    = (content.match(/\n/g)  || []).length;
       const escapedNL = (content.match(/\\n/g) || []).length;
       if (escapedNL > 10 && realNL === 0) {
-        content = content.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+        content = content.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\'/g, "'");
       }
       // Capture pre-build SHA for rollback (null if file is new)
       let sha = null;

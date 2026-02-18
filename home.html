@@ -343,7 +343,7 @@
     </section>
 
     <div class="charter">
-      <p>This is your community\'s platform — built by your neighbours, shaped by everyone. Share ideas below or tap the button in any page corner. When approved, they get built here.</p>
+      <p>This is your community's platform — built by your neighbours, shaped by everyone. Share ideas below or tap the button in any page corner. When approved, they get built here.</p>
     </div>
 
     <button class="cta-btn" onclick="openFeedbackWidget()">
@@ -376,7 +376,7 @@
       <a href="changelog.html" class="nav-card">
         <span class="nav-card-emoji">📦</span>
         <div class="nav-card-body">
-          <div class="nav-card-title">What we\'ve built</div>
+          <div class="nav-card-title">What we've built</div>
           <div class="nav-card-desc">Features the community has shaped</div>
         </div>
       </a>
@@ -385,7 +385,7 @@
         <span class="nav-card-emoji">💬</span>
         <div class="nav-card-body">
           <div class="nav-card-title">My ideas<span id="validation-badge" class="nav-card-badge" style="display:none"></span></div>
-          <div class="nav-card-desc">Track what\'s happening with your ideas</div>
+          <div class="nav-card-desc">Track what's happening with your ideas</div>
         </div>
       </a>
 
@@ -414,44 +414,44 @@
 
       initFeedbackWidget(member.id);
 
-      const name     = member.display_name || \'Member\';
-      const initials = name.split(\' \').map(w => w[0]).join(\'\').toUpperCase().slice(0, 2);
+      const name     = member.display_name || 'Member';
+      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-      document.getElementById(\'avatar\').textContent       = initials;
-      document.getElementById(\'welcome-name\').textContent = `Good to see you, ${name.split(\' \')[0]}.`;
-      document.getElementById(\'welcome-email\').textContent = member.email;
+      document.getElementById('avatar').textContent       = initials;
+      document.getElementById('welcome-name').textContent = `Good to see you, ${name.split(' ')[0]}.`;
+      document.getElementById('welcome-email').textContent = member.email;
 
-      const badge = document.getElementById(\'role-badge\');
+      const badge = document.getElementById('role-badge');
       badge.textContent = member.role;
-      badge.className   = `role-pill${member.role === \'admin\' ? \' admin\' : \'\'}`;
-      badge.style.display = \'inline-block\';
+      badge.className   = `role-pill${member.role === 'admin' ? ' admin' : ''}`;
+      badge.style.display = 'inline-block';
 
-      document.getElementById(\'masthead-date\').textContent =
-        new Date().toLocaleDateString(\'en-IE\', { day: \'numeric\', month: \'long\', year: \'numeric\' });
+      document.getElementById('masthead-date').textContent =
+        new Date().toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
 
       if (member.joined_at) {
         const d = new Date(member.joined_at);
-        document.getElementById(\'joined-date\').textContent =
-          `Member since ${d.toLocaleDateString(\'en-IE\', { month: \'long\', year: \'numeric\' })}`;
+        document.getElementById('joined-date').textContent =
+          `Member since ${d.toLocaleDateString('en-IE', { month: 'long', year: 'numeric' })}`;
       }
 
-      if (member.role === \'admin\') {
-        const link   = document.createElement(\'a\');
-        link.href    = \'admin.html\';
-        link.textContent = \'Admin ↗\';
-        link.className = \'footer-admin-link\';
-        document.getElementById(\'footer-right\').insertAdjacentElement(\'afterbegin\', link);
+      if (member.role === 'admin') {
+        const link   = document.createElement('a');
+        link.href    = 'admin.html';
+        link.textContent = 'Admin ↗';
+        link.className = 'footer-admin-link';
+        document.getElementById('footer-right').insertAdjacentElement('afterbegin', link);
       }
 
       const { data: settings } = await getSupabase()
-        .from(\'settings\').select(\'value\').eq(\'key\', \'community_name\').single();
-      if (settings?.value) document.getElementById(\'community-name\').textContent = settings.value;
+        .from('settings').select('value').eq('key', 'community_name').single();
+      if (settings?.value) document.getElementById('community-name').textContent = settings.value;
 
       getPendingValidations(member.id).then(pending => {
         if (pending.length > 0) {
-          const b = document.getElementById(\'validation-badge\');
+          const b = document.getElementById('validation-badge');
           b.textContent   = pending.length;
-          b.style.display = \'inline-flex\';
+          b.style.display = 'inline-flex';
         }
       }).catch(() => {});
     }
