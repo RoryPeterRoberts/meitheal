@@ -86,6 +86,18 @@ async function getProposal(id) {
   return data;
 }
 
+// ---- Members ----
+
+async function getAllMembers() {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .select('id,display_name,email,role,trust_level,status,created_at')
+    .eq('status', 'active')
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
 // ---- Settings ----
 
 async function getSetting(key) {

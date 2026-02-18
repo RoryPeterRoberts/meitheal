@@ -469,11 +469,178 @@
     .cost-label { color: var(--color-text-muted); }
     .cost-value { font-family: var(--font-family-mono); font-weight: var(--font-weight-semibold); }
 
+    /* ---- Members panel ---------------------------------- */
+    .members-panel { max-width: 760px; }
+
+    .invite-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+
+    .invite-card-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+    }
+
+    .invite-form { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+    .invite-input, .invite-select {
+      flex: 1;
+      min-width: 160px;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      background: var(--color-bg);
+      outline: none;
+    }
+
+    .invite-input:focus, .invite-select:focus { border-color: var(--color-primary); }
+    .invite-select { flex: 0 0 130px; }
+
+    .invite-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--color-text-inverse);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+    }
+
+    .invite-btn:hover { background: var(--color-primary-dark); }
+    .invite-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .invite-status {
+      margin-top: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+    }
+
+    .invite-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .invite-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .members-list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .member-row {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .member-row.member-inactive { opacity: 0.55; }
+
+    .member-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
+    }
+
+    .member-avatar-admin   { background: #ede9fe; color: #5b21b6; }
+    .member-avatar-steward { background: #ccfbf1; color: #0f766e; }
+    .member-avatar-member  { background: var(--color-primary-bg); color: var(--color-primary); }
+
+    .member-info { flex: 1; min-width: 0; }
+
+    .member-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .member-email {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .member-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-shrink: 0;
+    }
+
+    .role-badge {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-full);
+    }
+
+    .role-admin   { background: #ede9fe; color: #5b21b6; }
+    .role-steward { background: #ccfbf1; color: #0f766e; }
+    .role-member  { background: var(--color-primary-bg); color: var(--color-primary); }
+
+    .status-badge {
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold);
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-full);
+    }
+
+    .status-invited  { background: #fef9c3; color: #854d0e; }
+    .status-inactive { background: #f3f4f6; color: #6b7280; }
+
+    .member-date { font-size: var(--font-size-xs); color: var(--color-text-light); }
+    .member-actions { display: flex; gap: var(--space-1); flex-shrink: 0; }
+
+    .member-action-btn {
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+    }
+
+    .member-action-btn:hover { background: var(--color-bg-muted); color: var(--color-text); }
+    .member-action-btn.danger { color: #dc2626; border-color: #fecaca; }
+    .member-action-btn.danger:hover { background: #fef2f2; }
+
     @media (max-width: 768px) {
       body { grid-template-columns: 1fr; }
       .sidebar { display: none; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .proposals-kanban { grid-template-columns: 1fr; }
+      .invite-form { flex-direction: column; }
+      .invite-select { flex: unset; }
+      .member-meta, .member-actions { display: none; }
     }
   </style>
 </head>
@@ -505,9 +672,9 @@
       <a class="nav-item" href="proposals.html">
         <span class="nav-icon">💡</span> All proposals
       </a>
-      <a class="nav-item" href="directory.html">
+      <button class="nav-item" data-panel="members" onclick="showPanel('members', this)">
         <span class="nav-icon">👥</span> Members
-      </a>
+      </button>
     </nav>
 
     <div class="sidebar-footer">
@@ -590,6 +757,35 @@
           <div class="cost-row"><span class="cost-label">All time</span><span class="cost-value" id="cost-alltime">—</span></div>
           <div class="cost-row"><span class="cost-label">Model</span><span class="cost-value" id="provider-badge">—</span></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Members panel -->
+    <div class="panel" id="panel-members">
+      <div class="members-panel">
+
+        <div class="invite-card">
+          <div class="invite-card-title">Invite a member</div>
+          <div class="invite-form">
+            <input type="text"  id="invite-name"  class="invite-input" placeholder="Full name">
+            <input type="email" id="invite-email" class="invite-input" placeholder="Email address">
+            <select id="invite-role" class="invite-select">
+              <option value="member">Member</option>
+              <option value="steward">Steward</option>
+            </select>
+            <button class="invite-btn" onclick="sendInvite()">Send invite</button>
+          </div>
+          <div id="invite-status" class="invite-status" style="display:none"></div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title">All members</div>
+          <span id="members-count" style="font-size:var(--font-size-xs);color:var(--color-text-muted)"></span>
+        </div>
+        <div id="members-list" class="members-list">
+          <div class="empty-state">Loading…</div>
+        </div>
+
       </div>
     </div>
 
@@ -859,6 +1055,201 @@
       }
     }
 
+    // ---- Members ----
+
+    let allMembers    = [];
+    let membersLoaded = false;
+
+    async function loadMembers() {
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action: 'list' }),
+        });
+
+        if (!r.ok) {
+          document.getElementById('members-list').innerHTML =
+            '<div class="empty-state">Could not load members.</div>';
+          return;
+        }
+
+        const { members } = await r.json();
+        allMembers    = members || [];
+        membersLoaded = true;
+        renderMembers(allMembers);
+
+      } catch (e) {
+        document.getElementById('members-list').innerHTML =
+          `<div class="empty-state">Error: ${escHtml(e.message)}</div>`;
+      }
+    }
+
+    function renderMembers(members) {
+      const el = document.getElementById('members-list');
+      const countEl = document.getElementById('members-count');
+      const active  = members.filter(m => m.status !== 'inactive');
+      countEl.textContent = `${active.length} active`;
+
+      if (!members.length) {
+        el.innerHTML = '<div class="empty-state">No members yet. Send an invite above.</div>';
+        return;
+      }
+
+      el.innerHTML = members.map(m => {
+        const initials = (m.display_name || m.email || '?')
+          .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const isPending  = !m.auth_id;
+        const isInactive = m.status === 'inactive';
+        const isSelf     = m.id === currentAdmin?.id;
+
+        const roleBadge = `<span class="role-badge role-${m.role}">${m.role}</span>`;
+        const statusBadge = isPending
+          ? '<span class="status-badge status-invited">Invited</span>'
+          : isInactive
+            ? '<span class="status-badge status-inactive">Inactive</span>'
+            : '';
+
+        const actions = [];
+        if (!isSelf && m.role !== 'admin') {
+          if (m.role === 'member') {
+            actions.push(`<button class="member-action-btn" onclick="setMemberRole('${m.id}','steward')">Make steward</button>`);
+          } else if (m.role === 'steward') {
+            actions.push(`<button class="member-action-btn" onclick="setMemberRole('${m.id}','member')">Remove steward</button>`);
+          }
+          if (!isInactive) {
+            actions.push(`<button class="member-action-btn danger" onclick="deactivateMember('${m.id}',${JSON.stringify(m.display_name || m.email)})">Deactivate</button>`);
+          }
+        }
+
+        const dateStr = new Date(m.created_at).toLocaleDateString('en-IE', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
+
+        return `<div class="member-row${isInactive ? ' member-inactive' : ''}">
+          <div class="member-avatar member-avatar-${m.role}">${escHtml(initials)}</div>
+          <div class="member-info">
+            <div class="member-name">${escHtml(m.display_name || '—')}</div>
+            <div class="member-email">${escHtml(m.email)}</div>
+          </div>
+          <div class="member-meta">
+            ${roleBadge}
+            ${statusBadge}
+            <span class="member-date">${dateStr}</span>
+          </div>
+          <div class="member-actions">${actions.join('')}</div>
+        </div>`;
+      }).join('');
+    }
+
+    async function sendInvite() {
+      const nameEl   = document.getElementById('invite-name');
+      const emailEl  = document.getElementById('invite-email');
+      const roleEl   = document.getElementById('invite-role');
+      const btn      = document.querySelector('.invite-btn');
+      const name     = nameEl.value.trim();
+      const email    = emailEl.value.trim();
+
+      if (!name || !email) {
+        showInviteStatus('Please enter both name and email.', false);
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.textContent = 'Sending…';
+
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action: 'invite', email, display_name: name, role: roleEl.value }),
+        });
+
+        const data = await r.json();
+
+        if (!r.ok) {
+          showInviteStatus(data.error || 'Invite failed.', false);
+        } else {
+          showInviteStatus(
+            data.warning || `Invite sent to ${email}.`,
+            !data.warning
+          );
+          nameEl.value  = '';
+          emailEl.value = '';
+          membersLoaded = false;
+          await loadMembers();
+        }
+
+      } catch (e) {
+        showInviteStatus(e.message, false);
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Send invite';
+      }
+    }
+
+    function showInviteStatus(msg, success) {
+      const el = document.getElementById('invite-status');
+      el.textContent = msg;
+      el.className   = `invite-status ${success ? 'invite-success' : 'invite-error'}`;
+      el.style.display = 'block';
+      if (success) setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    async function setMemberRole(memberId, role) {
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+          body: JSON.stringify({ action: 'set_role', member_id: memberId, role }),
+        });
+
+        const data = await r.json();
+        if (!r.ok) { alert(data.error || 'Failed to update role.'); return; }
+
+        membersLoaded = false;
+        await loadMembers();
+
+      } catch (e) { alert(e.message); }
+    }
+
+    async function deactivateMember(memberId, name) {
+      if (!confirm(`Deactivate ${name}?\n\nThey will no longer be able to sign in.`)) return;
+
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+          body: JSON.stringify({ action: 'deactivate', member_id: memberId }),
+        });
+
+        const data = await r.json();
+        if (!r.ok) { alert(data.error || 'Failed to deactivate.'); return; }
+
+        membersLoaded = false;
+        await loadMembers();
+
+      } catch (e) { alert(e.message); }
+    }
+
     // ---- Nav ----
 
     function showPanel(panelId, btn) {
@@ -866,8 +1257,9 @@
       document.querySelectorAll('.nav-item[data-panel]').forEach(b => b.classList.remove('active'));
       document.getElementById(`panel-${panelId}`).classList.add('active');
       if (btn) btn.classList.add('active');
-      const titles = { overview: 'Overview', build: 'Build queue' };
+      const titles = { overview: 'Overview', build: 'Build queue', members: 'Members' };
       document.getElementById('main-title').textContent = titles[panelId] || panelId;
+      if (panelId === 'members' && !membersLoaded) loadMembers();
     }
 
     // ---- Utils ----
