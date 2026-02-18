@@ -9,7 +9,7 @@
     body {
       height: 100dvh;
       display: grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 240px 1fr;
       overflow: hidden;
     }
 
@@ -23,7 +23,7 @@
     }
 
     .sidebar-header {
-      padding: var(--space-5) var(--space-4) var(--space-3);
+      padding: var(--space-5) var(--space-4) var(--space-4);
       border-bottom: 1px solid var(--color-border);
     }
 
@@ -43,143 +43,71 @@
       text-overflow: ellipsis;
     }
 
-    .sidebar-section {
-      padding: var(--space-4) var(--space-4) var(--space-2);
-      font-size: 11px;
-      font-weight: var(--font-weight-semibold);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--color-text-light);
-    }
-
-    .cost-block {
-      margin: 0 var(--space-3) var(--space-3);
-      padding: var(--space-3) var(--space-4);
-      background: var(--color-bg-muted);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-    }
-
-    .cost-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: var(--font-size-xs);
-    }
-
-    .cost-row + .cost-row { margin-top: var(--space-1); }
-    .cost-label { color: var(--color-text-muted); }
-    .cost-value {
-      font-weight: var(--font-weight-semibold);
-      font-family: var(--font-family-mono);
-      font-size: var(--font-size-xs);
-      color: var(--color-text);
-    }
-    .cost-row.month .cost-value { color: var(--color-primary); }
-
-    .provider-block {
-      margin: 0 var(--space-3) var(--space-3);
-      padding: var(--space-2) var(--space-4);
-      background: var(--color-bg-muted);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .provider-label { font-size: var(--font-size-xs); color: var(--color-text-muted); }
-    .provider-value {
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-semibold);
-      font-family: var(--font-family-mono);
-      color: var(--color-status-accepted);
-    }
-
-    .new-conv-btn {
-      margin: 0 var(--space-3) var(--space-2);
-      width: calc(100% - var(--space-6));
-      padding: var(--space-2);
-      border-radius: var(--radius-md);
-      border: 1px dashed var(--color-border);
-      background: none;
-      color: var(--color-text-light);
-      font-family: var(--font-family);
-      font-size: var(--font-size-xs);
-      cursor: pointer;
-      transition: all var(--transition-fast);
-    }
-
-    .new-conv-btn:hover {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-      background: var(--color-primary-bg);
-    }
-
-    .feedback-list {
+    .sidebar-nav {
+      padding: var(--space-3) var(--space-2);
       flex: 1;
       overflow-y: auto;
-      padding: 0 var(--space-2) var(--space-2);
     }
 
-    .feedback-item {
-      padding: var(--space-3);
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-3);
       border-radius: var(--radius-md);
-      margin-bottom: var(--space-1);
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all var(--transition-fast);
-    }
-
-    .feedback-item:hover {
-      background: var(--color-bg-muted);
-      border-color: var(--color-border);
-    }
-
-    .feedback-author {
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-semibold);
-      color: var(--color-text);
-    }
-
-    .feedback-text {
-      font-size: var(--font-size-xs);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
       color: var(--color-text-muted);
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      margin-bottom: 2px;
     }
 
-    .feedback-type {
-      display: inline-block;
-      font-size: 10px;
-      padding: 1px var(--space-2);
-      border-radius: var(--radius-sm);
-      margin-top: var(--space-1);
-      background: var(--color-bg-warm);
-      color: var(--color-text-light);
+    .nav-item:hover { background: var(--color-bg-muted); color: var(--color-text); }
+
+    .nav-item.active {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
       font-weight: var(--font-weight-semibold);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
     }
 
-    .empty-feedback {
-      padding: var(--space-5) var(--space-3);
-      text-align: center;
-      color: var(--color-text-light);
-      font-size: var(--font-size-xs);
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--color-status-hold);
+      color: white;
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      min-width: 18px;
+      height: 18px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 var(--space-1);
     }
 
-    /* ---- Chat -------------------------------------------- */
-    .chat-area {
+    .sidebar-footer {
+      padding: var(--space-3) var(--space-2);
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* ---- Main area --------------------------------------- */
+    .main {
       display: flex;
       flex-direction: column;
       overflow: hidden;
       background: var(--color-bg);
     }
 
-    .chat-header {
+    .main-header {
       padding: var(--space-4) var(--space-6);
       border-bottom: 1px solid var(--color-border);
       background: var(--color-bg-card);
@@ -189,14 +117,14 @@
       flex-shrink: 0;
     }
 
-    .chat-header-title {
+    .main-title {
       font-family: var(--font-family-heading);
-      font-weight: var(--font-weight-semibold);
       font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
       color: var(--color-text);
     }
 
-    .chat-header-actions { display: flex; gap: var(--space-2); }
+    .header-actions { display: flex; gap: var(--space-2); }
 
     .btn-sm {
       padding: var(--space-2) var(--space-3);
@@ -220,242 +148,332 @@
       background: var(--color-primary-bg);
     }
 
-    /* Messages */
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: var(--space-6);
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-5);
+    /* ---- Panels ------------------------------------------ */
+    .panel { display: none; flex: 1; overflow-y: auto; padding: var(--space-6); }
+    .panel.active { display: block; }
+
+    /* ---- Overview panel ---------------------------------- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
     }
 
-    .message { display: flex; gap: var(--space-3); max-width: 760px; }
-    .message.user { align-self: flex-end; flex-direction: row-reverse; }
-
-    .message-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    .message.user .message-avatar {
-      background: var(--color-primary);
-    }
-
-    .message.assistant .message-avatar {
-      background: var(--color-bg-muted);
-      border: 1px solid var(--color-border);
-    }
-
-    .message-bubble {
-      padding: var(--space-3) var(--space-4);
-      border-radius: var(--radius-lg);
-      font-size: var(--font-size-sm);
-      line-height: var(--line-height-relaxed);
-      max-width: 620px;
-    }
-
-    .message.user .message-bubble {
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
-      border-bottom-right-radius: var(--radius-sm);
-    }
-
-    .message.assistant .message-bubble {
+    .stat-card {
       background: var(--color-bg-card);
       border: 1px solid var(--color-border);
-      color: var(--color-text);
-      border-bottom-left-radius: var(--radius-sm);
-      white-space: pre-wrap;
-      box-shadow: var(--shadow-xs);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
     }
 
-    /* Tool log */
-    .tool-log { margin-top: var(--space-2); }
+    .stat-number {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: var(--space-1);
+    }
 
-    .tool-log-toggle {
+    .stat-label {
       font-size: var(--font-size-xs);
-      color: var(--color-text-light);
-      cursor: pointer;
-      padding: 2px 0;
-      user-select: none;
-      transition: color var(--transition-fast);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: var(--font-weight-semibold);
     }
 
-    .tool-log-toggle:hover { color: var(--color-text-muted); }
-
-    .tool-log-items {
-      display: none;
-      flex-direction: column;
-      gap: var(--space-1);
-      margin-top: var(--space-2);
-    }
-
-    .tool-log-items.open { display: flex; }
-
-    .tool-item {
+    .section-header {
       display: flex;
       align-items: center;
-      gap: var(--space-2);
-      font-size: var(--font-size-xs);
-      color: var(--color-text-light);
-      font-family: var(--font-family-mono);
-      padding: var(--space-1) var(--space-3);
-      background: var(--color-bg-muted);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--color-border-light);
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
     }
 
-    .tool-item.done { color: var(--color-status-accepted); }
-    .tool-item.error { color: var(--color-status-hold); }
-    .tool-name { font-weight: var(--font-weight-semibold); }
-    .tool-arg {
-      color: var(--color-text-muted);
+    .section-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+    }
+
+    .section-link {
+      font-size: var(--font-size-xs);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .section-link:hover { text-decoration: underline; }
+
+    .overview-section { margin-bottom: var(--space-6); }
+
+    /* Feedback preview */
+    .feedback-preview-list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .preview-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-accent);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .preview-emoji { font-size: 16px; flex-shrink: 0; }
+
+    .preview-body { flex: 1; min-width: 0; }
+
+    .preview-message {
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 300px;
     }
 
-    /* Thinking */
-    .thinking {
-      display: flex;
-      gap: var(--space-1);
-      align-items: center;
+    .preview-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: 2px;
+    }
+
+    /* Proposals board */
+    .proposals-kanban {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .kanban-col {
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
       padding: var(--space-3);
     }
 
-    .thinking span {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--color-text-light);
-      animation: pulse 1.4s infinite;
+    .kanban-header {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-3);
+      padding: 0 var(--space-1);
     }
 
-    .thinking span:nth-child(2) { animation-delay: 0.2s; }
-    .thinking span:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes pulse {
-      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-      40% { opacity: 1; transform: scale(1); }
-    }
-
-    /* Welcome state */
-    .welcome {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: var(--space-10);
-    }
-
-    .welcome-icon { font-size: 48px; margin-bottom: var(--space-4); }
-
-    .welcome-title {
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-semibold);
-      color: var(--color-text);
+    .kanban-item {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
       margin-bottom: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-tight);
     }
 
-    .welcome-text {
+    .kanban-item-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: var(--space-2);
+    }
+
+    .kanban-empty {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      text-align: center;
+      padding: var(--space-4);
+    }
+
+    /* Approve button in kanban */
+    .kanban-approve-btn {
+      display: inline-block;
+      margin-top: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      background: var(--color-primary-bg);
+      border: 1px solid var(--color-primary-lighter);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .kanban-approve-btn:hover {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+
+    /* ---- Build panel ------------------------------------- */
+    .build-panel {
+      max-width: 720px;
+    }
+
+    .build-intro {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-5);
       font-size: var(--font-size-sm);
       color: var(--color-text-muted);
       line-height: var(--line-height-relaxed);
-      max-width: 380px;
     }
 
-    .welcome-suggestions {
+    .build-intro strong { color: var(--color-text); }
+
+    .approved-queue {
       display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-      justify-content: center;
-      margin-top: var(--space-6);
-    }
-
-    .suggestion {
-      padding: var(--space-2) var(--space-4);
-      border-radius: var(--radius-full);
-      border: 1px solid var(--color-border);
-      font-size: var(--font-size-xs);
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      color: var(--color-text-muted);
-      background: var(--color-bg-card);
-      font-family: var(--font-family);
-    }
-
-    .suggestion:hover {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-      background: var(--color-primary-bg);
-    }
-
-    /* Input */
-    .input-area {
-      padding: var(--space-4) var(--space-6);
-      border-top: 1px solid var(--color-border);
-      background: var(--color-bg-card);
-      flex-shrink: 0;
-    }
-
-    .input-row {
-      display: flex;
+      flex-direction: column;
       gap: var(--space-3);
-      align-items: flex-end;
+      margin-bottom: var(--space-6);
     }
 
-    .chat-input {
-      flex: 1;
-      background: var(--color-bg-muted);
+    .approved-card {
+      background: var(--color-bg-card);
       border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-status-accepted);
       border-radius: var(--radius-lg);
-      color: var(--color-text);
-      font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      padding: var(--space-3) var(--space-4);
-      resize: none;
-      min-height: 44px;
-      max-height: 160px;
-      line-height: var(--line-height-normal);
-      transition: border-color var(--transition-fast);
-      outline: none;
-    }
-
-    .chat-input:focus { border-color: var(--color-primary); background: var(--color-bg-card); }
-    .chat-input::placeholder { color: var(--color-text-light); }
-
-    .send-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--radius-lg);
-      background: var(--color-primary);
-      border: none;
-      cursor: pointer;
+      padding: var(--space-4) var(--space-5);
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: var(--space-4);
+    }
+
+    .approved-info { flex: 1; min-width: 0; }
+
+    .approved-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 2px;
+    }
+
+    .approved-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
+    .start-build-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-md);
       color: var(--color-text-inverse);
-      transition: background var(--transition-fast);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-fast);
       flex-shrink: 0;
     }
 
-    .send-btn:hover { background: var(--color-primary-dark); }
-    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .send-btn svg { width: 18px; height: 18px; }
+    .start-build-btn:hover { background: var(--color-primary-dark); }
 
-    @media (max-width: 640px) {
+    /* Build console */
+    .build-console {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: none;
+    }
+
+    .build-console.open { display: flex; flex-direction: column; }
+
+    .console-header {
+      background: var(--color-bg-card);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .console-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+    }
+
+    .console-close {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .console-messages {
+      padding: var(--space-4);
+      background: var(--color-bg);
+      min-height: 160px;
+      max-height: 320px;
+      overflow-y: auto;
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-relaxed);
+      font-family: var(--font-family-mono);
+      white-space: pre-wrap;
+    }
+
+    .console-status {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-bg-muted);
+      border-top: 1px solid var(--color-border);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .console-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    .console-spinner.active { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Misc -------------------------------------------- */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    .cost-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+      font-size: var(--font-size-xs);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .cost-row:last-child { border-bottom: none; }
+    .cost-label { color: var(--color-text-muted); }
+    .cost-value { font-family: var(--font-family-mono); font-weight: var(--font-weight-semibold); }
+
+    @media (max-width: 768px) {
       body { grid-template-columns: 1fr; }
       .sidebar { display: none; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .proposals-kanban { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -463,6 +481,7 @@
   <script src="/api/init"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
 
   <!-- Sidebar -->
   <aside class="sidebar">
@@ -471,166 +490,313 @@
       <div class="sidebar-community" id="community-name">Loading…</div>
     </div>
 
-    <div class="sidebar-section">AI Provider</div>
-    <div class="provider-block">
-      <span class="provider-label">Model</span>
-      <span class="provider-value" id="provider-badge">—</span>
-    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-panel="overview" onclick="showPanel('overview', this)">
+        <span class="nav-icon">🏠</span> Overview
+      </button>
+      <button class="nav-item" data-panel="build" onclick="showPanel('build', this)">
+        <span class="nav-icon">🔨</span> Build queue
+        <span class="nav-badge" id="build-badge" style="display:none"></span>
+      </button>
+      <a class="nav-item" href="triage.html">
+        <span class="nav-icon">📥</span> Triage
+        <span class="nav-badge" id="triage-badge" style="display:none"></span>
+      </a>
+      <a class="nav-item" href="proposals.html">
+        <span class="nav-icon">💡</span> All proposals
+      </a>
+      <a class="nav-item" href="directory.html">
+        <span class="nav-icon">👥</span> Members
+      </a>
+    </nav>
 
-    <div class="sidebar-section">This month</div>
-    <div class="cost-block">
-      <div class="cost-row month">
-        <span class="cost-label">AI cost</span>
-        <span class="cost-value" id="cost-month">$0.0000</span>
-      </div>
-      <div class="cost-row">
-        <span class="cost-label">All time</span>
-        <span class="cost-value" id="cost-alltime">$0.0000</span>
-      </div>
-    </div>
-
-    <button class="new-conv-btn" onclick="newConversation()">+ New conversation</button>
-
-    <div class="sidebar-section">Member Feedback</div>
-    <div class="feedback-list" id="feedback-list">
-      <div class="empty-feedback">Loading…</div>
+    <div class="sidebar-footer">
+      <a class="nav-item" href="home.html" style="margin-bottom:2px">
+        <span class="nav-icon">←</span> Community
+      </a>
+      <button class="nav-item" onclick="doSignOut()">
+        <span class="nav-icon">↩</span> Sign out
+      </button>
     </div>
   </aside>
 
-  <!-- Chat -->
-  <main class="chat-area">
-    <header class="chat-header">
-      <div class="chat-header-title" id="chat-title">Admin</div>
-      <div class="chat-header-actions">
-        <a href="home.html" class="btn-sm">← Community</a>
-        <button class="btn-sm" onclick="doSignOut()">Sign out</button>
+  <!-- Main -->
+  <main class="main">
+    <header class="main-header">
+      <div class="main-title" id="main-title">Overview</div>
+      <div class="header-actions">
+        <span style="font-size:var(--font-size-xs);color:var(--color-text-muted)" id="admin-name"></span>
       </div>
     </header>
 
-    <div class="messages" id="messages">
-      <div class="welcome" id="welcome">
-        <div class="welcome-icon">🏘️</div>
-        <div class="welcome-title" id="welcome-title">Hello, builder.</div>
-        <div class="welcome-text">Tell me what you want to create for your community, or ask me to look at the feedback queue.</div>
-        <div class="welcome-suggestions">
-          <div class="suggestion" onclick="sendSuggestion(this)">What has been built so far?</div>
-          <div class="suggestion" onclick="sendSuggestion(this)">Check the feedback queue</div>
-          <div class="suggestion" onclick="sendSuggestion(this)">Add a noticeboard page</div>
-          <div class="suggestion" onclick="sendSuggestion(this)">Show me the cost breakdown</div>
+    <!-- Overview panel -->
+    <div class="panel active" id="panel-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="stat-new-feedback">—</div>
+          <div class="stat-label">New feedback</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-proposals">—</div>
+          <div class="stat-label">Proposed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-approved">—</div>
+          <div class="stat-label">Ready to build</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-done">—</div>
+          <div class="stat-label">Built</div>
+        </div>
+      </div>
+
+      <div class="overview-section">
+        <div class="section-header">
+          <div class="section-title">New feedback</div>
+          <a href="triage.html" class="section-link">Open triage →</a>
+        </div>
+        <div class="feedback-preview-list" id="feedback-preview">
+          <div class="empty-state">Loading…</div>
+        </div>
+      </div>
+
+      <div class="overview-section">
+        <div class="section-header">
+          <div class="section-title">Proposals board</div>
+          <a href="proposals.html" class="section-link">View all →</a>
+        </div>
+        <div class="proposals-kanban" id="proposals-kanban">
+          <div class="kanban-col">
+            <div class="kanban-header">Proposed</div>
+            <div id="kanban-proposed"><div class="kanban-empty">Loading…</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">Approved</div>
+            <div id="kanban-approved"><div class="kanban-empty">Loading…</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">Building / Done</div>
+            <div id="kanban-done"><div class="kanban-empty">Loading…</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-section">
+        <div class="section-header">
+          <div class="section-title">AI cost</div>
+        </div>
+        <div id="cost-section" style="background:var(--color-bg-card);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4)">
+          <div class="cost-row"><span class="cost-label">This month</span><span class="cost-value" id="cost-month">—</span></div>
+          <div class="cost-row"><span class="cost-label">All time</span><span class="cost-value" id="cost-alltime">—</span></div>
+          <div class="cost-row"><span class="cost-label">Model</span><span class="cost-value" id="provider-badge">—</span></div>
         </div>
       </div>
     </div>
 
-    <div class="input-area">
-      <div class="input-row">
-        <textarea
-          class="chat-input"
-          id="chat-input"
-          placeholder="Tell me what to build…"
-          rows="1"
-          onkeydown="handleKey(event)"
-          oninput="autoResize(this)"
-        ></textarea>
-        <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-        </button>
+    <!-- Build queue panel -->
+    <div class="panel" id="panel-build">
+      <div class="build-panel">
+        <div class="build-intro">
+          <strong>Build queue</strong> — these proposals have been approved and are ready to be built.
+          Selecting one sends a structured brief to the AI agent. The agent can only build what's
+          in the approved queue — it cannot modify this governance system.
+        </div>
+
+        <div class="approved-queue" id="approved-queue">
+          <div class="empty-state">Loading…</div>
+        </div>
+
+        <div class="build-console" id="build-console">
+          <div class="console-header">
+            <span class="console-title" id="console-title">Building…</span>
+            <button class="console-close" onclick="closeBuildConsole()" title="Close">×</button>
+          </div>
+          <div class="console-messages" id="console-messages"></div>
+          <div class="console-status">
+            <div class="console-spinner" id="console-spinner"></div>
+            <span id="console-status-text">Waiting</span>
+          </div>
+        </div>
       </div>
     </div>
+
   </main>
 
   <script>
-    let currentMember = null;
-    let conversationId = null;
-    let isThinking = false;
+    let currentAdmin = null;
+    let allProposals = [];
+    let allFeedback  = [];
+
+    // ---- Init ----
 
     async function init() {
-      const sb = getSupabase();
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) { window.location.href = 'auth.html'; return; }
+      const member = await requireAuthAsync();
+      if (!member) return;
 
-      const { data: members } = await sb.from('members').select('*').eq('auth_id', session.user.id);
-      currentMember = members?.[0];
-      if (!currentMember || currentMember.role !== 'admin') {
-        document.querySelector('.chat-area').innerHTML =
-          `<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:var(--space-3);color:var(--color-text-muted);font-family:var(--font-family-heading)">
-            <span style="font-size:40px">🔒</span>
-            <span style="font-size:var(--font-size-lg)">Admin access only.</span>
-          </div>`;
+      if (member.role !== 'admin' && member.role !== 'steward') {
+        document.querySelector('.main').innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:var(--space-3);color:var(--color-text-muted);font-family:var(--font-family-heading)"><span style="font-size:40px">🔒</span><span>Admin access only.</span></div>';
         return;
       }
 
-      const { data: settingsRows } = await sb.from('settings').select('key,value');
-      const settings = Object.fromEntries((settingsRows || []).map(r => [r.key, r.value]));
-      document.getElementById('community-name').textContent = settings.community_name || 'My Community';
-      document.getElementById('welcome-title').textContent = `Hello, ${currentMember.display_name || 'builder'}.`;
-      document.getElementById('provider-badge').textContent =
-        `${settings.ai_provider || 'anthropic'} / ${(settings.ai_model || 'claude-sonnet-4-6').split('-').slice(1,3).join('-')}`;
+      currentAdmin = member;
+      document.getElementById('admin-name').textContent = member.display_name || '';
 
-      loadCosts(sb);
-      loadFeedback(sb);
+      const communityName = await getCommunityName();
+      document.getElementById('community-name').textContent = communityName;
+
+      await Promise.all([
+        loadOverview(),
+        loadCosts(),
+      ]);
     }
 
-    async function loadCosts(sb) {
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      const { data: monthRows } = await sb.from('ai_usage').select('cost_usd').gte('ts', monthStart);
-      const { data: allRows }   = await sb.from('ai_usage').select('cost_usd');
-      const monthTotal = (monthRows || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
-      const allTotal   = (allRows   || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
-      document.getElementById('cost-month').textContent   = `$${monthTotal.toFixed(4)}`;
-      document.getElementById('cost-alltime').textContent = `$${allTotal.toFixed(4)}`;
+    async function loadOverview() {
+      try {
+        [allFeedback, allProposals] = await Promise.all([
+          getAllFeedback(),
+          getAllProposals(),
+        ]);
+
+        const newFeedback  = allFeedback.filter(f => f.status === 'new');
+        const proposed     = allProposals.filter(p => p.status === 'proposed');
+        const approved     = allProposals.filter(p => p.status === 'approved');
+        const done         = allProposals.filter(p => p.status === 'done');
+
+        // Stats
+        document.getElementById('stat-new-feedback').textContent = newFeedback.length;
+        document.getElementById('stat-proposals').textContent    = proposed.length;
+        document.getElementById('stat-approved').textContent     = approved.length;
+        document.getElementById('stat-done').textContent         = done.length;
+
+        // Badges
+        const triageBadge = document.getElementById('triage-badge');
+        if (newFeedback.length > 0) {
+          triageBadge.textContent = newFeedback.length;
+          triageBadge.style.display = 'inline-flex';
+        }
+
+        const buildBadge = document.getElementById('build-badge');
+        if (approved.length > 0) {
+          buildBadge.textContent = approved.length;
+          buildBadge.style.display = 'inline-flex';
+        }
+
+        renderFeedbackPreview(newFeedback);
+        renderKanban(allProposals);
+        renderApprovedQueue(approved);
+
+      } catch (e) {
+        console.error('Overview error:', e);
+      }
     }
 
-    async function loadFeedback(sb) {
-      const { data: items } = await sb
-        .from('feedback')
-        .select('*, author:members(display_name)')
-        .eq('status', 'new')
-        .order('created_at', { ascending: true });
+    // ---- Feedback preview ----
 
-      const list = document.getElementById('feedback-list');
-      if (!items || items.length === 0) {
-        list.innerHTML = '<div class="empty-feedback">No open feedback</div>';
+    const TYPE_EMOJI = { idea: '💡', bug: '🔧', question: '❓', other: '💬' };
+
+    function renderFeedbackPreview(items) {
+      const el = document.getElementById('feedback-preview');
+      if (items.length === 0) {
+        el.innerHTML = '<div class="empty-state">No new feedback — the queue is clear.</div>';
         return;
       }
-      list.innerHTML = items.map(f => `
-        <div class="feedback-item" onclick="sendFeedbackToAgent('${f.id}', ${JSON.stringify(f.message).replace(/"/g, '&quot;')})">
-          <div class="feedback-author">${escHtml(f.author?.display_name || 'Member')}</div>
-          <div class="feedback-text">${escHtml(f.message)}</div>
-          <span class="feedback-type">${escHtml(f.type)}</span>
+      const preview = items.slice(0, 4);
+      el.innerHTML = preview.map(f => {
+        const author = f.members?.display_name || 'A member';
+        const ago    = timeAgo(f.created_at);
+        return `<div class="preview-card">
+          <span class="preview-emoji">${TYPE_EMOJI[f.type] || '💬'}</span>
+          <div class="preview-body">
+            <div class="preview-message">${escHtml(f.message)}</div>
+            <div class="preview-meta">from ${escHtml(author)} · ${ago}</div>
+          </div>
+        </div>`;
+      }).join('') + (items.length > 4
+        ? `<div style="font-size:var(--font-size-xs);color:var(--color-text-light);padding:var(--space-2) 0">+${items.length - 4} more in triage</div>`
+        : '');
+    }
+
+    // ---- Kanban ----
+
+    function renderKanban(proposals) {
+      const grouped = {
+        proposed: proposals.filter(p => p.status === 'proposed'),
+        approved:  proposals.filter(p => p.status === 'approved'),
+        done:      proposals.filter(p => p.status === 'building' || p.status === 'done'),
+      };
+
+      const cols = { proposed: 'kanban-proposed', approved: 'kanban-approved', done: 'kanban-done' };
+      for (const [key, elId] of Object.entries(cols)) {
+        const el = document.getElementById(elId);
+        const items = grouped[key];
+        if (items.length === 0) {
+          el.innerHTML = '<div class="kanban-empty">Empty</div>';
+        } else {
+          el.innerHTML = items.map(p => {
+            const approveBtn = key === 'proposed'
+              ? `<button class="kanban-approve-btn" onclick="approveProposal('${p.id}')">Approve →</button>`
+              : '';
+            return `<div class="kanban-item">
+              ${escHtml(p.title)}
+              <div class="kanban-item-meta">${timeAgo(p.created_at)}</div>
+              ${approveBtn}
+            </div>`;
+          }).join('');
+        }
+      }
+    }
+
+    async function approveProposal(id) {
+      try {
+        const { error } = await getSupabase()
+          .from('proposals')
+          .update({ status: 'approved', approved_by: currentAdmin.id })
+          .eq('id', id);
+        if (error) throw error;
+        await loadOverview();
+        showPanel('build', document.querySelector('[data-panel="build"]'));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ---- Build queue ----
+
+    function renderApprovedQueue(approved) {
+      const el = document.getElementById('approved-queue');
+      if (approved.length === 0) {
+        el.innerHTML = '<div class="empty-state">No approved proposals ready to build. Approve a proposal in the Overview to add it here.</div>';
+        return;
+      }
+      el.innerHTML = approved.map(p => `
+        <div class="approved-card">
+          <div class="approved-info">
+            <div class="approved-title">${escHtml(p.title)}</div>
+            <div class="approved-meta">Approved · ${timeAgo(p.created_at)}</div>
+          </div>
+          <button class="start-build-btn" onclick="startBuild('${p.id}', ${JSON.stringify(p.title).replace(/'/g,"&#39;")})">
+            Start build
+          </button>
         </div>
       `).join('');
     }
 
-    async function sendMessage() {
-      const input = document.getElementById('chat-input');
-      const message = input.value.trim();
-      if (!message || isThinking) return;
-      input.value = '';
-      autoResize(input);
-      appendMessage('user', message);
-      hideWelcome();
-      await callAgent(message);
-    }
+    // ---- Build console ----
 
-    async function sendFeedbackToAgent(id, message) {
-      hideWelcome();
-      const prompt = `Please look at this member feedback (ID: ${id}) and handle it:\n\n"${message}"`;
-      appendMessage('user', prompt);
-      await callAgent(prompt);
-    }
+    async function startBuild(proposalId, title) {
+      const console_ = document.getElementById('build-console');
+      const msgs     = document.getElementById('console-messages');
+      const spinner  = document.getElementById('console-spinner');
+      const status   = document.getElementById('console-status-text');
+      const conTitle = document.getElementById('console-title');
 
-    function sendSuggestion(el) {
-      document.getElementById('chat-input').value = el.textContent;
-      sendMessage();
-    }
-
-    async function callAgent(message) {
-      isThinking = true;
-      setThinking(true);
-      document.getElementById('send-btn').disabled = true;
+      conTitle.textContent = title;
+      msgs.textContent     = '';
+      spinner.classList.add('active');
+      status.textContent   = 'Sending proposal to agent…';
+      console_.classList.add('open');
+      console_.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       try {
         const sb = getSupabase();
@@ -640,125 +806,86 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`
+            'Authorization': `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ message, conversationId })
+          body: JSON.stringify({ proposal_id: proposalId }),
         });
 
         if (!r.ok) {
-          const err = await r.json();
-          throw new Error(err.error || 'Agent error');
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.error || `Agent error ${r.status}`);
         }
 
         const result = await r.json();
-        conversationId = result.conversationId;
-        setThinking(false);
-        appendMessage('assistant', result.text, result.toolLog);
-        loadCosts(sb);
-        loadFeedback(sb);
+        msgs.textContent = result.text || '(No response)';
+        status.textContent = 'Build complete';
+        spinner.classList.remove('active');
+
+        // Reload to show updated status
+        await loadOverview();
 
       } catch (e) {
-        setThinking(false);
-        appendMessage('assistant', `Something went wrong: ${e.message}`);
-      } finally {
-        isThinking = false;
-        document.getElementById('send-btn').disabled = false;
-        document.getElementById('chat-input').focus();
+        msgs.textContent = `Error: ${e.message}`;
+        status.textContent = 'Build failed';
+        spinner.classList.remove('active');
       }
     }
 
-    function appendMessage(role, text, toolLog) {
-      const msgs = document.getElementById('messages');
-      const el = document.createElement('div');
-      el.className = `message ${role}`;
-
-      let toolHtml = '';
-      if (toolLog && toolLog.length > 0) {
-        const id = 'tl-' + Date.now();
-        toolHtml = `<div class="tool-log">
-          <div class="tool-log-toggle" onclick="toggleToolLog('${id}')">▶ ${toolLog.length} action${toolLog.length > 1 ? 's' : ''}</div>
-          <div class="tool-log-items" id="${id}">${toolLog.map(t => `
-            <div class="tool-item done">
-              <span class="tool-name">${escHtml(t.tool)}</span>
-              <span class="tool-arg">${escHtml(getToolSummary(t))}</span>
-            </div>
-          `).join('')}</div>
-        </div>`;
-      }
-
-      el.innerHTML = `
-        <div class="message-avatar">${role === 'user' ? '👤' : '🏘️'}</div>
-        <div>
-          <div class="message-bubble">${escHtml(text)}</div>
-          ${toolHtml}
-        </div>
-      `;
-      msgs.appendChild(el);
-      msgs.scrollTop = msgs.scrollHeight;
+    function closeBuildConsole() {
+      document.getElementById('build-console').classList.remove('open');
     }
 
-    function getToolSummary(t) {
-      if (t.args?.path)    return t.args.path;
-      if (t.args?.sql)     return t.args.sql.slice(0, 60) + '…';
-      if (t.args?.table)   return t.args.table;
-      if (t.args?.content) return t.args.content.slice(0, 60) + '…';
-      return '';
-    }
+    // ---- Costs ----
 
-    function setThinking(on) {
-      const existing = document.getElementById('thinking-indicator');
-      if (on) {
-        if (existing) return;
-        const msgs = document.getElementById('messages');
-        const el = document.createElement('div');
-        el.id = 'thinking-indicator';
-        el.className = 'message assistant';
-        el.innerHTML = `
-          <div class="message-avatar">🏘️</div>
-          <div class="message-bubble thinking"><span></span><span></span><span></span></div>
-        `;
-        msgs.appendChild(el);
-        msgs.scrollTop = msgs.scrollHeight;
-      } else {
-        if (existing) existing.remove();
+    async function loadCosts() {
+      try {
+        const sb = getSupabase();
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const [{ data: monthRows }, { data: allRows }, { data: settingsRows }] = await Promise.all([
+          sb.from('ai_usage').select('cost_usd').gte('ts', monthStart),
+          sb.from('ai_usage').select('cost_usd'),
+          sb.from('settings').select('key,value'),
+        ]);
+        const settings   = Object.fromEntries((settingsRows || []).map(r => [r.key, r.value]));
+        const monthTotal = (monthRows || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
+        const allTotal   = (allRows   || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
+        document.getElementById('cost-month').textContent   = `$${monthTotal.toFixed(4)}`;
+        document.getElementById('cost-alltime').textContent = `$${allTotal.toFixed(4)}`;
+        document.getElementById('provider-badge').textContent =
+          `${settings.ai_provider || 'anthropic'} / ${(settings.ai_model || 'claude-sonnet-4-6').split('-').slice(-2).join('-')}`;
+      } catch (e) {
+        console.error('Cost load error:', e);
       }
     }
 
-    function hideWelcome() {
-      const w = document.getElementById('welcome');
-      if (w) w.style.display = 'none';
+    // ---- Nav ----
+
+    function showPanel(panelId, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item[data-panel]').forEach(b => b.classList.remove('active'));
+      document.getElementById(`panel-${panelId}`).classList.add('active');
+      if (btn) btn.classList.add('active');
+      const titles = { overview: 'Overview', build: 'Build queue' };
+      document.getElementById('main-title').textContent = titles[panelId] || panelId;
     }
 
-    function newConversation() {
-      conversationId = null;
-      document.getElementById('messages').innerHTML = `
-        <div class="welcome" id="welcome">
-          <div class="welcome-icon">🏘️</div>
-          <div class="welcome-title">New conversation</div>
-          <div class="welcome-text">What would you like to build?</div>
-        </div>
-      `;
-    }
+    // ---- Utils ----
 
-    function toggleToolLog(id) {
-      const el = document.getElementById(id);
-      const toggle = el.previousElementSibling;
-      const open = el.classList.toggle('open');
-      toggle.textContent = (open ? '▼ ' : '▶ ') + toggle.textContent.slice(2);
-    }
-
-    function autoResize(el) {
-      el.style.height = 'auto';
-      el.style.height = Math.min(el.scrollHeight, 160) + 'px';
-    }
-
-    function handleKey(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    function timeAgo(ts) {
+      const diff = Date.now() - new Date(ts).getTime();
+      const mins  = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days  = Math.floor(diff / 86400000);
+      if (mins  < 1)  return 'just now';
+      if (mins  < 60) return `${mins}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      if (days  < 30) return `${days}d ago`;
+      return new Date(ts).toLocaleDateString('en-IE', { day: 'numeric', month: 'short' });
     }
 
     function escHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     async function doSignOut() {

@@ -484,7 +484,7 @@ async function runAgent(userMessage, conversationId, env) {
       prompt_tokens: totalPromptTokens,
       completion_tokens: totalCompletionTokens,
       cost_usd: costUsd,
-      triggered_by: 'admin_chat',
+      triggered_by: 'agent_build',
       conversation_id: conversation.id
     })
   });
@@ -550,6 +550,19 @@ Your job is to build, maintain, and evolve this platform through conversation wi
 - Always read a file before modifying it
 - Describe what you're about to do before doing it for significant changes
 
+## The meta-rule (most important rule — read this carefully)
+**You cannot modify the system that governs you.**
+
+This means you must never:
+- Modify api/agent.js (this file)
+- Modify js/auth.js
+- Modify the migrations in migrations/
+- Modify admin.html, triage.html, or proposals.html
+- Change how proposals are approved, how feedback is triaged, or how your own role works
+
+This rule exists so that the community always controls the AI, not the other way around.
+Any admin who can read this system prompt can verify this rule is in place.
+
 ## Your memory
 ${agentMemory ? agentMemory : '(No memory yet — this community is just getting started.)'}
 
@@ -602,31 +615,100 @@ export default async function handler(req, res) {
   if (!userR.ok) return res.status(401).json({ error: 'Invalid token' });
   const user = await userR.json();
 
-  // Check member is admin
-  const memberR = await fetch(`${SUPABASE_URL}/rest/v1/members?auth_id=eq.${user.id}&select=id,role`, {
+  // Check member is admin or steward
+  const memberR = await fetch(`${SUPABASE_URL}/rest/v1/members?auth_id=eq.${user.id}&select=id,role,display_name`, {
     headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` }
   });
   const members = await memberR.json();
   const member = members[0];
-  if (!member || member.role !== 'admin') return res.status(403).json({ error: 'Admin only' });
+  if (!member || (member.role !== 'admin' && member.role !== 'steward')) {
+    return res.status(403).json({ error: 'Admin or steward access required' });
+  }
 
-  const { message, conversationId } = req.body;
-  if (!message) return res.status(400).json({ error: 'message required' });
+  const { message, conversationId, proposal_id } = req.body;
+  if (!message && !proposal_id) return res.status(400).json({ error: 'message or proposal_id required' });
+
+  const env = {
+    SUPABASE_URL,
+    SUPABASE_SERVICE_KEY,
+    AI_API_KEY:        process.env.AI_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
+    OPENAI_API_KEY:    process.env.OPENAI_API_KEY,
+    GITHUB_TOKEN:      process.env.GITHUB_TOKEN,
+    GITHUB_REPO:       process.env.GITHUB_REPO,
+    GITHUB_BRANCH:     process.env.GITHUB_BRANCH || 'main',
+    OLLAMA_URL:        process.env.OLLAMA_URL
+  };
 
   try {
-    const env = {
-      SUPABASE_URL,
-      SUPABASE_SERVICE_KEY,
-      AI_API_KEY:      process.env.AI_API_KEY,
-      ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-      OPENAI_API_KEY:  process.env.OPENAI_API_KEY,
-      GITHUB_TOKEN:    process.env.GITHUB_TOKEN,
-      GITHUB_REPO:     process.env.GITHUB_REPO,
-      GITHUB_BRANCH:   process.env.GITHUB_BRANCH || 'main',
-      OLLAMA_URL:      process.env.OLLAMA_URL
-    };
+    let agentMessage = message;
+    let buildProposalId = null;
 
-    const result = await runAgent(message, conversationId, env);
+    // If proposal_id provided: load proposal and build structured brief
+    if (proposal_id) {
+      const sbHeaders = {
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+      };
+      const propR = await fetch(
+        `${SUPABASE_URL}/rest/v1/proposals?id=eq.${proposal_id}&select=*,feedback(message,ref_number,author_id),members!proposals_promoted_by_fkey(display_name)`,
+        { headers: sbHeaders }
+      );
+      const proposals = await propR.json();
+      const proposal = proposals[0];
+      if (!proposal) return res.status(404).json({ error: 'Proposal not found' });
+      if (proposal.status !== 'approved') return res.status(400).json({ error: 'Only approved proposals can be built' });
+
+      // Get original submitter's name if available
+      const origFeedback = proposal.feedback?.[0];
+      let suggestedBy = 'a community member';
+      if (origFeedback?.author_id) {
+        const mbR = await fetch(
+          `${SUPABASE_URL}/rest/v1/members?id=eq.${origFeedback.author_id}&select=display_name`,
+          { headers: sbHeaders }
+        );
+        const mbs = await mbR.json();
+        if (mbs[0]?.display_name) suggestedBy = mbs[0].display_name;
+      }
+
+      // Build structured brief
+      const brief = {
+        proposal_id:   proposal.id,
+        title:         proposal.title,
+        description:   proposal.description || null,
+        original_idea: origFeedback?.message || null,
+        suggested_by:  suggestedBy,
+        promoted_by:   proposal.members?.display_name || 'admin',
+        approved_at:   proposal.updated_at,
+      };
+
+      agentMessage = `You have been given an approved proposal to build.\n\nProposal brief:\n${JSON.stringify(brief, null, 2)}\n\nPlease build this feature now. Read the existing codebase first to understand the design system and conventions, then implement the feature. Remember: update navigation so the feature is reachable from the site.`;
+      buildProposalId = proposal_id;
+
+      // Mark proposal as 'building'
+      await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${proposal_id}`, {
+        method: 'PATCH',
+        headers: { ...sbHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'building', build_started_at: new Date().toISOString() }),
+      });
+    }
+
+    const result = await runAgent(agentMessage, conversationId, env);
+
+    // If this was a proposal build, mark as done
+    if (buildProposalId) {
+      const sbHeaders = {
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'Content-Type': 'application/json',
+      };
+      await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${buildProposalId}`, {
+        method: 'PATCH',
+        headers: sbHeaders,
+        body: JSON.stringify({ status: 'done', build_finished_at: new Date().toISOString() }),
+      });
+    }
+
     res.json(result);
   } catch (e) {
     console.error('Agent error:', e);

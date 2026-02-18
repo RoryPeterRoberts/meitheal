@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Proposals — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-5);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    .page-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+    }
+
+    .page-sub {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-5);
+      margin-left: calc(44px + var(--space-4));
+    }
+
+    /* Filter tabs */
+    .filter-tabs {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-5);
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .filter-tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      flex-shrink: 0;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      padding: var(--space-2) var(--space-4);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .tab-btn:hover { border-color: var(--color-primary-lighter); color: var(--color-text); }
+
+    .tab-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+
+    /* Proposal cards */
+    .proposals-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .proposal-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      transition: box-shadow var(--transition-fast);
+    }
+
+    .proposal-card:hover { box-shadow: var(--shadow-sm); }
+
+    .proposal-card.status-proposed  { border-left: 3px solid var(--color-accent); }
+    .proposal-card.status-approved  { border-left: 3px solid var(--color-status-accepted); }
+    .proposal-card.status-building  { border-left: 3px solid var(--color-primary); }
+    .proposal-card.status-done      { border-left: 3px solid var(--color-status-accepted); opacity: 0.8; }
+    .proposal-card.status-declined  { border-left: 3px solid var(--color-border); opacity: 0.6; }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .proposal-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      line-height: var(--line-height-tight);
+    }
+
+    .status-chip {
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px var(--space-3);
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    .status-chip.proposed  { background: var(--color-accent-bg);          color: var(--color-accent-dark); }
+    .status-chip.approved  { background: var(--color-status-accepted-bg);  color: var(--color-status-accepted); }
+    .status-chip.building  { background: var(--color-primary-bg);          color: var(--color-primary); }
+    .status-chip.done      { background: var(--color-status-accepted-bg);  color: var(--color-status-accepted); }
+    .status-chip.declined  { background: var(--color-bg-muted);            color: var(--color-text-light); }
+
+    .proposal-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-3);
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
+    .suggested-by {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+    }
+
+    /* Clarification note */
+    .clarification-note {
+      margin-top: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-primary-bg);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-primary-lighter);
+    }
+
+    .clarification-note .note-label {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-1);
+    }
+
+    .clarification-note p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-normal);
+    }
+
+    /* Clarification input (for original submitter) */
+    .clarify-toggle {
+      background: none;
+      border: none;
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      color: var(--color-primary);
+      cursor: pointer;
+      padding: 0;
+      margin-top: var(--space-2);
+    }
+
+    .clarify-form {
+      margin-top: var(--space-3);
+      display: none;
+    }
+
+    .clarify-form.open { display: block; }
+
+    .clarify-textarea {
+      width: 100%;
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      padding: var(--space-3) var(--space-4);
+      resize: none;
+      height: 80px;
+      outline: none;
+      box-sizing: border-box;
+      margin-bottom: var(--space-2);
+    }
+
+    .clarify-textarea:focus { border-color: var(--color-primary); }
+
+    .clarify-actions {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: flex-end;
+    }
+
+    .clarify-btn {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      transition: all var(--transition-fast);
+    }
+
+    .clarify-btn-ghost { background: none; color: var(--color-text-muted); }
+    .clarify-btn-primary {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border-color: var(--color-primary);
+    }
+
+    /* Empty state */
+    .state-msg {
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    .state-msg .icon { font-size: 32px; margin-bottom: var(--space-3); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--color-text);
+      color: var(--color-text-inverse);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      box-shadow: var(--shadow-lg);
+      z-index: 1100;
+      opacity: 0;
+      transition: all 0.2s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+
+  <div class="page">
+    <header class="page-header">
+      <a href="home.html" class="back-btn" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="page-title">Proposals</h1>
+      </div>
+    </header>
+    <p class="page-sub">Ideas from your community that have been put forward to build.</p>
+
+    <div class="filter-tabs">
+      <button class="tab-btn active" data-filter="active" onclick="setFilter('active')">Active</button>
+      <button class="tab-btn" data-filter="proposed" onclick="setFilter('proposed')">Proposed</button>
+      <button class="tab-btn" data-filter="building" onclick="setFilter('building')">Building</button>
+      <button class="tab-btn" data-filter="done" onclick="setFilter('done')">Done</button>
+      <button class="tab-btn" data-filter="all" onclick="setFilter('all')">All</button>
+    </div>
+
+    <div id="state" class="state-msg">
+      <div class="icon">📋</div>
+      Loading proposals…
+    </div>
+
+    <div class="proposals-list" id="proposals-list" style="display:none"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const FILTER_FN = {
+      active:   p => p.status === 'proposed' || p.status === 'approved' || p.status === 'building',
+      proposed: p => p.status === 'proposed',
+      building: p => p.status === 'approved' || p.status === 'building',
+      done:     p => p.status === 'done',
+      all:      ()=> true,
+    };
+
+    const STATUS_LABEL = {
+      proposed: 'Proposed',
+      approved: 'Approved',
+      building: 'Building now',
+      done:     'Done',
+      declined: 'Declined',
+    };
+
+    let allProposals = [];
+    let currentFilter = 'active';
+    let currentMember = null;
+
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
+      currentMember = member;
+
+      try {
+        allProposals = await getAllProposals();
+        render();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('state').innerHTML = '<div class="icon">⚠️</div>Could not load proposals.';
+      }
+    }
+
+    function setFilter(f) {
+      currentFilter = f;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === f);
+      });
+      render();
+    }
+
+    function render() {
+      const items = allProposals.filter(FILTER_FN[currentFilter]);
+      const state = document.getElementById('state');
+      const list  = document.getElementById('proposals-list');
+
+      if (items.length === 0) {
+        list.style.display = 'none';
+        const labels = {
+          active:   'No active proposals yet.',
+          proposed: 'No proposals waiting for approval.',
+          building: 'Nothing being built right now.',
+          done:     'Nothing completed yet.',
+          all:      'No proposals yet.',
+        };
+        state.innerHTML = `<div class="icon">📋</div>${labels[currentFilter]}`;
+        state.style.display = 'block';
+        return;
+      }
+
+      state.style.display = 'none';
+      list.style.display = 'flex';
+      list.innerHTML = items.map(p => buildCard(p)).join('');
+    }
+
+    function buildCard(p) {
+      const promoter = p.members?.display_name || 'Admin';
+      const suggestedBy = p.feedback?.length
+        ? p.feedback.map(f => `#${String(f.ref_number).padStart(3,'0')}`).join(', ')
+        : null;
+      const date = timeAgo(p.created_at);
+      const statusLabel = STATUS_LABEL[p.status] || p.status;
+
+      // Is current member the original submitter?
+      const isSubmitter = p.feedback?.some(f => f.author_id === currentMember.id);
+
+      const clarificationSection = p.clarification_note
+        ? `<div class="clarification-note">
+            <div class="note-label">Clarification from submitter</div>
+            <p>${escHtml(p.clarification_note)}</p>
+          </div>`
+        : (isSubmitter && p.status !== 'done' && p.status !== 'declined'
+          ? `<button class="clarify-toggle" onclick="toggleClarify('${p.id}')">Add a clarification note</button>
+             <div class="clarify-form" id="clarify-${p.id}">
+               <textarea class="clarify-textarea" id="clarify-text-${p.id}" placeholder="If we've misunderstood what you meant, add a note here…"></textarea>
+               <div class="clarify-actions">
+                 <button class="clarify-btn clarify-btn-ghost" onclick="toggleClarify('${p.id}')">Cancel</button>
+                 <button class="clarify-btn clarify-btn-primary" onclick="submitClarification('${p.id}')">Save note</button>
+               </div>
+             </div>`
+          : '');
+
+      return `
+        <div class="proposal-card status-${p.status}">
+          <div class="card-top">
+            <div class="proposal-title">${escHtml(p.title)}</div>
+            <span class="status-chip ${p.status}">${statusLabel}</span>
+          </div>
+          ${p.description ? `<div class="proposal-description">${escHtml(p.description)}</div>` : ''}
+          <div class="card-meta">
+            <span>Proposed by ${escHtml(promoter)}</span>
+            ${suggestedBy ? `<span>· from ${suggestedBy}</span>` : ''}
+            <span>· ${date}</span>
+          </div>
+          ${clarificationSection}
+        </div>
+      `;
+    }
+
+    function toggleClarify(id) {
+      const form = document.getElementById(`clarify-${id}`);
+      if (form) form.classList.toggle('open');
+    }
+
+    async function submitClarification(proposalId) {
+      const note = document.getElementById(`clarify-text-${proposalId}`).value.trim();
+      if (!note) return;
+
+      try {
+        const { error } = await getSupabase()
+          .from('proposals')
+          .update({
+            clarification_note: note,
+            clarification_by:   currentMember.id,
+            clarification_at:   new Date().toISOString(),
+          })
+          .eq('id', proposalId);
+
+        if (error) throw error;
+
+        showToast('Note saved ✓');
+        allProposals = await getAllProposals();
+        render();
+      } catch (e) {
+        console.error(e);
+        showToast('Could not save note');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function timeAgo(ts) {
+      const diff = Date.now() - new Date(ts).getTime();
+      const days = Math.floor(diff / 86400000);
+      if (days < 1)  return 'today';
+      if (days < 30) return `${days}d ago`;
+      const months = Math.floor(days / 30);
+      return months === 1 ? '1 month ago' : `${months} months ago`;
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    init();
+  </script>
+</body>
+</html>

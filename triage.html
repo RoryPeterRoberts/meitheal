@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Triage — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page { max-width: 760px; margin: 0 auto; padding: var(--space-6) var(--space-5); min-height: 100vh; }
+
+    .page-header {
+      display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-6);
+    }
+    .back-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; background: var(--color-bg-card);
+      border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      color: var(--color-text-muted); text-decoration: none; transition: all var(--transition-fast);
+    }
+    .back-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-bg); }
+
+    .page-title { font-family: var(--font-family-heading); font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text); }
+    .page-sub { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: 2px; }
+
+    /* Stats */
+    .stats-row { display: flex; gap: var(--space-3); margin-bottom: var(--space-5); flex-wrap: wrap; }
+    .stat-pill {
+      padding: var(--space-2) var(--space-4); border-radius: var(--radius-full);
+      border: 1px solid var(--color-border); background: var(--color-bg-card);
+      font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);
+      color: var(--color-text-muted); cursor: pointer; transition: all var(--transition-fast);
+      font-family: var(--font-family);
+    }
+    .stat-pill:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .stat-pill.active { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-text-inverse); }
+    .stat-pill .count { font-family: var(--font-family-mono); margin-left: var(--space-2); }
+
+    /* Feedback cards */
+    .feedback-list { display: flex; flex-direction: column; gap: var(--space-3); }
+
+    .feedback-card {
+      background: var(--color-bg-card); border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      transition: box-shadow var(--transition-fast);
+    }
+    .feedback-card:hover { box-shadow: var(--shadow-sm); }
+    .feedback-card.status-new { border-left: 3px solid var(--color-accent); }
+    .feedback-card.status-triaged { border-left: 3px solid var(--color-status-review); }
+    .feedback-card.status-actioned { border-left: 3px solid var(--color-status-accepted); }
+    .feedback-card.status-declined { border-left: 3px solid var(--color-border); opacity: 0.6; }
+
+    .card-top { display: flex; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .card-meta { flex: 1; }
+    .card-ref {
+      font-family: var(--font-family-mono); font-size: var(--font-size-xs);
+      color: var(--color-text-light); margin-bottom: var(--space-1);
+    }
+    .card-message {
+      font-size: var(--font-size-base); color: var(--color-text);
+      line-height: var(--line-height-relaxed);
+    }
+    .card-footer {
+      display: flex; align-items: center; gap: var(--space-3);
+      margin-top: var(--space-3); flex-wrap: wrap;
+    }
+    .card-author { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+    .card-date { font-size: var(--font-size-xs); color: var(--color-text-light); }
+
+    .type-badge {
+      font-size: 10px; font-weight: var(--font-weight-semibold); text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 2px var(--space-2); border-radius: var(--radius-sm);
+      background: var(--color-bg-muted); color: var(--color-text-light);
+    }
+    .type-badge.idea { background: var(--color-accent-bg); color: var(--color-accent-dark); }
+    .type-badge.bug { background: var(--color-status-hold-bg); color: var(--color-status-hold); }
+    .type-badge.question { background: var(--color-status-review-bg); color: var(--color-status-review); }
+
+    .status-badge {
+      font-size: 10px; font-weight: var(--font-weight-semibold); text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 2px var(--space-2); border-radius: var(--radius-sm);
+    }
+    .status-badge.new { background: var(--color-accent-bg); color: var(--color-accent-dark); }
+    .status-badge.triaged { background: var(--color-status-review-bg); color: var(--color-status-review); }
+    .status-badge.actioned { background: var(--color-status-accepted-bg); color: var(--color-status-accepted); }
+    .status-badge.declined { background: var(--color-bg-muted); color: var(--color-text-light); }
+
+    /* Action buttons */
+    .card-actions { display: flex; gap: var(--space-2); margin-top: var(--space-4); flex-wrap: wrap; }
+    .action-btn {
+      padding: var(--space-2) var(--space-4); border-radius: var(--radius-md);
+      font-family: var(--font-family); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);
+      cursor: pointer; border: 1px solid var(--color-border); background: var(--color-bg-muted);
+      color: var(--color-text-muted); transition: all var(--transition-fast);
+    }
+    .action-btn:hover { color: var(--color-text); border-color: var(--color-text-light); }
+    .action-btn.promote { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-bg); }
+    .action-btn.promote:hover { background: var(--color-primary); color: var(--color-text-inverse); }
+    .action-btn.decline { border-color: var(--color-status-hold); color: var(--color-status-hold); }
+    .action-btn.decline:hover { background: var(--color-status-hold-bg); }
+
+    /* Note input (inline) */
+    .note-row { margin-top: var(--space-3); display: none; }
+    .note-row.open { display: flex; gap: var(--space-2); }
+    .note-input {
+      flex: 1; background: var(--color-bg-muted); border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); color: var(--color-text); font-family: var(--font-family);
+      font-size: var(--font-size-xs); padding: var(--space-2) var(--space-3); outline: none;
+    }
+    .note-input:focus { border-color: var(--color-primary); }
+
+    /* Admin note display */
+    .admin-note {
+      margin-top: var(--space-3); padding: var(--space-3); background: var(--color-bg-warm);
+      border-radius: var(--radius-md); border-left: 3px solid var(--color-accent);
+      font-size: var(--font-size-xs); color: var(--color-text-muted);
+    }
+    .admin-note strong { color: var(--color-text); }
+
+    .empty { text-align: center; padding: var(--space-12); color: var(--color-text-muted); font-size: var(--font-size-sm); }
+    .empty .icon { font-size: 32px; margin-bottom: var(--space-3); }
+
+    /* Promote modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(44,62,44,0.4);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      padding: var(--space-5); opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--color-bg-card); border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl, 20px); padding: var(--space-6); max-width: 480px; width: 100%;
+      box-shadow: var(--shadow-xl); transform: translateY(12px); transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-title { font-family: var(--font-family-heading); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text); margin-bottom: var(--space-5); }
+    .modal-field { margin-bottom: var(--space-4); }
+    .modal-label { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2); display: block; }
+    .modal-input, .modal-textarea {
+      width: 100%; background: var(--color-bg-muted); border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg); color: var(--color-text); font-family: var(--font-family);
+      font-size: var(--font-size-sm); padding: var(--space-3) var(--space-4); outline: none; box-sizing: border-box;
+    }
+    .modal-textarea { resize: none; height: 80px; }
+    .modal-input:focus, .modal-textarea:focus { border-color: var(--color-primary); }
+    .modal-actions { display: flex; gap: var(--space-3); justify-content: flex-end; margin-top: var(--space-5); }
+    .modal-btn {
+      padding: var(--space-2) var(--space-5); border-radius: var(--radius-lg); font-family: var(--font-family);
+      font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); cursor: pointer; border: 1px solid var(--color-border);
+    }
+    .modal-btn-ghost { background: none; color: var(--color-text-muted); }
+    .modal-btn-primary { background: var(--color-primary); color: var(--color-text-inverse); border-color: var(--color-primary); }
+    .modal-btn-primary:hover { background: var(--color-primary-dark); }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+
+  <div class="page">
+    <header class="page-header">
+      <a href="admin.html" class="back-btn" aria-label="Back to admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <div>
+        <h1 class="page-title">Feedback Triage</h1>
+        <p class="page-sub">Review and action what your community is asking for.</p>
+      </div>
+    </header>
+
+    <div class="stats-row" id="filters">
+      <button class="stat-pill" data-filter="all" onclick="setFilter('all')">All <span class="count" id="count-all">—</span></button>
+      <button class="stat-pill active" data-filter="new" onclick="setFilter('new')">New <span class="count" id="count-new">—</span></button>
+      <button class="stat-pill" data-filter="triaged" onclick="setFilter('triaged')">Triaged <span class="count" id="count-triaged">—</span></button>
+      <button class="stat-pill" data-filter="actioned" onclick="setFilter('actioned')">Actioned <span class="count" id="count-actioned">—</span></button>
+      <button class="stat-pill" data-filter="declined" onclick="setFilter('declined')">Declined <span class="count" id="count-declined">—</span></button>
+    </div>
+
+    <div class="feedback-list" id="feedback-list">
+      <div class="empty"><div class="icon">📬</div>Loading…</div>
+    </div>
+  </div>
+
+  <!-- Promote to proposal modal -->
+  <div class="modal-overlay" id="promote-modal">
+    <div class="modal">
+      <div class="modal-title">Promote to Proposal</div>
+      <div class="modal-field">
+        <label class="modal-label">Proposal title</label>
+        <input class="modal-input" id="proposal-title" placeholder="Short, plain language title…">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Description for the community</label>
+        <textarea class="modal-textarea" id="proposal-desc" placeholder="What problem does this solve? Why is it worth building?"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-ghost" onclick="closePromoteModal()">Cancel</button>
+        <button class="modal-btn modal-btn-primary" onclick="submitPromotion()">Create Proposal</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allFeedback = [];
+    let currentFilter = 'new';
+    let promotingFeedbackId = null;
+    let adminMemberId = null;
+
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
+      if (member.role !== 'admin' && member.role !== 'steward') {
+        document.querySelector('.page').innerHTML = '<div style="padding:60px;text-align:center;color:var(--color-text-muted)">Admin access only.</div>';
+        return;
+      }
+      adminMemberId = member.id;
+      await loadFeedback();
+    }
+
+    async function loadFeedback() {
+      try {
+        allFeedback = await getAllFeedback();
+        updateCounts();
+        renderFeedback();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('feedback-list').innerHTML = '<div class="empty"><div class="icon">⚠️</div>Could not load feedback.</div>';
+      }
+    }
+
+    function updateCounts() {
+      document.getElementById('count-all').textContent = allFeedback.length;
+      ['new','triaged','actioned','declined'].forEach(s => {
+        document.getElementById(`count-${s}`).textContent = allFeedback.filter(f => f.status === s).length;
+      });
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.stat-pill').forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
+      renderFeedback();
+    }
+
+    function renderFeedback() {
+      const items = currentFilter === 'all' ? allFeedback : allFeedback.filter(f => f.status === currentFilter);
+      const list = document.getElementById('feedback-list');
+
+      if (items.length === 0) {
+        list.innerHTML = `<div class="empty"><div class="icon">✓</div>Nothing here.</div>`;
+        return;
+      }
+
+      list.innerHTML = items.map(f => {
+        const date = new Date(f.created_at).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', year: 'numeric' });
+        const ref = f.ref_number ? `FB-${String(f.ref_number).padStart(3,'0')}` : '';
+        const authorName = f.members?.display_name || f.members?.email || 'A member';
+
+        const priorityBadge = f.priority ? `<span class="status-badge" style="background:var(--color-bg-muted)">${f.priority}</span>` : '';
+
+        const actions = f.status === 'new' || f.status === 'triaged' ? `
+          <div class="card-actions">
+            <button class="action-btn promote" onclick="openPromoteModal('${f.id}')">→ Promote to proposal</button>
+            <select class="action-btn" style="cursor:pointer" onchange="setPriority('${f.id}', this.value)">
+              <option value="">Priority…</option>
+              <option value="high"   ${f.priority==='high'   ? 'selected':''}>High</option>
+              <option value="medium" ${f.priority==='medium' ? 'selected':''}>Medium</option>
+              <option value="low"    ${f.priority==='low'    ? 'selected':''}>Low</option>
+            </select>
+            <button class="action-btn" onclick="markActioned('${f.id}')">Direct fix</button>
+            <button class="action-btn decline" onclick="markDeclined('${f.id}')">Decline</button>
+          </div>
+        ` : '';
+
+        const adminNote = '';
+
+        return `
+          <div class="feedback-card status-${f.status}" id="card-${f.id}">
+            <div class="card-top">
+              <div class="card-meta">
+                ${ref ? `<div class="card-ref">${ref}</div>` : ''}
+                <div class="card-message">${escHtml(f.message)}</div>
+              </div>
+              <span class="status-badge ${f.status}">${f.status}</span>
+            </div>
+            <div class="card-footer">
+              <span class="type-badge ${f.type}">${typeEmoji(f.type)} ${typeLabel(f.type)}</span>
+              ${priorityBadge}
+              <span class="card-author">from ${escHtml(authorName)}</span>
+              <span class="card-date">${date}</span>
+            </div>
+            ${adminNote}
+            ${actions}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function typeEmoji(t) {
+      return { idea: '💡', bug: '🔧', question: '❓', other: '💬' }[t] || '💬';
+    }
+
+    function typeLabel(t) {
+      return { idea: 'Suggestion', bug: 'Problem', question: 'Question', other: 'Other' }[t] || 'Other';
+    }
+
+    async function setPriority(id, priority) {
+      try {
+        await updateFeedback(id, { priority: priority || null, status: 'triaged' });
+        await loadFeedback();
+      } catch (e) { console.error(e); }
+    }
+
+    async function markActioned(id) {
+      try {
+        await updateFeedback(id, { status: 'actioned' });
+        await loadFeedback();
+      } catch (e) { console.error(e); }
+    }
+
+    async function markDeclined(id) {
+      try {
+        await updateFeedback(id, { status: 'declined' });
+        await loadFeedback();
+      } catch (e) { console.error(e); }
+    }
+
+    function openPromoteModal(feedbackId) {
+      promotingFeedbackId = feedbackId;
+      const f = allFeedback.find(x => x.id === feedbackId);
+      if (f) {
+        const msg = f.message || '';
+        document.getElementById('proposal-title').value = msg.length > 60 ? msg.slice(0, 57) + '…' : msg;
+        document.getElementById('proposal-desc').value = '';
+      }
+      document.getElementById('promote-modal').classList.add('open');
+      setTimeout(() => document.getElementById('proposal-title').focus(), 100);
+    }
+
+    function closePromoteModal() {
+      document.getElementById('promote-modal').classList.remove('open');
+      promotingFeedbackId = null;
+    }
+
+    async function submitPromotion() {
+      const title = document.getElementById('proposal-title').value.trim();
+      const desc  = document.getElementById('proposal-desc').value.trim();
+      if (!title) { document.getElementById('proposal-title').focus(); return; }
+
+      const btn = document.querySelector('#promote-modal .modal-btn-primary');
+      btn.disabled = true;
+      btn.textContent = 'Creating…';
+
+      try {
+        await createProposal({
+          feedback_id:  promotingFeedbackId,
+          title,
+          description:  desc || null,
+          promoted_by:  adminMemberId,
+        });
+        await updateFeedback(promotingFeedbackId, {
+          status:      'actioned',
+          promoted_at: new Date().toISOString(),
+        });
+        closePromoteModal();
+        await loadFeedback();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Proposal';
+      }
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    init();
+  </script>
+</body>
+</html>

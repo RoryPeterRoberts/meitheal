@@ -200,6 +200,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script src="js/auth.js"></script>
+  <script src="feedback-widget.js"></script>
 
   <div class="page">
     <header class="page-header">
@@ -233,18 +234,16 @@
         <span class="coming-soon-tag">Coming soon</span>
       </a>
 
-      <a href="#" class="nav-card coming-soon">
+      <a href="my-feedback.html" class="nav-card">
         <div class="nav-icon">💬</div>
-        <div class="nav-title">Discussions</div>
-        <div class="nav-desc">Community conversations</div>
-        <span class="coming-soon-tag">Coming soon</span>
+        <div class="nav-title">My feedback</div>
+        <div class="nav-desc">Your ideas and updates on them</div>
       </a>
 
-      <a href="#" class="nav-card coming-soon">
+      <a href="proposals.html" class="nav-card">
         <div class="nav-icon">💡</div>
-        <div class="nav-title">Feedback</div>
-        <div class="nav-desc">Share ideas and suggestions</div>
-        <span class="coming-soon-tag">Coming soon</span>
+        <div class="nav-title">Proposals</div>
+        <div class="nav-desc">See what the community is building</div>
       </a>
     </div>
 
@@ -287,6 +286,8 @@
 
       const { data: settings } = await getSupabase().from('settings').select('value').eq('key', 'community_name').single();
       if (settings?.value) document.getElementById('community-name').textContent = settings.value;
+
+      initFeedbackWidget(member.id);
     }
 
     init();

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>My Feedback — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-5);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    .page-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+    }
+
+    .page-sub {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-6);
+      margin-left: calc(44px + var(--space-4));
+    }
+
+    /* Share button */
+    .share-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: var(--space-5);
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-full);
+      color: var(--color-text-inverse);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .share-btn:hover { background: var(--color-primary-dark); }
+
+    /* Feedback list */
+    .feedback-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .feedback-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5);
+      transition: box-shadow var(--transition-fast);
+    }
+
+    .feedback-card:hover { box-shadow: var(--shadow-sm); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .type-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .card-body { flex: 1; min-width: 0; }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-2);
+    }
+
+    .ref-badge {
+      font-size: 11px;
+      font-weight: var(--font-weight-bold);
+      font-family: var(--font-family-mono);
+      color: var(--color-text-light);
+      background: var(--color-bg-muted);
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    .status-chip {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    .status-chip.new      { background: var(--color-bg-muted); color: var(--color-text-muted); }
+    .status-chip.triaged  { background: var(--color-accent-bg, #e0f2fe); color: var(--color-accent); }
+    .status-chip.actioned { background: var(--color-status-accepted-bg); color: var(--color-status-accepted); }
+    .status-chip.declined { background: #fee2e2; color: #b91c1c; }
+
+    .card-message {
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-normal);
+      margin-bottom: var(--space-2);
+    }
+
+    .card-date {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
+    /* Proposal link */
+    .proposal-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-primary-bg);
+      border: 1px solid var(--color-primary-lighter);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      transition: background var(--transition-fast);
+    }
+
+    .proposal-link:hover { background: var(--color-primary-bg); filter: brightness(0.97); }
+
+    .proposal-link-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: var(--font-weight-bold);
+    }
+
+    .proposal-link-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+    }
+
+    /* Validation prompt */
+    .validation-prompt {
+      margin-top: var(--space-3);
+      padding: var(--space-4);
+      background: var(--color-status-accepted-bg);
+      border: 1px solid var(--color-status-accepted);
+      border-radius: var(--radius-md);
+    }
+
+    .validation-q {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+    }
+
+    .validation-btns {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .validate-btn {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      transition: all var(--transition-fast);
+    }
+
+    .validate-yes {
+      background: var(--color-status-accepted);
+      border-color: var(--color-status-accepted);
+      color: white;
+    }
+
+    .validate-no {
+      background: var(--color-bg-muted);
+      color: var(--color-text-muted);
+    }
+
+    .validate-no:hover { border-color: var(--color-status-hold); color: var(--color-status-hold); }
+
+    /* Validated badge */
+    .validated-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--font-size-xs);
+      color: var(--color-status-accepted);
+      font-weight: var(--font-weight-semibold);
+      margin-top: var(--space-3);
+    }
+
+    /* Empty / state */
+    .state-msg {
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    .state-msg .icon { font-size: 32px; margin-bottom: var(--space-3); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: var(--color-text);
+      color: var(--color-text-inverse);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      box-shadow: var(--shadow-lg);
+      z-index: 1100;
+      opacity: 0;
+      transition: all 0.2s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="feedback-widget.js"></script>
+
+  <div class="page">
+    <header class="page-header">
+      <a href="home.html" class="back-btn" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="page-title">My feedback</h1>
+      </div>
+    </header>
+    <p class="page-sub">Everything you've shared, and what's happened since.</p>
+
+    <div class="share-row">
+      <button class="share-btn" onclick="openFeedbackWidget()">
+        <span>+</span> Share something new
+      </button>
+    </div>
+
+    <div id="state" class="state-msg">
+      <div class="icon">💬</div>
+      Loading…
+    </div>
+
+    <div class="feedback-list" id="feedback-list" style="display:none"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const TYPE_LABELS = {
+      idea:     { emoji: '💡', label: 'Suggestion' },
+      bug:      { emoji: '🔧', label: 'Problem reported' },
+      question: { emoji: '❓', label: 'Question' },
+      other:    { emoji: '💬', label: 'Other' },
+    };
+
+    const STATUS_LABELS = {
+      new:      'Received',
+      triaged:  'Reviewed',
+      actioned: 'Actioned',
+      declined: 'Declined',
+    };
+
+    let currentMember = null;
+    let myFeedback = [];
+    let allProposals = [];
+
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
+      currentMember = member;
+
+      initFeedbackWidget(member.id);
+
+      try {
+        [myFeedback, allProposals] = await Promise.all([
+          getMyFeedback(member.id),
+          getAllProposals(),
+        ]);
+        render();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('state').innerHTML = '<div class="icon">⚠️</div>Could not load your feedback.';
+      }
+    }
+
+    function render() {
+      const state = document.getElementById('state');
+      const list  = document.getElementById('feedback-list');
+
+      if (myFeedback.length === 0) {
+        state.innerHTML = '<div class="icon">💡</div>You haven\'t shared anything yet.<br>Use the button above to share your first thought.';
+        state.style.display = 'block';
+        list.style.display = 'none';
+        return;
+      }
+
+      state.style.display = 'none';
+      list.style.display = 'flex';
+      list.innerHTML = myFeedback.map(buildCard).join('');
+    }
+
+    function buildCard(f) {
+      const t   = TYPE_LABELS[f.type] || TYPE_LABELS.other;
+      const ref = f.ref_number ? `#${String(f.ref_number).padStart(3, '0')}` : '';
+      const date = new Date(f.created_at).toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
+      const statusLabel = STATUS_LABELS[f.status] || f.status;
+
+      // Find linked proposal (if this feedback was promoted)
+      const linkedProposal = allProposals.find(p =>
+        p.feedback?.some(fb => fb.author_id === currentMember.id && fb.ref_number === f.ref_number)
+      );
+
+      const proposalSection = linkedProposal ? `
+        <a class="proposal-link" href="proposals.html">
+          <div>
+            <div class="proposal-link-label">Turned into a proposal</div>
+            <div class="proposal-link-title">${escHtml(linkedProposal.title)}</div>
+          </div>
+          <span style="margin-left:auto;font-size:16px;color:var(--color-primary)">→</span>
+        </a>
+      ` : '';
+
+      // Validation prompt: show when proposal is 'done' and not yet validated
+      const validationSection = (linkedProposal && linkedProposal.status === 'done' && !linkedProposal.member_validated) ? `
+        <div class="validation-prompt">
+          <div class="validation-q">Did this turn out the way you hoped? ✨</div>
+          <div class="validation-btns">
+            <button class="validate-btn validate-yes" onclick="validate('${linkedProposal.id}', true)">Yes, this is it ✅</button>
+            <button class="validate-btn validate-no" onclick="validate('${linkedProposal.id}', false)">Not quite 🔄</button>
+          </div>
+        </div>
+      ` : (linkedProposal?.member_validated ? `<div class="validated-badge">✅ You confirmed this was built right</div>` : '');
+
+      return `
+        <div class="feedback-card" id="fb-${f.id}">
+          <div class="card-top">
+            <div class="type-icon">${t.emoji}</div>
+            <div class="card-body">
+              <div class="card-header">
+                ${ref ? `<span class="ref-badge">${ref}</span>` : ''}
+                <span class="status-chip ${f.status}">${statusLabel}</span>
+              </div>
+              <div class="card-message">${escHtml(f.message)}</div>
+              <div class="card-date">${date}</div>
+            </div>
+          </div>
+          ${proposalSection}
+          ${validationSection}
+        </div>
+      `;
+    }
+
+    async function validate(proposalId, approved) {
+      try {
+        const updates = {
+          member_validated:    true,
+          member_validated_at: new Date().toISOString(),
+          member_validation_note: approved ? 'Confirmed by submitter.' : 'Submitter indicated it needs more work.',
+        };
+
+        const { error } = await getSupabase()
+          .from('proposals')
+          .update(updates)
+          .eq('id', proposalId);
+
+        if (error) throw error;
+
+        if (!approved) {
+          // Open feedback widget pre-filled so they can describe what's missing
+          showToast('Please tell us what needs improving…');
+          setTimeout(() => openFeedbackWidget(), 600);
+        } else {
+          showToast('Thank you for letting us know ✓');
+        }
+
+        allProposals = await getAllProposals();
+        render();
+      } catch (e) {
+        console.error(e);
+        showToast('Could not save your response');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    init();
+  </script>
+</body>
+</html>
