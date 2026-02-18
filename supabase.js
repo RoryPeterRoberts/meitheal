@@ -86,6 +86,29 @@ async function getProposal(id) {
   return data;
 }
 
+// ---- Changelog ----
+
+async function getChangelog() {
+  const { data, error } = await getSupabase()
+    .from('changelog')
+    .select('id, ts, description, files_changed, sql_run, suggested_by_name, proposal_id')
+    .order('ts', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+async function getPendingValidations(memberId) {
+  // proposals that are done but the original submitter hasn't validated yet
+  const { data, error } = await getSupabase()
+    .from('proposals')
+    .select('id, title, feedback!inner(author_id)')
+    .eq('status', 'done')
+    .is('member_validated', null)
+    .eq('feedback.author_id', memberId);
+  if (error) throw error;
+  return data || [];
+}
+
 // ---- Members ----
 
 async function getAllMembers() {

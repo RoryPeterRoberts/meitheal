@@ -139,17 +139,20 @@
       line-height: var(--line-height-normal);
     }
 
-    .coming-soon-tag {
-      display: inline-block;
+    .nav-card-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-status-hold);
+      color: white;
       font-size: 10px;
-      font-weight: var(--font-weight-semibold);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-text-light);
-      background: var(--color-bg-muted);
-      padding: 2px var(--space-2);
-      border-radius: var(--radius-sm);
-      margin-top: var(--space-2);
+      font-weight: var(--font-weight-bold);
+      min-width: 18px;
+      height: 18px;
+      border-radius: var(--radius-full);
+      padding: 0 var(--space-1);
+      margin-left: var(--space-2);
+      vertical-align: middle;
     }
 
     /* Footer */
@@ -227,16 +230,15 @@
         <div class="nav-desc">Browse everyone in the community</div>
       </a>
 
-      <a href="#" class="nav-card coming-soon">
-        <div class="nav-icon">📋</div>
-        <div class="nav-title">Noticeboard</div>
-        <div class="nav-desc">Announcements and updates</div>
-        <span class="coming-soon-tag">Coming soon</span>
+      <a href="changelog.html" class="nav-card">
+        <div class="nav-icon">📦</div>
+        <div class="nav-title">What we've built</div>
+        <div class="nav-desc">Features the community has shaped</div>
       </a>
 
       <a href="my-feedback.html" class="nav-card">
         <div class="nav-icon">💬</div>
-        <div class="nav-title">My feedback</div>
+        <div class="nav-title">My feedback<span id="validation-badge" class="nav-card-badge" style="display:none"></span></div>
         <div class="nav-desc">Your ideas and updates on them</div>
       </a>
 
@@ -286,6 +288,15 @@
 
       const { data: settings } = await getSupabase().from('settings').select('value').eq('key', 'community_name').single();
       if (settings?.value) document.getElementById('community-name').textContent = settings.value;
+
+      // Show badge on My Feedback if there are proposals awaiting validation
+      getPendingValidations(member.id).then(pending => {
+        if (pending.length > 0) {
+          const badge = document.getElementById('validation-badge');
+          badge.textContent = pending.length;
+          badge.style.display = 'inline-flex';
+        }
+      }).catch(() => {});
 
       initFeedbackWidget(member.id);
     }

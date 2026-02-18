@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>What we've built — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-5);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    .page-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+    }
+
+    .page-sub {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-6);
+      margin-left: calc(44px + var(--space-4));
+    }
+
+    /* Entry list */
+    .entry-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .entry-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-status-accepted);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5);
+    }
+
+    .entry-top {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .entry-icon {
+      font-size: 20px;
+      line-height: 1;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .entry-body { flex: 1; min-width: 0; }
+
+    .entry-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .entry-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .entry-meta-sep { color: var(--color-border); }
+
+    .entry-files {
+      margin-top: var(--space-3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-1);
+    }
+
+    .file-chip {
+      font-family: var(--font-family-mono);
+      font-size: 11px;
+      color: var(--color-text-muted);
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border-light);
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    .file-chip.deleted {
+      color: #b91c1c;
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    /* Empty / loading */
+    .state-msg {
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    .state-msg .icon { font-size: 32px; margin-bottom: var(--space-3); }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+
+  <div class="page">
+    <header class="page-header">
+      <a href="home.html" class="back-btn" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="page-title">What we've built</h1>
+      </div>
+    </header>
+    <p class="page-sub">Everything the community has shaped, in order.</p>
+
+    <div id="state" class="state-msg">
+      <div class="icon">📦</div>
+      Loading…
+    </div>
+
+    <div class="entry-list" id="entry-list" style="display:none"></div>
+  </div>
+
+  <script>
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
+
+      try {
+        const entries = await getChangelog();
+        render(entries);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('state').innerHTML = '<div class="icon">⚠️</div>Could not load changelog.';
+      }
+    }
+
+    function render(entries) {
+      const state = document.getElementById('state');
+      const list  = document.getElementById('entry-list');
+
+      if (!entries.length) {
+        state.innerHTML = '<div class="icon">🌱</div>Nothing built yet — the community is just getting started.';
+        return;
+      }
+
+      state.style.display = 'none';
+      list.style.display  = 'flex';
+      list.innerHTML = entries.map(buildEntry).join('');
+    }
+
+    function buildEntry(e) {
+      const date = new Date(e.ts).toLocaleDateString('en-IE', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
+
+      const meta = [];
+      if (e.suggested_by_name) meta.push(`suggested by ${escHtml(e.suggested_by_name)}`);
+      meta.push(date);
+
+      const files = e.files_changed || [];
+      const fileChips = files.length
+        ? `<div class="entry-files">
+            ${files.map(f =>
+              `<span class="file-chip${f.action === 'delete' ? ' deleted' : ''}">${escHtml(f.path)}</span>`
+            ).join('')}
+           </div>`
+        : '';
+
+      return `
+        <div class="entry-card">
+          <div class="entry-top">
+            <div class="entry-icon">📦</div>
+            <div class="entry-body">
+              <div class="entry-title">${escHtml(e.description || 'Untitled build')}</div>
+              <div class="entry-meta">${meta.join('<span class="entry-meta-sep"> · </span>')}</div>
+              ${fileChips}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    init();
+  </script>
+</body>
+</html>
