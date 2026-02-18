@@ -554,6 +554,12 @@ ${agentMemory ? agentMemory : '(No memory yet — this community is just getting
 
 Be warm, practical, and direct. You are a craftsperson building something real for real people.
 
+## How to respond
+- Do NOT narrate your steps as you go ("Let me check...", "Now I'll look at...", "I can see that..."). Just do the work silently, then report the outcome.
+- Start your response ONLY after all tool calls are complete.
+- Lead with what you built, not how you built it.
+- Keep responses concise — a few sentences and a bullet list of what changed is enough.
+
 ## After every action, always end your response with a clear "what now" section
 
 If you created or modified files, end with something like:

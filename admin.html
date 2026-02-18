@@ -235,12 +235,22 @@
     }
 
     /* Tool call log */
-    .tool-log {
-      margin-top: 10px;
-      display: flex;
+    .tool-log { margin-top: 8px; }
+    .tool-log-toggle {
+      font-size: 11px;
+      color: var(--text-3);
+      cursor: pointer;
+      padding: 2px 0;
+      user-select: none;
+    }
+    .tool-log-toggle:hover { color: var(--text-2); }
+    .tool-log-items {
+      display: none;
       flex-direction: column;
       gap: 4px;
+      margin-top: 4px;
     }
+    .tool-log-items.open { display: flex; }
     .tool-item {
       display: flex;
       align-items: center;
@@ -606,12 +616,16 @@
       const avatarEmoji = role === 'user' ? '👤' : '🤖';
       let toolHtml = '';
       if (toolLog && toolLog.length > 0) {
-        toolHtml = `<div class="tool-log">${toolLog.map(t => `
-          <div class="tool-item done">
-            <span class="tool-name">${escHtml(t.tool)}</span>
-            <span class="tool-arg">${escHtml(getToolSummary(t))}</span>
-          </div>
-        `).join('')}</div>`;
+        const id = 'tl-' + Date.now();
+        toolHtml = `<div class="tool-log">
+          <div class="tool-log-toggle" onclick="toggleToolLog('${id}')">▶ ${toolLog.length} action${toolLog.length > 1 ? 's' : ''}</div>
+          <div class="tool-log-items" id="${id}">${toolLog.map(t => `
+            <div class="tool-item done">
+              <span class="tool-name">${escHtml(t.tool)}</span>
+              <span class="tool-arg">${escHtml(getToolSummary(t))}</span>
+            </div>
+          `).join('')}</div>
+        </div>`;
       }
 
       el.innerHTML = `
@@ -671,6 +685,13 @@
     }
 
     // ---- Helpers -------------------------------------------
+    function toggleToolLog(id) {
+      const el = document.getElementById(id);
+      const toggle = el.previousElementSibling;
+      const open = el.classList.toggle('open');
+      toggle.textContent = (open ? '▼ ' : '▶ ') + toggle.textContent.slice(2);
+    }
+
     function autoResize(el) {
       el.style.height = 'auto';
       el.style.height = Math.min(el.scrollHeight, 160) + 'px';
