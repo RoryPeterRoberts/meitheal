@@ -348,24 +348,47 @@ async function callOpenAI(messages, systemPrompt, model, apiKey, baseUrl) {
     model,
     messages: oaiMessages,
     tools: TOOLS.map(t => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } })),
-    tool_choice: 'auto'
+    tool_choice: 'auto',
+    max_tokens: 16000   // prevent output truncation mid-tool-call
   };
   const headers = { 'Content-Type': 'application/json' };
   if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
 
   const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-  if (!r.ok) { const t = await r.text(); throw new Error(`OpenAI: ${r.status} ${t}`); }
+  if (!r.ok) { const t = await r.text(); throw new Error(`${model}: ${r.status} ${t}`); }
   const data = await r.json();
-  const msg = data.choices[0].message;
+  const choice = data.choices[0];
+  const msg = choice.message;
+
+  // If the model hit its token limit mid-generation, tool call args will be
+  // truncated and unparseable. Catch this before JSON.parse blows up.
+  if (choice.finish_reason === 'length') {
+    throw new Error(
+      'Model hit its output token limit mid-response. ' +
+      'The feature being built may be too large for one pass. ' +
+      'Try a simpler or more focused proposal.'
+    );
+  }
+
   const text = msg.content || '';
-  const toolCalls = (msg.tool_calls || []).map(tc => ({
-    id: tc.id, name: tc.function.name, args: JSON.parse(tc.function.arguments || '{}')
-  }));
+  const toolCalls = (msg.tool_calls || []).map(tc => {
+    let args;
+    try {
+      args = JSON.parse(tc.function.arguments || '{}');
+    } catch (e) {
+      throw new Error(
+        `Tool call "${tc.function.name}" returned unparseable arguments ` +
+        `(likely truncated at ${(tc.function.arguments || '').length} chars). ` +
+        `Original error: ${e.message}`
+      );
+    }
+    return { id: tc.id, name: tc.function.name, args };
+  });
   return {
     text,
     toolCalls,
     usage: { prompt: data.usage?.prompt_tokens || 0, completion: data.usage?.completion_tokens || 0 },
-    stopReason: data.choices[0].finish_reason
+    stopReason: choice.finish_reason
   };
 }
 
