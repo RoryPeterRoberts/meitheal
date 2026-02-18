@@ -164,3 +164,32 @@ async function deleteNotice(id) {
     .eq('id', id);
   if (error) throw error;
 }
+
+// ---- Events ----
+
+async function getEvents() {
+  const { data, error } = await getSupabase()
+    .from('events')
+    .select('*, members(display_name)')
+    .order('start_time', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+async function createEvent(eventData) {
+  const { data, error } = await getSupabase()
+    .from('events')
+    .insert([eventData])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+async function deleteEvent(id) {
+  const { error } = await getSupabase()
+    .from('events')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+}
