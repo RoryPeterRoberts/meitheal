@@ -784,6 +784,29 @@
     .member-action-btn.danger { color: #dc2626; border-color: #fecaca; }
     .member-action-btn.danger:hover { background: #fef2f2; }
 
+    /* Agent memory section */
+    .memory-textarea {
+      width: 100%;
+      min-height: 320px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      color: var(--color-text);
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .memory-hint {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+      line-height: var(--line-height-relaxed);
+    }
+
     /* Settings panel */
     .settings-form { max-width: 520px; }
     .settings-section { margin-bottom: var(--space-8); }
@@ -1088,6 +1111,17 @@
           <button class="settings-save-btn" onclick="saveSettings()">Save settings</button>
           <span class="settings-saved-msg" id="settings-saved-msg"></span>
         </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Agent memory</div>
+          <textarea class="memory-textarea" id="agent-memory-input" placeholder="Loading…" spellcheck="false"></textarea>
+          <p class="memory-hint">This is AGENT.md — the agent reads it before every build. Edit it to correct mistakes, add context, or guide future builds. Changes commit directly to the repo.</p>
+          <div class="settings-save-row" style="margin-top:var(--space-3)">
+            <button class="settings-save-btn" onclick="saveAgentMemory()">Save memory</button>
+            <span class="settings-saved-msg" id="memory-saved-msg"></span>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1665,6 +1699,7 @@
       if (s.ai_provider)    document.getElementById('s-ai-provider').value    = s.ai_provider;
       if (s.ai_model)       document.getElementById('s-ai-model').value       = s.ai_model;
       if (s.ai_api_key)     document.getElementById('s-ai-api-key').value     = s.ai_api_key;
+      loadAgentMemory();
     }
 
     function updateModelPlaceholder() {
@@ -1696,6 +1731,47 @@
         setTimeout(() => msg.textContent = '', 3000);
         const name = document.getElementById('s-community-name').value.trim();
         if (name) document.getElementById('community-name').textContent = name;
+      } catch (e) {
+        msg.style.color = 'var(--color-status-hold)';
+        msg.textContent = 'Error — ' + e.message;
+      }
+    }
+
+    // ---- Agent memory ----
+
+    async function loadAgentMemory() {
+      const ta = document.getElementById('agent-memory-input');
+      ta.placeholder = 'Loading…';
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+        const r = await fetch('/api/memory', {
+          headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
+        if (!r.ok) throw new Error(`${r.status}`);
+        const { content } = await r.json();
+        ta.value = content;
+      } catch (e) {
+        ta.placeholder = 'Could not load AGENT.md — ' + e.message;
+      }
+    }
+
+    async function saveAgentMemory() {
+      const ta  = document.getElementById('agent-memory-input');
+      const msg = document.getElementById('memory-saved-msg');
+      msg.style.color = '';
+      msg.textContent = 'Saving…';
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+        const r = await fetch('/api/memory', {
+          method:  'POST',
+          headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ content: ta.value })
+        });
+        if (!r.ok) { const e = await r.json(); throw new Error(e.error || r.status); }
+        msg.textContent = 'Saved ✓';
+        setTimeout(() => msg.textContent = '', 3000);
       } catch (e) {
         msg.style.color = 'var(--color-status-hold)';
         msg.textContent = 'Error — ' + e.message;
