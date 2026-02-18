@@ -30,7 +30,7 @@ Copy your **Project URL**, **Anon Key**, and **Service Role Key** from Project S
 
 **3. Deploy to Vercel**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_ORG/meitheal)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/RoryPeterRoberts/meitheal)
 
 Connect your forked repo. When prompted, add these environment variables:
 
@@ -51,23 +51,27 @@ Also add your AI key (at least one):
 Visit your Vercel URL. The setup wizard walks you through the rest — initialises the database, creates your admin account, and sends you a sign-in link.
 
 **5. Start building**
-Log in as admin. You'll see the admin chat. Tell the AI what your community needs.
+Log in as admin. Invite your members, then watch the feedback come in. Triage it, create proposals, approve them, and trigger builds from the build queue. The AI writes the features directly to your repo.
 
 ---
 
 ## How it works
 
 ```
-Admin types: "Add a tool lending library for our street"
+Member submits: "We need a tool-lending library for the street"
      ↓
-AI reads the codebase, writes tool-library.html, creates a DB table
+Admin reviews in triage → promotes it to a proposal
      ↓
-Commits to your GitHub repo → Vercel auto-deploys
+Admin approves the proposal → it enters the build queue
      ↓
-Feature is live. The AI updates its memory (AGENT.md).
+Admin triggers a build → AI reads the codebase, writes the feature
+     ↓
+Commits to your GitHub repo → Vercel auto-deploys → feature is live
+     ↓
+Member validates: "Yes, this is what I meant" → loop closes
 ```
 
-Members use the feedback form → admin reviews it → AI acts on it → community improves.
+The AI can only build what's been approved. It cannot modify the governance system that controls it.
 
 ## AI Provider support
 
