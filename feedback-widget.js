@@ -200,6 +200,46 @@
         opacity: 1;
         transform: translateY(0);
       }
+
+      .mth-confirm {
+        display: none;
+        text-align: center;
+        padding: var(--space-4) 0 var(--space-2);
+      }
+      .mth-confirm.show { display: block; }
+      .mth-confirm-icon { font-size: 36px; margin-bottom: var(--space-3); }
+      .mth-confirm-title {
+        font-family: var(--font-family-heading);
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text);
+        margin-bottom: var(--space-2);
+      }
+      .mth-confirm-body {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-muted);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--space-5);
+      }
+      .mth-confirm-actions {
+        display: flex;
+        gap: var(--space-3);
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .mth-confirm-link {
+        display: inline-block;
+        padding: var(--space-2) var(--space-5);
+        background: var(--color-primary);
+        color: var(--color-text-inverse);
+        border-radius: var(--radius-lg);
+        font-family: var(--font-family);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        text-decoration: none;
+        transition: background var(--transition-fast);
+      }
+      .mth-confirm-link:hover { background: var(--color-primary-dark); }
     `;
     document.head.appendChild(style);
   }
@@ -239,6 +279,20 @@
             <button class="mth-btn mth-btn-ghost" onclick="window._mthClose()">Cancel</button>
             <button class="mth-btn mth-btn-primary" id="mth-submit" onclick="window._mthSubmit()" disabled>Send</button>
           </div>
+
+          <div class="mth-confirm" id="mth-confirm">
+            <div class="mth-confirm-icon">✅</div>
+            <div class="mth-confirm-title">Sent — thank you</div>
+            <div class="mth-confirm-body">
+              Your idea has gone to the community stewards for review.<br>
+              If it gets taken forward you'll see it on the Proposals page,<br>
+              and you'll be asked to confirm it turned out right once built.
+            </div>
+            <div class="mth-confirm-actions">
+              <a class="mth-confirm-link" href="my-feedback.html">Track your idea →</a>
+              <button class="mth-btn mth-btn-ghost" onclick="window._mthClose()">Close</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -277,9 +331,22 @@
     document.getElementById('mth-fab').style.display = '';
     _selectedType = null;
     const msg = document.getElementById('mth-message');
-    if (msg) { msg.value = ''; }
+    if (msg) { msg.value = ''; msg.style.display = ''; }
     document.querySelectorAll('.mth-type-btn').forEach(b => b.classList.remove('selected'));
     document.getElementById('mth-submit').disabled = true;
+    // Reset confirmation screen
+    const confirm = document.getElementById('mth-confirm');
+    if (confirm) confirm.classList.remove('show');
+    const title = document.querySelector('.mth-modal-title');
+    const sub   = document.querySelector('.mth-modal-sub');
+    const types = document.getElementById('mth-types');
+    const actions = document.querySelector('.mth-actions');
+    if (title)   title.style.display = '';
+    if (sub)     sub.style.display = '';
+    if (types)   types.style.display = '';
+    if (actions) actions.style.display = '';
+    const btn = document.getElementById('mth-submit');
+    if (btn) btn.textContent = 'Send';
   };
 
   window._mthSubmit = async function () {
@@ -297,8 +364,13 @@
         type: _selectedType || 'other',
       });
 
-      window._mthClose();
-      window._mthShowToast('Thanks — your thoughts have been sent ✓');
+      // Show confirmation screen inside the modal
+      document.getElementById('mth-types').style.display = 'none';
+      document.getElementById('mth-message').style.display = 'none';
+      document.querySelector('.mth-modal-title').style.display = 'none';
+      document.querySelector('.mth-modal-sub').style.display = 'none';
+      document.querySelector('.mth-actions').style.display = 'none';
+      document.getElementById('mth-confirm').classList.add('show');
     } catch (e) {
       console.error('Feedback error:', e);
       btn.disabled = false;
