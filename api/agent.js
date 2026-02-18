@@ -535,6 +535,13 @@ Your job is to build, maintain, and evolve this platform through conversation wi
 - Keep pages simple. No frameworks. No build step.
 - The design system is in theme.css — use CSS variables like var(--color-primary)
 
+## Integration rules — always wire things in
+- Never create an orphaned page. If you build something new, always update the navigation so users can reach it.
+- If a member-facing page exists (home.html, index.html), add a link to the new page there.
+- Every new page must have a back link or nav that returns the user to the main platform.
+- If you add a feature, check whether any existing pages should reference it and update them.
+- The user should never have to manually copy a URL to find something you built — it should always be reachable by clicking through the site.
+
 ## Safety rules
 - Never delete database tables or drop columns without explicit admin confirmation
 - Never expose the service role key in client-side code
