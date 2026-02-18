@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set up your Cell — Meitheal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f0f; --bg-card: #1a1a1a; --bg-input: #242424;
+      --border: #2e2e2e; --text: #e8e8e8; --text-2: #999; --text-3: #555;
+      --primary: #4f8ef7; --green: #3dd68c; --red: #f87171;
+      --radius: 10px; --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font);
+      min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px; max-width: 480px; width: 100%;
+    }
+    .logo { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: var(--text-2); font-size: 14px; margin-bottom: 32px; line-height: 1.5; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 16px;
+    }
+    .step-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .step-desc { font-size: 13px; color: var(--text-2); margin-bottom: 24px; line-height: 1.5; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-2); }
+    input, select {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text); font-size: 14px;
+      outline: none; transition: border-color 0.15s;
+    }
+    input:focus, select:focus { border-color: var(--primary); }
+    input::placeholder { color: var(--text-3); }
+    select option { background: var(--bg-card); }
+    .btn {
+      width: 100%; padding: 12px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.15s; margin-top: 8px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-ghost {
+      background: none; border: 1px solid var(--border); color: var(--text-2);
+      margin-top: 8px;
+    }
+    .btn-ghost:hover { border-color: var(--text-3); color: var(--text); }
+    .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
+    .progress {
+      display: flex; gap: 6px; margin-bottom: 28px;
+    }
+    .progress-dot {
+      height: 4px; flex: 1; border-radius: 2px;
+      background: var(--border); transition: background 0.3s;
+    }
+    .progress-dot.done { background: var(--primary); }
+    .success-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+    .success-title { font-size: 20px; font-weight: 600; text-align: center; margin-bottom: 8px; }
+    .success-text { font-size: 14px; color: var(--text-2); text-align: center; line-height: 1.6; }
+    .link-note {
+      font-size: 12px; color: var(--text-3); margin-top: 12px;
+      padding: 10px; background: var(--bg-input); border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .link-note a { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+
+  <div class="card">
+    <div class="logo">Meitheal</div>
+    <div class="subtitle">Let's set up your community. This takes about 5 minutes.</div>
+
+    <div class="progress" id="progress">
+      <div class="progress-dot done" id="dot-1"></div>
+      <div class="progress-dot" id="dot-2"></div>
+      <div class="progress-dot" id="dot-3"></div>
+      <div class="progress-dot" id="dot-4"></div>
+    </div>
+
+    <!-- Step 1: Community name + admin email -->
+    <div class="step active" id="step-1">
+      <div class="step-label">Step 1 of 4</div>
+      <div class="step-title">Your community</div>
+      <div class="step-desc">Give your community a name, and enter your email to become the founding admin.</div>
+      <div class="form-group">
+        <label>Community name</label>
+        <input type="text" id="community-name" placeholder="e.g. Stoneybatter Mutual Aid">
+      </div>
+      <div class="form-group">
+        <label>Your email</label>
+        <input type="email" id="admin-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Your name</label>
+        <input type="text" id="admin-name" placeholder="How members will see you">
+      </div>
+      <div class="error-msg" id="err-1"></div>
+      <button class="btn btn-primary" onclick="step1Next()">Continue →</button>
+    </div>
+
+    <!-- Step 2: AI provider -->
+    <div class="step" id="step-2">
+      <div class="step-label">Step 2 of 4</div>
+      <div class="step-title">Choose your AI</div>
+      <div class="step-desc">The AI builds and evolves your platform. You can change provider any time from the admin panel.</div>
+      <div class="form-group">
+        <label>Provider</label>
+        <select id="ai-provider" onchange="updateProviderFields()">
+          <option value="anthropic">Anthropic (Claude) — Recommended</option>
+          <option value="openai">OpenAI (GPT)</option>
+          <option value="groq">Groq (fast, free tier)</option>
+          <option value="ollama">Ollama (local, free)</option>
+        </select>
+      </div>
+      <div class="form-group" id="model-group">
+        <label>Model</label>
+        <select id="ai-model">
+          <option value="claude-sonnet-4-6">Claude Sonnet 4.6 — Best balance</option>
+          <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 — Faster, cheaper</option>
+          <option value="claude-opus-4-6">Claude Opus 4.6 — Most capable</option>
+        </select>
+      </div>
+      <div class="form-group" id="apikey-group">
+        <label>API Key</label>
+        <input type="password" id="ai-api-key" placeholder="sk-ant-...">
+        <div class="link-note" id="apikey-hint">
+          Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. New accounts get free credits.
+        </div>
+      </div>
+      <div class="form-group" id="ollama-group" style="display:none;">
+        <label>Ollama URL</label>
+        <input type="text" id="ollama-url" placeholder="http://localhost:11434" value="http://localhost:11434">
+        <div class="link-note">Ollama must be running locally or on a server you control. Cost: free.</div>
+      </div>
+      <div class="error-msg" id="err-2"></div>
+      <button class="btn btn-primary" onclick="step2Next()">Continue →</button>
+      <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+    </div>
+
+    <!-- Step 3: Database (Supabase) -->
+    <div class="step" id="step-3">
+      <div class="step-label">Step 3 of 4</div>
+      <div class="step-title">Connect your database</div>
+      <div class="step-desc">
+        Your community's data lives in your own Supabase project — you own it completely.
+        You'll need to run the migration SQL once in the Supabase SQL editor.
+      </div>
+      <div class="form-group">
+        <label>Service Role Key</label>
+        <input type="password" id="service-key" placeholder="eyJhbGci...">
+        <div class="link-note">
+          Find this in your Supabase dashboard → Project Settings → API → Service Role Key.
+          It's used once to initialise the database and is never stored.
+        </div>
+      </div>
+      <div class="error-msg" id="err-3"></div>
+      <button class="btn btn-primary" id="init-btn" onclick="step3Init()">Initialise database →</button>
+      <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+    </div>
+
+    <!-- Step 4: Done -->
+    <div class="step" id="step-4">
+      <div class="success-icon">✅</div>
+      <div class="success-title">You're all set!</div>
+      <div class="success-text">
+        Check your email for a login link. Once you're in, open the Admin panel and start building.
+      </div>
+      <button class="btn btn-primary" style="margin-top:24px;" onclick="window.location.href='auth.html'">Go to login →</button>
+    </div>
+  </div>
+
+  <script>
+    let formData = {};
+    let currentStep = 1;
+
+    function getSupabase() {
+      if (!window._sb) {
+        window._sb = supabase.createClient(
+          document.querySelector('meta[name="supabase-url"]')?.content || window._SUPABASE_URL || '',
+          document.querySelector('meta[name="supabase-anon"]')?.content || window._SUPABASE_ANON_KEY || ''
+        );
+      }
+      return window._sb;
+    }
+
+    function showErr(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+    function clearErr(id) {
+      const el = document.getElementById(id);
+      el.style.display = 'none';
+    }
+
+    function goStep(n) {
+      document.getElementById(`step-${currentStep}`).classList.remove('active');
+      document.getElementById(`step-${n}`).classList.add('active');
+      // Update progress dots
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`dot-${i}`).classList.toggle('done', i <= n);
+      }
+      currentStep = n;
+    }
+
+    function step1Next() {
+      clearErr('err-1');
+      const name  = document.getElementById('community-name').value.trim();
+      const email = document.getElementById('admin-email').value.trim();
+      const adminName = document.getElementById('admin-name').value.trim();
+      if (!name)  return showErr('err-1', 'Please enter a community name.');
+      if (!email || !email.includes('@')) return showErr('err-1', 'Please enter a valid email.');
+      if (!adminName) return showErr('err-1', 'Please enter your name.');
+      formData = { ...formData, communityName: name, adminEmail: email, adminName };
+      goStep(2);
+    }
+
+    function updateProviderFields() {
+      const provider = document.getElementById('ai-provider').value;
+      const modelGroup = document.getElementById('model-group');
+      const apiKeyGroup = document.getElementById('apikey-group');
+      const ollamaGroup = document.getElementById('ollama-group');
+      const hint = document.getElementById('apikey-hint');
+
+      const modelOptions = {
+        anthropic: [
+          ['claude-sonnet-4-6', 'Claude Sonnet 4.6 — Best balance'],
+          ['claude-haiku-4-5-20251001', 'Claude Haiku 4.5 — Faster, cheaper'],
+          ['claude-opus-4-6', 'Claude Opus 4.6 — Most capable'],
+        ],
+        openai: [
+          ['gpt-4o', 'GPT-4o — Best'],
+          ['gpt-4o-mini', 'GPT-4o Mini — Cheaper'],
+        ],
+        groq: [
+          ['llama-3.3-70b-versatile', 'Llama 3.3 70B — Fast'],
+          ['mixtral-8x7b-32768', 'Mixtral 8x7B'],
+        ],
+      };
+
+      ollamaGroup.style.display = provider === 'ollama' ? 'block' : 'none';
+      apiKeyGroup.style.display = provider === 'ollama' ? 'none' : 'block';
+
+      if (provider !== 'ollama' && modelOptions[provider]) {
+        const sel = document.getElementById('ai-model');
+        sel.innerHTML = modelOptions[provider].map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+        modelGroup.style.display = 'block';
+      } else if (provider === 'ollama') {
+        const sel = document.getElementById('ai-model');
+        sel.innerHTML = '<option value="llama3">llama3</option><option value="mistral">mistral</option>';
+        modelGroup.style.display = 'block';
+      }
+
+      const hints = {
+        anthropic: 'Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.',
+        openai: 'Get your key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a>.',
+        groq: 'Get a free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>.',
+      };
+      if (hint && hints[provider]) hint.innerHTML = hints[provider];
+    }
+
+    function step2Next() {
+      clearErr('err-2');
+      const provider = document.getElementById('ai-provider').value;
+      const model    = document.getElementById('ai-model').value;
+      const apiKey   = document.getElementById('ai-api-key').value.trim();
+      const ollamaUrl = document.getElementById('ollama-url').value.trim();
+      if (provider !== 'ollama' && !apiKey) return showErr('err-2', 'Please enter your API key.');
+      formData = { ...formData, provider, model, apiKey, ollamaUrl };
+      goStep(3);
+    }
+
+    async function step3Init() {
+      clearErr('err-3');
+      const serviceKey = document.getElementById('service-key').value.trim();
+      if (!serviceKey) return showErr('err-3', 'Please enter your Supabase service role key.');
+
+      const btn = document.getElementById('init-btn');
+      btn.disabled = true;
+      btn.textContent = 'Initialising…';
+
+      try {
+        const supabaseUrl = window._SUPABASE_URL || document.querySelector('meta[name="supabase-url"]')?.content;
+        const ref = supabaseUrl.replace('https://','').split('.')[0];
+
+        // Run migration SQL via Management API
+        const migrationSql = await fetch('migrations/00_base.sql').then(r => r.text());
+        const mgmtR = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${serviceKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ query: migrationSql })
+        });
+        if (!mgmtR.ok) {
+          const t = await mgmtR.text();
+          throw new Error(`Database init failed: ${t}`);
+        }
+
+        // Upsert community settings
+        const sbHeaders = {
+          'apikey': serviceKey,
+          'Authorization': `Bearer ${serviceKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        };
+        await fetch(`${supabaseUrl}/rest/v1/settings`, {
+          method: 'POST', headers: sbHeaders,
+          body: JSON.stringify([
+            { key: 'community_name', value: formData.communityName },
+            { key: 'ai_provider',    value: formData.provider },
+            { key: 'ai_model',       value: formData.model },
+            { key: 'ai_api_key',     value: formData.apiKey || '' },
+            { key: 'ollama_url',     value: formData.ollamaUrl || '' },
+            { key: 'initialized',    value: 'true' }
+          ])
+        });
+
+        // Create admin member via Supabase auth invite
+        const sb = supabase.createClient(supabaseUrl, window._SUPABASE_ANON_KEY || '');
+
+        // Send magic link to admin email
+        const { error: authErr } = await sb.auth.signInWithOtp({
+          email: formData.adminEmail,
+          options: { emailRedirectTo: window.location.origin + '/auth.html' }
+        });
+        if (authErr) throw new Error(`Auth error: ${authErr.message}`);
+
+        // Pre-create member record (will be linked when they first log in)
+        await fetch(`${supabaseUrl}/rest/v1/members`, {
+          method: 'POST',
+          headers: { ...sbHeaders, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({
+            email: formData.adminEmail,
+            display_name: formData.adminName,
+            role: 'admin',
+            status: 'active'
+          })
+        });
+
+        goStep(4);
+
+      } catch (e) {
+        showErr('err-3', e.message);
+        btn.disabled = false;
+        btn.textContent = 'Initialise database →';
+      }
+    }
+  </script>
+</body>
+</html>

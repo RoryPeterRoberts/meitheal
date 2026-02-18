@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Meitheal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0f0f0f;
+      --bg-card:    #1a1a1a;
+      --bg-input:   #242424;
+      --border:     #2e2e2e;
+      --text:       #e8e8e8;
+      --text-2:     #999;
+      --text-3:     #555;
+      --primary:    #4f8ef7;
+      --primary-dk: #3a72d4;
+      --green:      #3dd68c;
+      --amber:      #f59e0b;
+      --red:        #f87171;
+      --radius:     10px;
+      --font:       -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono:       'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      height: 100dvh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 1fr;
+      overflow: hidden;
+    }
+
+    /* ---- Sidebar ----------------------------------------- */
+    .sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-header {
+      padding: 20px 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    .sidebar-community {
+      font-size: 12px;
+      color: var(--text-2);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-section {
+      padding: 12px 16px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+    }
+
+    /* Cost meter */
+    .cost-block {
+      margin: 0 12px 8px;
+      padding: 10px 12px;
+      background: var(--bg-input);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 12px;
+    }
+    .cost-label { color: var(--text-2); }
+    .cost-value { font-weight: 600; font-family: var(--mono); font-size: 13px; color: var(--text); }
+    .cost-month { color: var(--primary); }
+    .cost-alltime { color: var(--text-2); margin-top: 4px; }
+
+    /* Feedback queue */
+    .feedback-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px 8px;
+    }
+    .feedback-item {
+      padding: 10px 10px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .feedback-item:hover { background: var(--bg-input); border-color: var(--border); }
+    .feedback-item.selected { background: var(--bg-input); border-color: var(--primary); }
+    .feedback-author { font-size: 12px; font-weight: 600; color: var(--text); }
+    .feedback-text {
+      font-size: 12px;
+      color: var(--text-2);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .feedback-type {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
+      background: var(--bg);
+      color: var(--text-3);
+    }
+
+    .empty-feedback {
+      padding: 20px 10px;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 13px;
+    }
+
+    /* Provider badge */
+    .provider-block {
+      margin: 0 12px 12px;
+      padding: 8px 12px;
+      background: var(--bg-input);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .provider-label { font-size: 11px; color: var(--text-2); }
+    .provider-value { font-size: 12px; font-weight: 600; color: var(--green); font-family: var(--mono); }
+
+    /* ---- Main chat area ---------------------------------- */
+    .chat-area {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .chat-header-title { font-weight: 600; font-size: 15px; }
+    .chat-header-actions { display: flex; gap: 8px; }
+    .btn-sm {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-2);
+      transition: all 0.1s;
+    }
+    .btn-sm:hover { color: var(--text); border-color: var(--text-3); }
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dk); border-color: var(--primary-dk); color: #fff; }
+
+    /* Messages */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      max-width: 780px;
+    }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .message.user .message-avatar { background: var(--primary); }
+    .message.assistant .message-avatar { background: var(--bg-input); border: 1px solid var(--border); }
+
+    .message-bubble {
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 640px;
+    }
+    .message.user .message-bubble {
+      background: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .message.assistant .message-bubble {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    /* Tool call log */
+    .tool-log {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tool-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-3);
+      font-family: var(--mono);
+      padding: 4px 8px;
+      background: var(--bg-input);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .tool-item.done { color: var(--green); }
+    .tool-item.error { color: var(--red); }
+    .tool-name { font-weight: 600; }
+    .tool-arg { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px; }
+
+    /* Thinking indicator */
+    .thinking {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 14px;
+    }
+    .thinking span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--text-3);
+      animation: pulse 1.4s infinite;
+    }
+    .thinking span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Welcome */
+    .welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-3);
+      text-align: center;
+      padding: 40px;
+    }
+    .welcome-icon { font-size: 48px; margin-bottom: 16px; }
+    .welcome-title { font-size: 20px; font-weight: 600; color: var(--text-2); margin-bottom: 8px; }
+    .welcome-text { font-size: 14px; line-height: 1.6; max-width: 400px; }
+    .welcome-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+    .suggestion {
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text-2);
+    }
+    .suggestion:hover { border-color: var(--primary); color: var(--primary); background: rgba(79,142,247,0.08); }
+
+    /* Input */
+    .input-area {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .chat-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      padding: 12px 14px;
+      resize: none;
+      min-height: 44px;
+      max-height: 160px;
+      line-height: 1.5;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .chat-input:focus { border-color: var(--primary); }
+    .chat-input::placeholder { color: var(--text-3); }
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      background: var(--primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .send-btn:hover { background: var(--primary-dk); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .send-btn svg { width: 18px; height: 18px; }
+
+    /* New conversation button */
+    .new-conv-btn {
+      margin: 0 12px 8px;
+      width: calc(100% - 24px);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      background: none;
+      color: var(--text-3);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .new-conv-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Meitheal</div>
+      <div class="sidebar-community" id="community-name">Loading…</div>
+    </div>
+
+    <div class="sidebar-section">AI Provider</div>
+    <div class="provider-block">
+      <span class="provider-label">Model</span>
+      <span class="provider-value" id="provider-badge">—</span>
+    </div>
+
+    <div class="sidebar-section">This month</div>
+    <div class="cost-block">
+      <div class="cost-row cost-month">
+        <span class="cost-label">AI cost</span>
+        <span class="cost-value" id="cost-month">$0.00</span>
+      </div>
+      <div class="cost-row cost-alltime">
+        <span class="cost-label">All time</span>
+        <span class="cost-value" id="cost-alltime">$0.00</span>
+      </div>
+    </div>
+
+    <button class="new-conv-btn" onclick="newConversation()">+ New conversation</button>
+
+    <div class="sidebar-section">Member Feedback</div>
+    <div class="feedback-list" id="feedback-list">
+      <div class="empty-feedback">Loading…</div>
+    </div>
+  </aside>
+
+  <!-- Chat -->
+  <main class="chat-area">
+    <header class="chat-header">
+      <div class="chat-header-title" id="chat-title">Admin</div>
+      <div class="chat-header-actions">
+        <a href="index.html" class="btn-sm">← Community</a>
+        <button class="btn-sm" onclick="signOut()">Sign out</button>
+      </div>
+    </header>
+
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🏘️</div>
+        <div class="welcome-title" id="welcome-title">Hello, builder.</div>
+        <div class="welcome-text">Tell me what you want to create for your community, or ask me to look at the feedback queue.</div>
+        <div class="welcome-suggestions">
+          <div class="suggestion" onclick="sendSuggestion(this)">What has been built so far?</div>
+          <div class="suggestion" onclick="sendSuggestion(this)">Check the feedback queue</div>
+          <div class="suggestion" onclick="sendSuggestion(this)">Add a noticeboard page</div>
+          <div class="suggestion" onclick="sendSuggestion(this)">Show me the cost breakdown</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea
+          class="chat-input"
+          id="chat-input"
+          placeholder="Tell me what to build…"
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentMember = null;
+    let conversationId = null;
+    let isThinking = false;
+
+    const SUPABASE_URL = window._SUPABASE_URL || '';
+    const SUPABASE_ANON_KEY = window._SUPABASE_ANON_KEY || '';
+
+    // ---- Init ----------------------------------------------
+    async function init() {
+      const sb = getSupabase();
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = 'auth.html'; return; }
+
+      // Load member
+      const { data: members } = await sb.from('members').select('*').eq('auth_id', session.user.id);
+      currentMember = members?.[0];
+      if (!currentMember || currentMember.role !== 'admin') {
+        document.querySelector('.chat-area').innerHTML = '<div style="padding:40px;color:#999;text-align:center;">Admin access only.</div>';
+        return;
+      }
+
+      // Load community settings
+      const { data: settingsRows } = await sb.from('settings').select('key,value');
+      const settings = Object.fromEntries((settingsRows || []).map(r => [r.key, r.value]));
+      document.getElementById('community-name').textContent = settings.community_name || 'My Community';
+      document.getElementById('welcome-title').textContent = `Hello, ${currentMember.display_name || 'builder'}.`;
+      document.getElementById('provider-badge').textContent =
+        `${settings.ai_provider || 'anthropic'} / ${(settings.ai_model || 'claude-sonnet-4-6').split('-').slice(1,3).join('-')}`;
+
+      // Load costs
+      loadCosts(sb);
+
+      // Load feedback
+      loadFeedback(sb);
+    }
+
+    async function loadCosts(sb) {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+      const { data: monthRows } = await sb.from('ai_usage').select('cost_usd').gte('ts', monthStart);
+      const { data: allRows }   = await sb.from('ai_usage').select('cost_usd');
+
+      const monthTotal = (monthRows || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
+      const allTotal   = (allRows   || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
+
+      document.getElementById('cost-month').textContent  = `$${monthTotal.toFixed(4)}`;
+      document.getElementById('cost-alltime').textContent = `$${allTotal.toFixed(4)}`;
+    }
+
+    async function loadFeedback(sb) {
+      const { data: items } = await sb
+        .from('feedback')
+        .select('*, author:members(display_name)')
+        .eq('status', 'new')
+        .order('created_at', { ascending: true });
+
+      const list = document.getElementById('feedback-list');
+      if (!items || items.length === 0) {
+        list.innerHTML = '<div class="empty-feedback">No open feedback</div>';
+        return;
+      }
+      list.innerHTML = items.map(f => `
+        <div class="feedback-item" onclick="sendFeedbackToAgent('${f.id}', ${JSON.stringify(f.message).replace(/"/g, '&quot;')})">
+          <div class="feedback-author">${escHtml(f.author?.display_name || 'Member')}</div>
+          <div class="feedback-text">${escHtml(f.message)}</div>
+          <span class="feedback-type">${escHtml(f.type)}</span>
+        </div>
+      `).join('');
+    }
+
+    // ---- Chat ----------------------------------------------
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message || isThinking) return;
+
+      input.value = '';
+      autoResize(input);
+      appendMessage('user', message);
+      hideWelcome();
+      await callAgent(message);
+    }
+
+    async function sendFeedbackToAgent(id, message) {
+      hideWelcome();
+      const prompt = `Please look at this member feedback (ID: ${id}) and handle it:\n\n"${message}"`;
+      appendMessage('user', prompt);
+      await callAgent(prompt);
+    }
+
+    function sendSuggestion(el) {
+      document.getElementById('chat-input').value = el.textContent;
+      sendMessage();
+    }
+
+    async function callAgent(message) {
+      isThinking = true;
+      setThinking(true);
+      document.getElementById('send-btn').disabled = true;
+
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/agent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ message, conversationId })
+        });
+
+        if (!r.ok) {
+          const err = await r.json();
+          throw new Error(err.error || 'Agent error');
+        }
+
+        const result = await r.json();
+        conversationId = result.conversationId;
+
+        setThinking(false);
+        appendMessage('assistant', result.text, result.toolLog);
+
+        // Update costs
+        loadCosts(sb);
+        // Refresh feedback
+        loadFeedback(sb);
+
+      } catch (e) {
+        setThinking(false);
+        appendMessage('assistant', `Something went wrong: ${e.message}`, null);
+      } finally {
+        isThinking = false;
+        document.getElementById('send-btn').disabled = false;
+        document.getElementById('chat-input').focus();
+      }
+    }
+
+    function appendMessage(role, text, toolLog) {
+      const msgs = document.getElementById('messages');
+      const el = document.createElement('div');
+      el.className = `message ${role}`;
+
+      const avatarEmoji = role === 'user' ? '👤' : '🤖';
+      let toolHtml = '';
+      if (toolLog && toolLog.length > 0) {
+        toolHtml = `<div class="tool-log">${toolLog.map(t => `
+          <div class="tool-item done">
+            <span class="tool-name">${escHtml(t.tool)}</span>
+            <span class="tool-arg">${escHtml(getToolSummary(t))}</span>
+          </div>
+        `).join('')}</div>`;
+      }
+
+      el.innerHTML = `
+        <div class="message-avatar">${avatarEmoji}</div>
+        <div>
+          <div class="message-bubble">${escHtml(text)}</div>
+          ${toolHtml}
+        </div>
+      `;
+      msgs.appendChild(el);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function getToolSummary(t) {
+      if (t.args?.path)    return t.args.path;
+      if (t.args?.sql)     return t.args.sql.slice(0, 60) + '…';
+      if (t.args?.table)   return t.args.table;
+      if (t.args?.content) return t.args.content.slice(0, 60) + '…';
+      return '';
+    }
+
+    function setThinking(on) {
+      const existing = document.getElementById('thinking-indicator');
+      if (on) {
+        if (existing) return;
+        const msgs = document.getElementById('messages');
+        const el = document.createElement('div');
+        el.id = 'thinking-indicator';
+        el.className = 'message assistant';
+        el.innerHTML = `
+          <div class="message-avatar">🤖</div>
+          <div class="message-bubble thinking">
+            <span></span><span></span><span></span>
+          </div>
+        `;
+        msgs.appendChild(el);
+        msgs.scrollTop = msgs.scrollHeight;
+      } else {
+        if (existing) existing.remove();
+      }
+    }
+
+    function hideWelcome() {
+      const w = document.getElementById('welcome');
+      if (w) w.style.display = 'none';
+    }
+
+    function newConversation() {
+      conversationId = null;
+      document.getElementById('messages').innerHTML = `
+        <div class="welcome" id="welcome">
+          <div class="welcome-icon">🏘️</div>
+          <div class="welcome-title">New conversation</div>
+          <div class="welcome-text">What would you like to build?</div>
+        </div>
+      `;
+    }
+
+    // ---- Helpers -------------------------------------------
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    }
+
+    function escHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function signOut() {
+      const sb = getSupabase();
+      await sb.auth.signOut();
+      window.location.href = 'auth.html';
+    }
+
+    function getSupabase() {
+      if (!window._sb) {
+        window._sb = supabase.createClient(
+          document.querySelector('meta[name="supabase-url"]')?.content || SUPABASE_URL,
+          document.querySelector('meta[name="supabase-anon"]')?.content || SUPABASE_ANON_KEY
+        );
+      }
+      return window._sb;
+    }
+
+    init();
+  </script>
+</body>
+</html>
