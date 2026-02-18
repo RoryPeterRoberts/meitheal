@@ -2,212 +2,283 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Member Directory - Meitheal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Members — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0f0f0f; --bg-card: #1a1a1a; --border: #2e2e2e;
-      --text: #e8e8e8; --text-2: #999; --primary: #4f8ef7;
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-5);
+      min-height: 100vh;
     }
-    body {
-      background: var(--bg); color: var(--text); font-family: var(--font);
-      min-height: 100dvh; padding: 24px;
+
+    /* Header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
     }
-    .container {
-      max-width: 800px; margin: 0 auto;
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
     }
-    header {
-      margin-bottom: 32px;
+
+    .back-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
     }
-    .logo {
-      font-size: 24px; font-weight: 700; margin-bottom: 8px;
+
+    .page-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
     }
-    .subtitle {
-      color: var(--text-2); font-size: 14px;
+
+    .member-count {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      font-weight: var(--font-weight-normal);
     }
-    .back-link {
-      display: inline-block; margin-top: 16px; color: var(--primary);
-      text-decoration: none; font-size: 14px;
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
     }
-    .back-link:hover {
-      text-decoration: underline;
-    }
-    .loading {
-      color: var(--text-2); text-align: center; padding: 48px 0;
-    }
-    .error {
-      color: #ff6b6b; text-align: center; padding: 48px 0;
-    }
-    .members-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 16px;
-    }
-    .member-card {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 8px; padding: 20px; transition: transform 0.2s;
-    }
-    .member-card:hover {
-      transform: translateY(-2px);
-    }
-    .member-name {
-      font-size: 18px; font-weight: 600; margin-bottom: 8px;
-    }
-    .member-email {
-      color: var(--text-2); font-size: 14px; margin-bottom: 12px;
-    }
-    .member-meta {
-      display: flex; justify-content: space-between; font-size: 13px;
-      color: var(--text-2);
-    }
-    .member-role {
-      background: var(--border); padding: 2px 8px; border-radius: 12px;
-      font-size: 12px;
-    }
-    .member-role.admin {
-      background: var(--primary); color: white;
-    }
-    .stats {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 8px; padding: 16px; margin-bottom: 24px;
-      display: flex; justify-content: space-between;
-    }
-    .stat-item {
+
+    .stat-card {
+      flex: 1;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
       text-align: center;
     }
+
     .stat-number {
-      font-size: 24px; font-weight: 600; margin-bottom: 4px;
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: var(--space-1);
     }
+
     .stat-label {
-      color: var(--text-2); font-size: 13px;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: var(--font-weight-semibold);
     }
-    .site-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+
+    /* Member list */
+    .members-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
     }
-    .site-nav-links {
-      display: flex; gap: 24px;
+
+    .member-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      transition: all var(--transition-fast);
     }
-    .site-nav-link {
-      color: var(--text-2); text-decoration: none; font-size: 14px;
-      transition: color 0.2s;
+
+    .member-card:hover {
+      border-color: var(--color-primary-lighter);
+      box-shadow: var(--shadow-sm);
     }
-    .site-nav-link:hover {
-      color: var(--text);
+
+    .member-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
     }
-    .site-nav-link.active {
-      color: var(--primary);
+
+    .member-avatar.accent { background: var(--color-accent); }
+    .member-avatar.secondary { background: var(--color-secondary); }
+    .member-avatar.terracotta { background: var(--color-terracotta); }
+
+    .member-info { flex: 1; min-width: 0; }
+
+    .member-name {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
+    .member-joined {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
+    .member-badge {
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px var(--space-2);
+      border-radius: var(--radius-full);
+      background: var(--color-bg-muted);
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+    }
+
+    .member-badge.admin {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+    }
+
+    /* States */
+    .state-msg {
+      text-align: center;
+      padding: var(--space-12) var(--space-6);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    .state-msg .icon { font-size: 32px; margin-bottom: var(--space-3); }
   </style>
 </head>
 <body>
   <script src="/api/init"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
-  
-  <div class="container">
-    <nav class="site-nav">
-      <div class="logo">Meitheal</div>
-      <div class="site-nav-links">
-        <a href="home.html" class="site-nav-link">Home</a>
-        <a href="directory.html" class="site-nav-link active">Directory</a>
-      </div>
-    </nav>
+  <script src="js/auth.js"></script>
 
-    <header>
-      <div class="subtitle">Member Directory</div>
+  <div class="page">
+    <header class="page-header">
+      <a href="home.html" class="back-btn" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="page-title">Members <span class="member-count" id="member-count"></span></h1>
+      </div>
     </header>
 
-    <div id="stats" class="stats" style="display: none;">
-      <div class="stat-item">
-        <div class="stat-number" id="total-members">0</div>
-        <div class="stat-label">Total Members</div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-total">—</div>
+        <div class="stat-label">Total</div>
       </div>
-      <div class="stat-item">
-        <div class="stat-number" id="active-members">0</div>
-        <div class="stat-label">Active Members</div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-active">—</div>
+        <div class="stat-label">Active</div>
       </div>
-      <div class="stat-item">
-        <div class="stat-number" id="admin-count">0</div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-admins">—</div>
         <div class="stat-label">Admins</div>
       </div>
     </div>
 
-    <div id="loading" class="loading">Loading members...</div>
-    <div id="error" class="error" style="display: none;"></div>
-    
-    <div id="members-container" class="members-grid" style="display: none;"></div>
+    <div id="state" class="state-msg">
+      <div class="icon">👥</div>
+      Loading members…
+    </div>
+
+    <div class="members-list" id="members-list" style="display:none"></div>
   </div>
 
   <script>
-    async function loadMembers() {
-      const sb = getSupabase();
-      
-      // Check if user is authenticated
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) {
-        window.location.href = 'auth.html';
+    const AVATAR_COLOURS = ['', 'accent', 'secondary', 'terracotta'];
+
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
+
+      const { data: members, error } = await getSupabase()
+        .from('members')
+        .select('id, display_name, email, role, status, joined_at')
+        .order('joined_at', { ascending: true });
+
+      const state = document.getElementById('state');
+
+      if (error || !members) {
+        state.innerHTML = '<div class="icon">⚠️</div>Could not load members. Please try again.';
         return;
       }
 
-      try {
-        // Fetch all members
-        const { data: members, error } = await sb
-          .from('members')
-          .select('id, display_name, email, role, status, joined_at')
-          .order('joined_at', { ascending: false });
+      // Stats
+      document.getElementById('stat-total').textContent   = members.length;
+      document.getElementById('stat-active').textContent  = members.filter(m => m.status === 'active').length;
+      document.getElementById('stat-admins').textContent  = members.filter(m => m.role === 'admin').length;
+      document.getElementById('member-count').textContent = `· ${members.length}`;
 
-        if (error) throw error;
-
-        // Update stats
-        document.getElementById('total-members').textContent = members.length;
-        document.getElementById('active-members').textContent = members.filter(m => m.status === 'active').length;
-        document.getElementById('admin-count').textContent = members.filter(m => m.role === 'admin').length;
-        document.getElementById('stats').style.display = 'flex';
-
-        // Hide loading, show members
-        document.getElementById('loading').style.display = 'none';
-        const container = document.getElementById('members-container');
-        container.style.display = 'grid';
-
-        // Clear container
-        container.innerHTML = '';
-
-        // Add each member
-        members.forEach(member => {
-          const card = document.createElement('div');
-          card.className = 'member-card';
-          
-          const joinedDate = new Date(member.joined_at);
-          const formattedDate = joinedDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-          });
-
-          card.innerHTML = `
-            <div class="member-name">${member.display_name || 'Unnamed Member'}</div>
-            <div class="member-email">${member.email}</div>
-            <div class="member-meta">
-              <div class="member-role ${member.role}">${member.role}</div>
-              <div>Joined ${formattedDate}</div>
-            </div>
-          `;
-          
-          container.appendChild(card);
-        });
-
-      } catch (error) {
-        console.error('Error loading members:', error);
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('error').style.display = 'block';
-        document.getElementById('error').textContent = 'Failed to load members. Please try again.';
+      if (members.length === 0) {
+        state.innerHTML = '<div class="icon">👥</div>No members yet.';
+        return;
       }
+
+      state.style.display = 'none';
+      const list = document.getElementById('members-list');
+      list.style.display = 'flex';
+
+      members.forEach((m, i) => {
+        const name     = m.display_name || 'Member';
+        const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        const colour   = AVATAR_COLOURS[i % AVATAR_COLOURS.length];
+        const joined   = m.joined_at
+          ? new Date(m.joined_at).toLocaleDateString('en-IE', { month: 'short', year: 'numeric' })
+          : '';
+
+        const card = document.createElement('div');
+        card.className = 'member-card';
+        card.innerHTML = `
+          <div class="member-avatar ${colour}">${initials}</div>
+          <div class="member-info">
+            <div class="member-name">${escHtml(name)}</div>
+            <div class="member-joined">${joined ? `Joined ${joined}` : ''}</div>
+          </div>
+          <span class="member-badge ${m.role === 'admin' ? 'admin' : ''}">${escHtml(m.role)}</span>
+        `;
+        list.appendChild(card);
+      });
     }
 
-    // Load members when page loads
-    document.addEventListener('DOMContentLoaded', loadMembers);
+    function escHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    init();
   </script>
 </body>
 </html>
