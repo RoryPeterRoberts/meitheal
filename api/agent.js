@@ -489,7 +489,7 @@ async function runAgent(userMessage, conversationId, env) {
                     : provider === 'deepseek' ? 'https://api.deepseek.com'
                     : provider === 'gemini'   ? 'https://generativelanguage.googleapis.com/v1beta/openai'
                     : provider === 'qwen'     ? 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1'
-                    : provider === 'kimi'     ? 'https://api.moonshot.ai/v1'
+                    : provider === 'kimi'     ? 'https://api.moonshot.ai'
                     : provider === 'ollama'   ? ollamaUrl
                     : null; // default openai
 
