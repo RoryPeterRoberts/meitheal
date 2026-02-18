@@ -201,9 +201,18 @@ async function executeTool(name, args, env) {
     }
 
     case 'write_file': {
+      let content = args.content || '';
+      // Gemini thinking model sometimes double-escapes newlines, producing a
+      // single-line file full of literal \n sequences. Detect and fix:
+      // if there are many literal \n but zero real newlines, it's been mangled.
+      const realNL    = (content.match(/\n/g)  || []).length;
+      const escapedNL = (content.match(/\\n/g) || []).length;
+      if (escapedNL > 10 && realNL === 0) {
+        content = content.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\'/g, "'").replace(/\\"/g, '"');
+      }
       let sha;
       try { const f = await ghGet(args.path); sha = f.sha; } catch {}
-      await ghPut(args.path, args.content, args.commit_message, sha);
+      await ghPut(args.path, content, args.commit_message, sha);
       return { written: args.path, message: args.commit_message };
     }
 
