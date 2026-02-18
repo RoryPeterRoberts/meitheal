@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Directory - Meitheal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f0f; --bg-card: #1a1a1a; --border: #2e2e2e;
+      --text: #e8e8e8; --text-2: #999; --primary: #4f8ef7;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font);
+      min-height: 100dvh; padding: 24px;
+    }
+    .container {
+      max-width: 800px; margin: 0 auto;
+    }
+    header {
+      margin-bottom: 32px;
+    }
+    .logo {
+      font-size: 24px; font-weight: 700; margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--text-2); font-size: 14px;
+    }
+    .back-link {
+      display: inline-block; margin-top: 16px; color: var(--primary);
+      text-decoration: none; font-size: 14px;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .loading {
+      color: var(--text-2); text-align: center; padding: 48px 0;
+    }
+    .error {
+      color: #ff6b6b; text-align: center; padding: 48px 0;
+    }
+    .members-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .member-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 20px; transition: transform 0.2s;
+    }
+    .member-card:hover {
+      transform: translateY(-2px);
+    }
+    .member-name {
+      font-size: 18px; font-weight: 600; margin-bottom: 8px;
+    }
+    .member-email {
+      color: var(--text-2); font-size: 14px; margin-bottom: 12px;
+    }
+    .member-meta {
+      display: flex; justify-content: space-between; font-size: 13px;
+      color: var(--text-2);
+    }
+    .member-role {
+      background: var(--border); padding: 2px 8px; border-radius: 12px;
+      font-size: 12px;
+    }
+    .member-role.admin {
+      background: var(--primary); color: white;
+    }
+    .stats {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; margin-bottom: 24px;
+      display: flex; justify-content: space-between;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 24px; font-weight: 600; margin-bottom: 4px;
+    }
+    .stat-label {
+      color: var(--text-2); font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  
+  <div class="container">
+    <header>
+      <div class="logo">Meitheal</div>
+      <div class="subtitle">Member Directory</div>
+      <a href="home.html" class="back-link">← Back to Home</a>
+    </header>
+
+    <div id="stats" class="stats" style="display: none;">
+      <div class="stat-item">
+        <div class="stat-number" id="total-members">0</div>
+        <div class="stat-label">Total Members</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="active-members">0</div>
+        <div class="stat-label">Active Members</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="admin-count">0</div>
+        <div class="stat-label">Admins</div>
+      </div>
+    </div>
+
+    <div id="loading" class="loading">Loading members...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    
+    <div id="members-container" class="members-grid" style="display: none;"></div>
+  </div>
+
+  <script>
+    async function loadMembers() {
+      const sb = getSupabase();
+      
+      // Check if user is authenticated
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) {
+        window.location.href = 'auth.html';
+        return;
+      }
+
+      try {
+        // Fetch all members
+        const { data: members, error } = await sb
+          .from('members')
+          .select('id, display_name, email, role, status, joined_at')
+          .order('joined_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Update stats
+        document.getElementById('total-members').textContent = members.length;
+        document.getElementById('active-members').textContent = members.filter(m => m.status === 'active').length;
+        document.getElementById('admin-count').textContent = members.filter(m => m.role === 'admin').length;
+        document.getElementById('stats').style.display = 'flex';
+
+        // Hide loading, show members
+        document.getElementById('loading').style.display = 'none';
+        const container = document.getElementById('members-container');
+        container.style.display = 'grid';
+
+        // Clear container
+        container.innerHTML = '';
+
+        // Add each member
+        members.forEach(member => {
+          const card = document.createElement('div');
+          card.className = 'member-card';
+          
+          const joinedDate = new Date(member.joined_at);
+          const formattedDate = joinedDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
+
+          card.innerHTML = `
+            <div class="member-name">${member.display_name || 'Unnamed Member'}</div>
+            <div class="member-email">${member.email}</div>
+            <div class="member-meta">
+              <div class="member-role ${member.role}">${member.role}</div>
+              <div>Joined ${formattedDate}</div>
+            </div>
+          `;
+          
+          container.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Error loading members:', error);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = 'Failed to load members. Please try again.';
+      }
+    }
+
+    // Load members when page loads
+    document.addEventListener('DOMContentLoaded', loadMembers);
+  </script>
+</body>
+</html>
