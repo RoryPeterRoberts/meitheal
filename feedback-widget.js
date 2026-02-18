@@ -7,8 +7,8 @@
 
 (function () {
   const TYPES = [
-    { id: 'idea',     label: 'I'd like to suggest something',  emoji: '💡', hint: '' },
-    { id: 'bug',      label: 'Something isn't working',        emoji: '🔧', hint: '' },
+    { id: 'idea',     label: "I'd like to suggest something",  emoji: '💡', hint: '' },
+    { id: 'bug',      label: "Something isn't working",        emoji: '🔧', hint: '' },
     { id: 'question', label: 'I have a question',              emoji: '❓', hint: '' },
     { id: 'other',    label: 'Something else',                 emoji: '💬', hint: '' },
   ];
