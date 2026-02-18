@@ -82,6 +82,23 @@
     .stat-label {
       color: var(--text-2); font-size: 13px;
     }
+    .site-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    .site-nav-links {
+      display: flex; gap: 24px;
+    }
+    .site-nav-link {
+      color: var(--text-2); text-decoration: none; font-size: 14px;
+      transition: color 0.2s;
+    }
+    .site-nav-link:hover {
+      color: var(--text);
+    }
+    .site-nav-link.active {
+      color: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -90,10 +107,16 @@
   <script src="supabase.js"></script>
   
   <div class="container">
-    <header>
+    <nav class="site-nav">
       <div class="logo">Meitheal</div>
+      <div class="site-nav-links">
+        <a href="home.html" class="site-nav-link">Home</a>
+        <a href="directory.html" class="site-nav-link active">Directory</a>
+      </div>
+    </nav>
+
+    <header>
       <div class="subtitle">Member Directory</div>
-      <a href="home.html" class="back-link">← Back to Home</a>
     </header>
 
     <div id="stats" class="stats" style="display: none;">
