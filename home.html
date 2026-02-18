@@ -277,6 +277,14 @@
           `Member since ${d.toLocaleDateString('en-IE', { month: 'long', year: 'numeric' })}`;
       }
 
+      if (member.role === 'admin') {
+        const adminLink = document.createElement('a');
+        adminLink.href = 'admin.html';
+        adminLink.textContent = 'Admin ↗';
+        adminLink.style.cssText = `font-size:var(--font-size-xs);color:var(--color-primary);text-decoration:none;font-family:var(--font-family);`;
+        document.getElementById('joined-date').insertAdjacentElement('afterend', adminLink);
+      }
+
       const { data: settings } = await getSupabase().from('settings').select('value').eq('key', 'community_name').single();
       if (settings?.value) document.getElementById('community-name').textContent = settings.value;
     }

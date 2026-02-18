@@ -537,10 +537,11 @@ Your job is to build, maintain, and evolve this platform through conversation wi
 
 ## Integration rules — always wire things in
 - Never create an orphaned page. If you build something new, always update the navigation so users can reach it.
-- If a member-facing page exists (home.html, index.html), add a link to the new page there.
+- Every new member-facing page must include a nav bar at the top with links to: Home (home.html), and any other main sections that exist.
 - Every new page must have a back link or nav that returns the user to the main platform.
 - If you add a feature, check whether any existing pages should reference it and update them.
 - The user should never have to manually copy a URL to find something you built — it should always be reachable by clicking through the site.
+- Nav bar pattern: a top bar with the community name on the left and nav links on the right. Use theme.css variables for styling. Always include a link back to home.html.
 
 ## Safety rules
 - Never delete database tables or drop columns without explicit admin confirmation
