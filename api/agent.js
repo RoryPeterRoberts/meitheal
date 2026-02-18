@@ -387,6 +387,7 @@ async function callOpenAI(messages, systemPrompt, model, apiKey, baseUrl, maxTok
   return {
     text,
     toolCalls,
+    rawToolCalls: msg.tool_calls || [],  // preserved verbatim for echo-back (Gemini thinking requires thought_signature)
     usage: { prompt: data.usage?.prompt_tokens || 0, completion: data.usage?.completion_tokens || 0 },
     stopReason: choice.finish_reason
   };
@@ -516,9 +517,8 @@ async function runAgent(userMessage, conversationId, env) {
         type: 'tool_result', tool_use_id: tr.id, content: JSON.stringify(tr.result)
       }))});
     } else {
-      messages.push({ role: 'assistant', content: response.text || null, tool_calls: response.toolCalls.map(tc => ({
-        id: tc.id, type: 'function', function: { name: tc.name, arguments: JSON.stringify(tc.args) }
-      }))});
+      // Use rawToolCalls verbatim so provider-specific fields (e.g. Gemini thought_signature) are preserved
+      messages.push({ role: 'assistant', content: response.text || null, tool_calls: response.rawToolCalls });
       for (const tr of toolResults) {
         messages.push({ role: 'tool', tool_call_id: tr.id, content: JSON.stringify(tr.result) });
       }
