@@ -13,10 +13,11 @@ const COSTS = {
   'gpt-4o-mini':              { input:  0.15, output:  0.60 },
   'deepseek-chat':            { input:  0.27, output:  1.10 }, // DeepSeek V3
   'deepseek-reasoner':        { input:  0.55, output:  2.19 }, // DeepSeek R1
-  'gemini-3.0-flash':         { input:  0.15, output:  0.60 }, // Gemini 3.0 Flash
-  'gemini-2.5-flash':         { input:  0.15, output:  0.60 }, // Gemini 2.5 Flash
-  'gemini-2.5-flash-lite':    { input:  0.075,output:  0.30 }, // Gemini 2.5 Flash Lite
-  'gemini-2.0-flash':         { input:  0.10, output:  0.40 }, // Gemini 2.0 Flash (legacy)
+  'gemini-3-flash-preview':   { input:  0.50, output:  3.00 }, // Gemini 3 Flash Preview
+  'gemini-3-pro-preview':     { input:  2.00, output: 12.00 }, // Gemini 3 Pro Preview
+  'gemini-2.5-flash':         { input:  0.30, output:  2.50 }, // Gemini 2.5 Flash
+  'gemini-2.5-flash-lite':    { input:  0.10, output:  0.40 }, // Gemini 2.5 Flash Lite
+  'gemini-2.0-flash':         { input:  0.10, output:  0.40 }, // Gemini 2.0 Flash
   'qwen3-max':                { input:  0.40, output:  1.20 }, // Qwen3 Max
   'qwen3-plus':               { input:  0.07, output:  0.21 }, // Qwen3 Plus
   'kimi-k2-turbo':            { input:  0.60, output:  2.50 }, // Kimi K2 Turbo
