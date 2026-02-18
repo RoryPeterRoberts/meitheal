@@ -29,15 +29,21 @@
 
     .sidebar-logo {
       font-family: var(--font-family-heading);
-      font-size: var(--font-size-lg);
+      font-size: var(--font-size-2xl);
       font-weight: var(--font-weight-bold);
+      font-style: italic;
       color: var(--color-primary);
+      line-height: 1;
+      letter-spacing: -0.02em;
     }
 
     .sidebar-community {
-      font-size: var(--font-size-xs);
-      color: var(--color-text-muted);
-      margin-top: 2px;
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-light);
+      margin-top: var(--space-1);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -119,8 +125,9 @@
 
     .main-title {
       font-family: var(--font-family-heading);
-      font-size: var(--font-size-base);
-      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      font-style: italic;
       color: var(--color-text);
     }
 
@@ -150,7 +157,15 @@
 
     /* ---- Panels ------------------------------------------ */
     .panel { display: none; flex: 1; overflow-y: auto; padding: var(--space-6); }
-    .panel.active { display: block; }
+    .panel.active {
+      display: block;
+      animation: panelIn 200ms ease-out both;
+    }
+
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
     /* ---- Overview panel ---------------------------------- */
     .stats-grid {
@@ -163,14 +178,15 @@
     .stat-card {
       background: var(--color-bg-card);
       border: 1px solid var(--color-border);
+      border-top: 3px solid var(--color-primary);
       border-radius: var(--radius-lg);
       padding: var(--space-4);
-      text-align: center;
+      text-align: left;
     }
 
     .stat-number {
       font-family: var(--font-family-heading);
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-3xl);
       font-weight: var(--font-weight-bold);
       color: var(--color-primary);
       line-height: 1;
@@ -178,11 +194,12 @@
     }
 
     .stat-label {
-      font-size: var(--font-size-xs);
-      color: var(--color-text-muted);
+      font-size: 10px;
+      color: var(--color-text-light);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: var(--font-weight-semibold);
+      letter-spacing: 0.08em;
+      font-weight: var(--font-weight-bold);
+      font-family: var(--font-family);
     }
 
     .section-header {
@@ -194,8 +211,8 @@
 
     .section-title {
       font-family: var(--font-family-heading);
-      font-size: var(--font-size-base);
-      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
       color: var(--color-text);
     }
 
@@ -256,13 +273,16 @@
     }
 
     .kanban-header {
-      font-size: var(--font-size-xs);
+      font-family: var(--font-family);
+      font-size: 10px;
       font-weight: var(--font-weight-bold);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--color-text-muted);
+      letter-spacing: 0.1em;
+      color: var(--color-text-light);
       margin-bottom: var(--space-3);
       padding: 0 var(--space-1);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
     }
 
     .kanban-item {
@@ -401,6 +421,22 @@
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
     }
+
+    .console-btns { display: flex; gap: var(--space-2); align-items: center; }
+
+    .console-copy {
+      background: none;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      padding: 2px var(--space-2);
+      transition: all var(--transition-fast);
+    }
+    .console-copy:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
     .console-close {
       background: none;
@@ -871,7 +907,10 @@
         <div class="build-console" id="build-console">
           <div class="console-header">
             <span class="console-title" id="console-title">Building…</span>
-            <button class="console-close" onclick="closeBuildConsole()" title="Close">×</button>
+            <div class="console-btns">
+              <button class="console-copy" onclick="copyConsole()" title="Copy output">Copy</button>
+              <button class="console-close" onclick="closeBuildConsole()" title="Close">×</button>
+            </div>
           </div>
           <div class="console-messages" id="console-messages"></div>
           <div class="console-status">
@@ -1139,6 +1178,15 @@
 
     function closeBuildConsole() {
       document.getElementById('build-console').classList.remove('open');
+    }
+
+    function copyConsole() {
+      const text = document.getElementById('console-messages').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.console-copy');
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      });
     }
 
     // ---- Costs ----

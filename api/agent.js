@@ -757,7 +757,13 @@ export default async function handler(req, res) {
       });
     }
 
-    res.json(result);
+    // Only return what the client needs — omit toolLog (has full file contents,
+    // causes JSON truncation in the browser when files are large)
+    res.json({
+      text:           result.text,
+      conversationId: result.conversationId,
+      usage:          result.usage
+    });
   } catch (e) {
     console.error('Agent error:', e);
     res.status(500).json({ error: e.message });
