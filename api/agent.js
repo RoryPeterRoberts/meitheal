@@ -427,7 +427,7 @@ async function runAgent(userMessage, conversationId, env) {
   let finalText = '';
   const toolLog = [];
 
-  for (let turn = 0; turn < 10; turn++) {
+  for (let turn = 0; turn < 25; turn++) {
     let response;
     if (provider === 'anthropic') {
       response = await callAnthropic(messages, systemPrompt, model, apiKey);
@@ -689,7 +689,7 @@ export default async function handler(req, res) {
         approved_at:   proposal.updated_at,
       };
 
-      agentMessage = `You have been given an approved proposal to build.\n\nProposal brief:\n${JSON.stringify(brief, null, 2)}\n\nPlease build this feature now. Read the existing codebase first to understand the design system and conventions, then implement the feature. Remember: update navigation so the feature is reachable from the site.`;
+      agentMessage = `You have been given an approved proposal to build.\n\nProposal brief:\n${JSON.stringify(brief, null, 2)}\n\nBuild this feature now. Be efficient: read only what you need (home.html for nav structure, supabase.js for data helpers). Do NOT read theme.css — trust the conventions already in AGENT.md. Do NOT narrate or plan — just build. When files are written and wired in, report what was built.`;
       buildProposalId      = proposal_id;
       buildTitle           = proposal.title;
       buildSuggestedById   = origFeedback?.author_id || null;
