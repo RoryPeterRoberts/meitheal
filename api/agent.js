@@ -21,7 +21,7 @@ const COSTS = {
   'qwen3-max':                { input:  0.40, output:  1.20 }, // Qwen3 Max
   'qwen3-plus':               { input:  0.07, output:  0.21 }, // Qwen3 Plus
   'kimi-k2-turbo':            { input:  0.60, output:  2.50 }, // Kimi K2 Turbo
-  'kimi-k2.5':                { input:  0.80, output:  3.00 }, // Kimi K2.5
+  'kimi-k2.5':                { input:  0.60, output:  3.00 }, // Kimi K2.5
   'llama3':                   { input:  0,    output:  0    }, // local
 };
 
@@ -498,7 +498,7 @@ async function runAgent(userMessage, conversationId, env) {
       const maxTokens = provider === 'gemini'   ? 32768
                       : provider === 'openai'   ? 16384
                       : provider === 'qwen'     ? 16384
-                      : provider === 'kimi'     ? 16384
+                      : provider === 'kimi'     ? 32768
                       : provider === 'deepseek' ?  8192
                       : provider === 'groq'     ?  8192
                       :                            8192; // ollama / unknown
