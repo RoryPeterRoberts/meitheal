@@ -1519,18 +1519,20 @@
       ].filter(u => u.value);
 
       const msg = document.getElementById('settings-saved-msg');
+      msg.style.color = '';
       try {
         for (const u of updates) {
-          await sb.from('settings').upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+          const { error } = await sb.from('settings')
+            .upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+          if (error) throw new Error(`${u.key}: ${error.message}`);
         }
         msg.textContent = 'Saved ✓';
         setTimeout(() => msg.textContent = '', 3000);
-        // Refresh community name in sidebar
         const name = document.getElementById('s-community-name').value.trim();
         if (name) document.getElementById('community-name').textContent = name;
       } catch (e) {
         msg.style.color = 'var(--color-status-hold)';
-        msg.textContent = 'Error saving — ' + e.message;
+        msg.textContent = 'Error — ' + e.message;
       }
     }
 
