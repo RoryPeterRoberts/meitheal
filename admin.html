@@ -971,7 +971,7 @@
             <div class="approved-title">${escHtml(p.title)}</div>
             <div class="approved-meta">Approved · ${timeAgo(p.created_at)}</div>
           </div>
-          <button class="start-build-btn" onclick="startBuild('${p.id}', ${JSON.stringify(p.title).replace(/'/g,"&#39;")})">
+          <button class="start-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="startBuild(this.dataset.id, this.dataset.title)">
             Start build
           </button>
         </div>
