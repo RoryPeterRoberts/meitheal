@@ -1,1 +1,462 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">\n  <meta name="robots" content="noindex, nofollow">\n  <title>Home — Meitheal</title>\n  <link rel="stylesheet" href="theme.css">\n  <style>\n    .page {\n      max-width: 600px;\n      margin: 0 auto;\n      padding: 0 var(--space-5) var(--space-12);\n      min-height: 100vh;\n      animation: pageIn 300ms ease-out both;\n    }\n\n    @keyframes pageIn {\n      from { opacity: 0; transform: translateY(8px); }\n      to   { opacity: 1; transform: translateY(0); }\n    }\n\n    /* ---- Masthead ---- */\n    .masthead {\n      padding: var(--space-6) 0 0;\n      margin-bottom: var(--space-6);\n    }\n\n    .masthead-eyebrow {\n      display: flex;\n      justify-content: space-between;\n      align-items: baseline;\n      padding-bottom: var(--space-2);\n      border-bottom: 1px solid var(--color-border);\n    }\n\n    .masthead-community {\n      font-family: var(--font-family);\n      font-size: 10px;\n      font-weight: var(--font-weight-bold);\n      text-transform: uppercase;\n      letter-spacing: 0.12em;\n      color: var(--color-text-muted);\n    }\n\n    .masthead-dateline {\n      font-family: var(--font-family);\n      font-size: 10px;\n      color: var(--color-text-light);\n      font-style: italic;\n    }\n\n    .masthead-wordmark {\n      display: block;\n      font-family: var(--font-family-heading);\n      font-size: 4.25rem;\n      font-weight: var(--font-weight-bold);\n      color: var(--color-primary);\n      letter-spacing: -0.04em;\n      line-height: 1;\n      padding: var(--space-3) 0 var(--space-2);\n    }\n\n    .masthead-baseline {\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      padding-top: var(--space-2);\n      border-top: 2px solid var(--color-text);\n    }\n\n    .masthead-tagline {\n      font-family: var(--font-family);\n      font-size: 11px;\n      color: var(--color-text-light);\n      font-style: italic;\n    }\n\n    .role-pill {\n      font-size: 10px;\n      font-weight: var(--font-weight-bold);\n      text-transform: uppercase;\n      letter-spacing: 0.06em;\n      padding: 2px var(--space-2);\n      border-radius: var(--radius-sm);\n      background: var(--color-status-accepted-bg);\n      color: var(--color-status-accepted);\n    }\n\n    .role-pill.admin {\n      background: var(--color-primary-bg);\n      color: var(--color-primary);\n    }\n\n    /* ---- Greeting ---- */\n    .greeting {\n      padding: var(--space-6) 0 var(--space-5);\n      border-bottom: 1px solid var(--color-border-light);\n      margin-bottom: var(--space-5);\n    }\n\n    .greeting-title {\n      font-family: var(--font-family-heading);\n      font-size: var(--font-size-3xl);\n      font-style: italic;\n      font-weight: var(--font-weight-bold);\n      color: var(--color-text);\n      line-height: 1.1;\n      margin-bottom: var(--space-1);\n    }\n\n    .greeting-meta {\n      font-size: var(--font-size-sm);\n      color: var(--color-text-muted);\n    }\n\n    /* ---- Charter ---- */\n    .charter {\n      border-left: 3px solid var(--color-primary);\n      padding: var(--space-3) var(--space-5);\n      background: var(--color-primary-bg);\n      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;\n      margin-bottom: var(--space-5);\n    }\n\n    .charter p {\n      font-size: var(--font-size-sm);\n      color: var(--color-text-secondary);\n      line-height: var(--line-height-relaxed);\n      font-style: italic;\n    }\n\n    /* ---- CTA ---- */\n    .cta-btn {\n      width: 100%;\n      padding: var(--space-5) var(--space-6);\n      background: var(--color-primary);\n      color: var(--color-text-inverse);\n      border: none;\n      border-radius: var(--radius-lg);\n      font-family: var(--font-family-heading);\n      font-size: var(--font-size-base);\n      font-weight: var(--font-weight-semibold);\n      cursor: pointer;\n      transition: all var(--transition-base);\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      margin-bottom: var(--space-8);\n      letter-spacing: -0.01em;\n      text-align: left;\n    }\n\n    .cta-btn:hover {\n      background: var(--color-primary-dark);\n      transform: translateY(-1px);\n      box-shadow: var(--shadow-lg);\n    }\n\n    .cta-arrow {\n      font-size: var(--font-size-lg);\n      opacity: 0.7;\n      transition: transform var(--transition-fast), opacity var(--transition-fast);\n    }\n\n    .cta-btn:hover .cta-arrow {\n      transform: translateX(4px);\n      opacity: 1;\n    }\n\n    /* ---- Section rule ---- */\n    .section-rule {\n      display: flex;\n      align-items: center;\n      gap: var(--space-3);\n      margin-bottom: var(--space-4);\n    }\n\n    .section-rule-text {\n      font-size: 10px;\n      font-weight: var(--font-weight-bold);\n      text-transform: uppercase;\n      letter-spacing: 0.12em;\n      color: var(--color-text-light);\n      flex-shrink: 0;\n      font-family: var(--font-family);\n    }\n\n    .section-rule-line {\n      flex: 1;\n      height: 1px;\n      background: var(--color-border);\n    }\n\n    /* ---- Nav grid ---- */\n    .nav-grid {\n      display: grid;\n      grid-template-columns: 1fr 1fr;\n      gap: var(--space-3);\n      margin-bottom: var(--space-8);\n    }\n\n    .nav-card {\n      background: var(--color-bg-card);\n      border: 1px solid var(--color-border);\n      border-radius: var(--radius-lg);\n      padding: var(--space-4);\n      text-decoration: none;\n      color: var(--color-text);\n      transition: all var(--transition-fast);\n      display: flex;\n      align-items: flex-start;\n      gap: var(--space-3);\n    }\n\n    .nav-card:hover {\n      border-color: var(--color-primary);\n      background: var(--color-primary-bg);\n      transform: translateY(-1px);\n      box-shadow: var(--shadow-sm);\n    }\n\n    .nav-card-emoji {\n      font-size: 20px;\n      flex-shrink: 0;\n      line-height: 1;\n      padding-top: 2px;\n    }\n\n    .nav-card-body {\n      flex: 1;\n      min-width: 0;\n    }\n\n    .nav-card-title {\n      font-family: var(--font-family-heading);\n      font-size: var(--font-size-sm);\n      font-weight: var(--font-weight-semibold);\n      color: var(--color-text);\n      margin-bottom: 2px;\n      line-height: var(--line-height-tight);\n    }\n\n    .nav-card-desc {\n      font-size: 11px;\n      color: var(--color-text-muted);\n      line-height: var(--line-height-normal);\n    }\n\n    .nav-card-badge {\n      display: inline-flex;\n      align-items: center;\n      justify-content: center;\n      background: var(--color-status-hold);\n      color: white;\n      font-size: 9px;\n      font-weight: var(--font-weight-bold);\n      min-width: 16px;\n      height: 16px;\n      border-radius: var(--radius-full);\n      padding: 0 3px;\n      margin-left: 4px;\n      vertical-align: middle;\n    }\n\n    /* ---- Footer ---- */\n    .page-footer {\n      display: flex;\n      justify-content: space-between;\n      align-items: center;\n      padding-top: var(--space-5);\n      border-top: 1px solid var(--color-border-light);\n      flex-wrap: wrap;\n      gap: var(--space-3);\n    }\n\n    .footer-left {\n      font-size: var(--font-size-xs);\n      color: var(--color-text-light);\n    }\n\n    .footer-right {\n      display: flex;\n      align-items: center;\n      gap: var(--space-4);\n    }\n\n    .footer-admin-link {\n      font-size: var(--font-size-xs);\n      color: var(--color-primary);\n      text-decoration: none;\n      font-family: var(--font-family);\n    }\n\n    .footer-admin-link:hover {\n      color: var(--color-primary-light);\n    }\n\n    .sign-out-btn {\n      background: none;\n      border: 1px solid var(--color-border);\n      color: var(--color-text-muted);\n      font-family: var(--font-family);\n      font-size: var(--font-size-xs);\n      padding: var(--space-2) var(--space-3);\n      border-radius: var(--radius-sm);\n      cursor: pointer;\n      transition: all var(--transition-fast);\n    }\n\n    .sign-out-btn:hover {\n      border-color: var(--color-status-hold);\n      color: var(--color-status-hold);\n    }\n  </style>\n</head>\n<body>\n  <script src="/api/init"></script>\n  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n  <script src="supabase.js"></script>\n  <script src="js/auth.js"></script>\n  <script src="feedback-widget.js"></script>\n\n  <div id="avatar" style="display:none"></div><!-- kept for JS compat -->\n\n  <div class="page">\n\n    <header class="masthead">\n      <div class="masthead-eyebrow">\n        <span class="masthead-community" id="community-name">Community Platform</span>\n        <span class="masthead-dateline" id="masthead-date"></span>\n      </div>\n      <span class="masthead-wordmark">Meitheal</span>\n      <div class="masthead-baseline">\n        <span class="masthead-tagline">Your community, your platform</span>\n        <span class="role-pill" id="role-badge" style="display:none"></span>\n      </div>\n    </header>\n\n    <section class="greeting">\n      <h1 class="greeting-title" id="welcome-name">Welcome</h1>\n      <p class="greeting-meta" id="welcome-email"></p>\n    </section>\n\n    <div class="charter">\n      <p>This is your community\'s platform — built by your neighbours, shaped by everyone. Share ideas below or tap the button in any page corner. When approved, they get built here.</p>\n    </div>\n\n    <button class="cta-btn" onclick="openFeedbackWidget()">\n      Share an idea or report a problem\n      <span class="cta-arrow">→</span>\n    </button>\n\n    <div class="section-rule">\n      <span class="section-rule-text">Community</span>\n      <div class="section-rule-line"></div>\n    </div>\n\n    <nav class="nav-grid">\n      <a href="noticeboard.html" class="nav-card">\n        <span class="nav-card-emoji">📌</span>\n        <div class="nav-card-body">\n          <div class="nav-card-title">Noticeboard</div>\n          <div class="nav-card-desc">Post and view community notices</div>\n        </div>\n      </a>\n\n      <a href="directory.html" class="nav-card">\n        <span class="nav-card-emoji">👥</span>\n        <div class="nav-card-body">\n          <div class="nav-card-title">Members</div>\n          <div class="nav-card-desc">Browse everyone in the community</div>\n        </div>\n      </a>\n\n      <a href="changelog.html" class="nav-card">\n        <span class="nav-card-emoji">📦</span>\n        <div class="nav-card-body">\n          <div class="nav-card-title">What we\'ve built</div>\n          <div class="nav-card-desc">Features the community has shaped</div>\n        </div>\n      </a>\n\n      <a href="my-feedback.html" class="nav-card">\n        <span class="nav-card-emoji">💬</span>\n        <div class="nav-card-body">\n          <div class="nav-card-title">My ideas<span id="validation-badge" class="nav-card-badge" style="display:none"></span></div>\n          <div class="nav-card-desc">Track what\'s happening with your ideas</div>\n        </div>\n      </a>\n\n      <a href="proposals.html" class="nav-card">\n        <span class="nav-card-emoji">💡</span>\n        <div class="nav-card-body">\n          <div class="nav-card-title">Proposals</div>\n          <div class="nav-card-desc">See what the community is building</div>\n        </div>\n      </a>\n    </nav>\n\n    <footer class="page-footer">\n      <span class="footer-left" id="joined-date"></span>\n      <div class="footer-right" id="footer-right">\n        <button class="sign-out-btn" onclick="handleSignOut()">Sign out</button>\n      </div>\n    </footer>\n\n  </div>\n\n  <script>\n    async function init() {\n      const member = await requireAuthAsync();\n      if (!member) return;\n\n      initFeedbackWidget(member.id);\n\n      const name     = member.display_name || \'Member\';\n      const initials = name.split(\' \').map(w => w[0]).join(\'\').toUpperCase().slice(0, 2);\n\n      document.getElementById(\'avatar\').textContent       = initials;\n      document.getElementById(\'welcome-name\').textContent = `Good to see you, ${name.split(\' \')[0]}.`;\n      document.getElementById(\'welcome-email\').textContent = member.email;\n\n      const badge = document.getElementById(\'role-badge\');\n      badge.textContent = member.role;\n      badge.className   = `role-pill${member.role === \'admin\' ? \' admin\' : \'\'}`;\n      badge.style.display = \'inline-block\';\n\n      document.getElementById(\'masthead-date\').textContent =\n        new Date().toLocaleDateString(\'en-IE\', { day: \'numeric\', month: \'long\', year: \'numeric\' });\n\n      if (member.joined_at) {\n        const d = new Date(member.joined_at);\n        document.getElementById(\'joined-date\').textContent =\n          `Member since ${d.toLocaleDateString(\'en-IE\', { month: \'long\', year: \'numeric\' })}`;\n      }\n\n      if (member.role === \'admin\') {\n        const link   = document.createElement(\'a\');\n        link.href    = \'admin.html\';\n        link.textContent = \'Admin ↗\';\n        link.className = \'footer-admin-link\';\n        document.getElementById(\'footer-right\').insertAdjacentElement(\'afterbegin\', link);\n      }\n\n      const { data: settings } = await getSupabase()\n        .from(\'settings\').select(\'value\').eq(\'key\', \'community_name\').single();\n      if (settings?.value) document.getElementById(\'community-name\').textContent = settings.value;\n\n      getPendingValidations(member.id).then(pending => {\n        if (pending.length > 0) {\n          const b = document.getElementById(\'validation-badge\');\n          b.textContent   = pending.length;\n          b.style.display = \'inline-flex\';\n        }\n      }).catch(() => {});\n    }\n\n    init();\n  </script>\n</body>\n</html>\n
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Home — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 var(--space-5) var(--space-12);
+      min-height: 100vh;
+      animation: pageIn 300ms ease-out both;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Masthead ---- */
+    .masthead {
+      padding: var(--space-6) 0 0;
+      margin-bottom: var(--space-6);
+    }
+
+    .masthead-eyebrow {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .masthead-community {
+      font-family: var(--font-family);
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-text-muted);
+    }
+
+    .masthead-dateline {
+      font-family: var(--font-family);
+      font-size: 10px;
+      color: var(--color-text-light);
+      font-style: italic;
+    }
+
+    .masthead-wordmark {
+      display: block;
+      font-family: var(--font-family-heading);
+      font-size: 4.25rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      padding: var(--space-3) 0 var(--space-2);
+    }
+
+    .masthead-baseline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-2);
+      border-top: 2px solid var(--color-text);
+    }
+
+    .masthead-tagline {
+      font-family: var(--font-family);
+      font-size: 11px;
+      color: var(--color-text-light);
+      font-style: italic;
+    }
+
+    .role-pill {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+      background: var(--color-status-accepted-bg);
+      color: var(--color-status-accepted);
+    }
+
+    .role-pill.admin {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+    }
+
+    /* ---- Greeting ---- */
+    .greeting {
+      padding: var(--space-6) 0 var(--space-5);
+      border-bottom: 1px solid var(--color-border-light);
+      margin-bottom: var(--space-5);
+    }
+
+    .greeting-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-3xl);
+      font-style: italic;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      line-height: 1.1;
+      margin-bottom: var(--space-1);
+    }
+
+    .greeting-meta {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+
+    /* ---- Charter ---- */
+    .charter {
+      border-left: 3px solid var(--color-primary);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-primary-bg);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: var(--space-5);
+    }
+
+    .charter p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      font-style: italic;
+    }
+
+    /* ---- CTA ---- */
+    .cta-btn {
+      width: 100%;
+      padding: var(--space-5) var(--space-6);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-8);
+      letter-spacing: -0.01em;
+      text-align: left;
+    }
+
+    .cta-btn:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .cta-arrow {
+      font-size: var(--font-size-lg);
+      opacity: 0.7;
+      transition: transform var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    .cta-btn:hover .cta-arrow {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+
+    /* ---- Section rule ---- */
+    .section-rule {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .section-rule-text {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-text-light);
+      flex-shrink: 0;
+      font-family: var(--font-family);
+    }
+
+    .section-rule-line {
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    /* ---- Nav grid ---- */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-8);
+    }
+
+    .nav-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-decoration: none;
+      color: var(--color-text);
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .nav-card:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-bg);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-card-emoji {
+      font-size: 20px;
+      flex-shrink: 0;
+      line-height: 1;
+      padding-top: 2px;
+    }
+
+    .nav-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .nav-card-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 2px;
+      line-height: var(--line-height-tight);
+    }
+
+    .nav-card-desc {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      line-height: var(--line-height-normal);
+    }
+
+    .nav-card-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-status-hold);
+      color: white;
+      font-size: 9px;
+      font-weight: var(--font-weight-bold);
+      min-width: 16px;
+      height: 16px;
+      border-radius: var(--radius-full);
+      padding: 0 3px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    /* ---- Footer ---- */
+    .page-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--color-border-light);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .footer-left {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .footer-admin-link {
+      font-size: var(--font-size-xs);
+      color: var(--color-primary);
+      text-decoration: none;
+      font-family: var(--font-family);
+    }
+
+    .footer-admin-link:hover {
+      color: var(--color-primary-light);
+    }
+
+    .sign-out-btn {
+      background: none;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .sign-out-btn:hover {
+      border-color: var(--color-status-hold);
+      color: var(--color-status-hold);
+    }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="feedback-widget.js"></script>
+
+  <div id="avatar" style="display:none"></div><!-- kept for JS compat -->
+
+  <div class="page">
+
+    <header class="masthead">
+      <div class="masthead-eyebrow">
+        <span class="masthead-community" id="community-name">Community Platform</span>
+        <span class="masthead-dateline" id="masthead-date"></span>
+      </div>
+      <span class="masthead-wordmark">Meitheal</span>
+      <div class="masthead-baseline">
+        <span class="masthead-tagline">Your community, your platform</span>
+        <span class="role-pill" id="role-badge" style="display:none"></span>
+      </div>
+    </header>
+
+    <section class="greeting">
+      <h1 class="greeting-title" id="welcome-name">Welcome</h1>
+      <p class="greeting-meta" id="welcome-email"></p>
+    </section>
+
+    <div class="charter">
+      <p>This is your community\'s platform — built by your neighbours, shaped by everyone. Share ideas below or tap the button in any page corner. When approved, they get built here.</p>
+    </div>
+
+    <button class="cta-btn" onclick="openFeedbackWidget()">
+      Share an idea or report a problem
+      <span class="cta-arrow">→</span>
+    </button>
+
+    <div class="section-rule">
+      <span class="section-rule-text">Community</span>
+      <div class="section-rule-line"></div>
+    </div>
+
+    <nav class="nav-grid">
+      <a href="noticeboard.html" class="nav-card">
+        <span class="nav-card-emoji">📌</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Noticeboard</div>
+          <div class="nav-card-desc">Post and view community notices</div>
+        </div>
+      </a>
+
+      <a href="directory.html" class="nav-card">
+        <span class="nav-card-emoji">👥</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Members</div>
+          <div class="nav-card-desc">Browse everyone in the community</div>
+        </div>
+      </a>
+
+      <a href="changelog.html" class="nav-card">
+        <span class="nav-card-emoji">📦</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">What we\'ve built</div>
+          <div class="nav-card-desc">Features the community has shaped</div>
+        </div>
+      </a>
+
+      <a href="my-feedback.html" class="nav-card">
+        <span class="nav-card-emoji">💬</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">My ideas<span id="validation-badge" class="nav-card-badge" style="display:none"></span></div>
+          <div class="nav-card-desc">Track what\'s happening with your ideas</div>
+        </div>
+      </a>
+
+      <a href="proposals.html" class="nav-card">
+        <span class="nav-card-emoji">💡</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Proposals</div>
+          <div class="nav-card-desc">See what the community is building</div>
+        </div>
+      </a>
+    </nav>
+
+    <footer class="page-footer">
+      <span class="footer-left" id="joined-date"></span>
+      <div class="footer-right" id="footer-right">
+        <button class="sign-out-btn" onclick="handleSignOut()">Sign out</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
+
+      initFeedbackWidget(member.id);
+
+      const name     = member.display_name || \'Member\';
+      const initials = name.split(\' \').map(w => w[0]).join(\'\').toUpperCase().slice(0, 2);
+
+      document.getElementById(\'avatar\').textContent       = initials;
+      document.getElementById(\'welcome-name\').textContent = `Good to see you, ${name.split(\' \')[0]}.`;
+      document.getElementById(\'welcome-email\').textContent = member.email;
+
+      const badge = document.getElementById(\'role-badge\');
+      badge.textContent = member.role;
+      badge.className   = `role-pill${member.role === \'admin\' ? \' admin\' : \'\'}`;
+      badge.style.display = \'inline-block\';
+
+      document.getElementById(\'masthead-date\').textContent =
+        new Date().toLocaleDateString(\'en-IE\', { day: \'numeric\', month: \'long\', year: \'numeric\' });
+
+      if (member.joined_at) {
+        const d = new Date(member.joined_at);
+        document.getElementById(\'joined-date\').textContent =
+          `Member since ${d.toLocaleDateString(\'en-IE\', { month: \'long\', year: \'numeric\' })}`;
+      }
+
+      if (member.role === \'admin\') {
+        const link   = document.createElement(\'a\');
+        link.href    = \'admin.html\';
+        link.textContent = \'Admin ↗\';
+        link.className = \'footer-admin-link\';
+        document.getElementById(\'footer-right\').insertAdjacentElement(\'afterbegin\', link);
+      }
+
+      const { data: settings } = await getSupabase()
+        .from(\'settings\').select(\'value\').eq(\'key\', \'community_name\').single();
+      if (settings?.value) document.getElementById(\'community-name\').textContent = settings.value;
+
+      getPendingValidations(member.id).then(pending => {
+        if (pending.length > 0) {
+          const b = document.getElementById(\'validation-badge\');
+          b.textContent   = pending.length;
+          b.style.display = \'inline-flex\';
+        }
+      }).catch(() => {});
+    }
+
+    init();
+  </script>
+</body>
+</html>
