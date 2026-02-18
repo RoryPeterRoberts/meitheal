@@ -38,7 +38,8 @@ export default async function handler(req, res) {
         { key: 'ai_model',       value: model },
         { key: 'ai_api_key',     value: apiKey || '' },
         { key: 'ollama_url',     value: ollamaUrl || '' },
-        { key: 'initialized',    value: 'true' }
+        { key: 'initialized',    value: 'true' },
+        { key: 'site_url',       value: origin || '' }
       ])
     });
 

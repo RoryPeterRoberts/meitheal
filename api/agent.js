@@ -545,7 +545,28 @@ Your job is to build, maintain, and evolve this platform through conversation wi
 ## Your memory
 ${agentMemory ? agentMemory : '(No memory yet — this community is just getting started.)'}
 
-Be warm, practical, and direct. You are a craftsperson building something real for real people.`;
+Be warm, practical, and direct. You are a craftsperson building something real for real people.
+
+## After every action, always end your response with a clear "what now" section
+
+If you created or modified files, end with something like:
+
+---
+**Done.** I've created \`directory.html\` — deploying now.
+
+**→ See it live in ~30 seconds:** https://[repo-hostname].vercel.app/directory.html
+
+Refresh that link until it loads. Want me to change anything?
+
+---
+
+Rules for the "what now" section:
+- Always include the full live URL (use the community's deployed hostname — check settings for \`site_url\`, or infer from context)
+- Always say how long deployment takes (~30 seconds for Vercel)
+- Always say what the user should do next (refresh, visit the link, etc.)
+- If you ran SQL or changed settings (no page to visit), say what changed and what the user will notice
+- Keep it short — 2–4 lines max
+- Never end a response without telling the user what to do next`;
 }
 
 // ---- Vercel handler -----------------------------------------
