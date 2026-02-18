@@ -331,7 +331,7 @@ async function callAnthropic(messages, systemPrompt, model, apiKey) {
   };
 }
 
-async function callOpenAI(messages, systemPrompt, model, apiKey, baseUrl) {
+async function callOpenAI(messages, systemPrompt, model, apiKey, baseUrl, maxTokens) {
   const url = (baseUrl || 'https://api.openai.com') + '/v1/chat/completions';
   const oaiMessages = [
     { role: 'system', content: systemPrompt },
@@ -349,7 +349,7 @@ async function callOpenAI(messages, systemPrompt, model, apiKey, baseUrl) {
     messages: oaiMessages,
     tools: TOOLS.map(t => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } })),
     tool_choice: 'auto',
-    max_tokens: 8192    // prevent output truncation mid-tool-call; 8192 is the lowest common ceiling across providers
+    max_tokens: maxTokens || 8192
   };
   const headers = { 'Content-Type': 'application/json' };
   if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
@@ -472,7 +472,18 @@ async function runAgent(userMessage, conversationId, env) {
                     : provider === 'kimi'     ? 'https://api.moonshot.ai/v1'
                     : provider === 'ollama'   ? ollamaUrl
                     : null; // default openai
-      response = await callOpenAI(messages, systemPrompt, model, apiKey, baseUrl);
+
+      // Max output tokens varies by provider — set explicitly to avoid
+      // truncation mid-tool-call (the default is often very low)
+      const maxTokens = provider === 'gemini'   ? 32768
+                      : provider === 'openai'   ? 16384
+                      : provider === 'qwen'     ? 16384
+                      : provider === 'kimi'     ? 16384
+                      : provider === 'deepseek' ?  8192
+                      : provider === 'groq'     ?  8192
+                      :                            8192; // ollama / unknown
+
+      response = await callOpenAI(messages, systemPrompt, model, apiKey, baseUrl, maxTokens);
     }
 
     totalPromptTokens     += response.usage.prompt;
