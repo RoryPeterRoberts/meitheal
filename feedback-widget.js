@@ -77,8 +77,9 @@
 
       .mth-modal-title {
         font-family: var(--font-family-heading);
-        font-size: var(--font-size-lg);
+        font-size: var(--font-size-xl);
         font-weight: var(--font-weight-bold);
+        font-style: italic;
         color: var(--color-text);
         margin-bottom: var(--space-1);
       }
@@ -86,6 +87,7 @@
         font-size: var(--font-size-xs);
         color: var(--color-text-muted);
         margin-bottom: var(--space-5);
+        line-height: var(--line-height-relaxed);
       }
 
       .mth-types {

@@ -8,84 +8,191 @@
   <link rel="stylesheet" href="theme.css">
   <style>
     .page {
-      max-width: 640px;
+      max-width: 600px;
       margin: 0 auto;
-      padding: var(--space-6) var(--space-5);
+      padding: 0 var(--space-5) var(--space-12);
       min-height: 100vh;
+      animation: pageIn 300ms ease-out both;
     }
 
-    /* Header */
-    .page-header {
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Masthead ---- */
+    .masthead {
+      padding: var(--space-6) 0 0;
+      margin-bottom: var(--space-6);
+    }
+
+    .masthead-eyebrow {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .masthead-community {
+      font-family: var(--font-family);
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-text-muted);
+    }
+
+    .masthead-dateline {
+      font-family: var(--font-family);
+      font-size: 10px;
+      color: var(--color-text-light);
+      font-style: italic;
+    }
+
+    .masthead-wordmark {
+      display: block;
+      font-family: var(--font-family-heading);
+      font-size: 4.25rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      padding: var(--space-3) 0 var(--space-2);
+    }
+
+    .masthead-baseline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--space-2);
+      border-top: 2px solid var(--color-text);
+    }
+
+    .masthead-tagline {
+      font-family: var(--font-family);
+      font-size: 11px;
+      color: var(--color-text-light);
+      font-style: italic;
+    }
+
+    .role-pill {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+      background: var(--color-status-accepted-bg);
+      color: var(--color-status-accepted);
+    }
+
+    .role-pill.admin {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+    }
+
+    /* ---- Greeting ---- */
+    .greeting {
+      padding: var(--space-6) 0 var(--space-5);
+      border-bottom: 1px solid var(--color-border-light);
+      margin-bottom: var(--space-5);
+    }
+
+    .greeting-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-3xl);
+      font-style: italic;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      line-height: 1.1;
+      margin-bottom: var(--space-1);
+    }
+
+    .greeting-meta {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+
+    /* ---- Charter ---- */
+    .charter {
+      border-left: 3px solid var(--color-primary);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-primary-bg);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: var(--space-5);
+    }
+
+    .charter p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      font-style: italic;
+    }
+
+    /* ---- CTA ---- */
+    .cta-btn {
+      width: 100%;
+      padding: var(--space-5) var(--space-6);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-base);
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: var(--space-8);
+      letter-spacing: -0.01em;
+      text-align: left;
     }
 
-    .logo {
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--color-primary);
+    .cta-btn:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
     }
 
-    .community-name {
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
+    .cta-arrow {
+      font-size: var(--font-size-lg);
+      opacity: 0.7;
+      transition: transform var(--transition-fast), opacity var(--transition-fast);
     }
 
-    /* Welcome */
-    .welcome-block {
-      background: var(--color-primary-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-6);
-      margin-bottom: var(--space-6);
+    .cta-btn:hover .cta-arrow {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+
+    /* ---- Section rule ---- */
+    .section-rule {
       display: flex;
       align-items: center;
-      gap: var(--space-4);
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
     }
 
-    .welcome-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: var(--radius-full);
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-lg);
+    .section-rule-text {
+      font-size: 10px;
       font-weight: var(--font-weight-bold);
-      flex-shrink: 0;
-    }
-
-    .welcome-text h2 {
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-lg);
-      font-weight: var(--font-weight-semibold);
-      color: var(--color-text);
-      margin-bottom: var(--space-1);
-    }
-
-    .welcome-text p {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-
-    /* Nav grid */
-    .section-title {
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-semibold);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.12em;
       color: var(--color-text-light);
-      margin-bottom: var(--space-3);
+      flex-shrink: 0;
+      font-family: var(--font-family);
     }
 
+    .section-rule-line {
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    /* ---- Nav grid ---- */
     .nav-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -97,44 +204,42 @@
       background: var(--color-bg-card);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
-      padding: var(--space-5);
+      padding: var(--space-4);
       text-decoration: none;
       color: var(--color-text);
       transition: all var(--transition-fast);
-      display: block;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
     }
 
     .nav-card:hover {
       border-color: var(--color-primary);
       background: var(--color-primary-bg);
       transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-sm);
     }
 
-    .nav-card.coming-soon {
-      opacity: 0.5;
-      cursor: default;
+    .nav-card-emoji {
+      font-size: 20px;
+      flex-shrink: 0;
+      line-height: 1;
+      padding-top: 2px;
     }
 
-    .nav-card.coming-soon:hover {
-      border-color: var(--color-border);
-      background: var(--color-bg-card);
-      transform: none;
-      box-shadow: none;
-    }
+    .nav-card-body { flex: 1; min-width: 0; }
 
-    .nav-icon { font-size: 24px; margin-bottom: var(--space-3); }
-
-    .nav-title {
+    .nav-card-title {
       font-family: var(--font-family-heading);
-      font-size: var(--font-size-base);
+      font-size: var(--font-size-sm);
       font-weight: var(--font-weight-semibold);
       color: var(--color-text);
-      margin-bottom: var(--space-1);
+      margin-bottom: 2px;
+      line-height: var(--line-height-tight);
     }
 
-    .nav-desc {
-      font-size: var(--font-size-xs);
+    .nav-card-desc {
+      font-size: 11px;
       color: var(--color-text-muted);
       line-height: var(--line-height-normal);
     }
@@ -145,33 +250,55 @@
       justify-content: center;
       background: var(--color-status-hold);
       color: white;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: var(--font-weight-bold);
-      min-width: 18px;
-      height: 18px;
+      min-width: 16px;
+      height: 16px;
       border-radius: var(--radius-full);
-      padding: 0 var(--space-1);
-      margin-left: var(--space-2);
+      padding: 0 3px;
+      margin-left: 4px;
       vertical-align: middle;
     }
 
-    /* Footer */
+    /* ---- Footer ---- */
     .page-footer {
-      border-top: 1px solid var(--color-border-light);
-      padding-top: var(--space-5);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--color-border-light);
+      flex-wrap: wrap;
+      gap: var(--space-3);
     }
+
+    .footer-left {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .footer-admin-link {
+      font-size: var(--font-size-xs);
+      color: var(--color-primary);
+      text-decoration: none;
+      font-family: var(--font-family);
+    }
+
+    .footer-admin-link:hover { color: var(--color-primary-light); }
 
     .sign-out-btn {
       background: none;
       border: 1px solid var(--color-border);
       color: var(--color-text-muted);
       font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      padding: var(--space-2) var(--space-4);
-      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
       cursor: pointer;
       transition: all var(--transition-fast);
     }
@@ -179,52 +306,6 @@
     .sign-out-btn:hover {
       border-color: var(--color-status-hold);
       color: var(--color-status-hold);
-    }
-
-    .member-role-badge {
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-semibold);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: var(--space-1) var(--space-3);
-      border-radius: var(--radius-full);
-      background: var(--color-status-accepted-bg);
-      color: var(--color-status-accepted);
-    }
-
-    .member-role-badge.admin {
-      background: var(--color-primary-bg);
-      color: var(--color-primary);
-    }
-
-    .orientation-text {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      line-height: var(--line-height-relaxed);
-      margin-bottom: var(--space-6);
-    }
-
-    .share-cta {
-      margin-bottom: var(--space-5);
-    }
-
-    .share-cta-btn {
-      width: 100%;
-      padding: var(--space-4);
-      background: var(--color-primary);
-      color: var(--color-text-inverse);
-      border: none;
-      border-radius: var(--radius-lg);
-      font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      font-weight: var(--font-weight-semibold);
-      cursor: pointer;
-      transition: background var(--transition-fast);
-      text-align: center;
-    }
-
-    .share-cta-btn:hover {
-      background: var(--color-primary-dark);
     }
   </style>
 </head>
@@ -235,60 +316,82 @@
   <script src="js/auth.js"></script>
   <script src="feedback-widget.js"></script>
 
+  <div id="avatar" style="display:none"></div><!-- kept for JS compat -->
+
   <div class="page">
-    <header class="page-header">
-      <div>
-        <div class="logo">Meitheal</div>
-        <div class="community-name" id="community-name"></div>
+
+    <header class="masthead">
+      <div class="masthead-eyebrow">
+        <span class="masthead-community" id="community-name">Community Platform</span>
+        <span class="masthead-dateline" id="masthead-date"></span>
       </div>
-      <span class="member-role-badge" id="role-badge" style="display:none"></span>
+      <span class="masthead-wordmark">Meitheal</span>
+      <div class="masthead-baseline">
+        <span class="masthead-tagline">Your community, your platform</span>
+        <span class="role-pill" id="role-badge" style="display:none"></span>
+      </div>
     </header>
 
-    <div class="welcome-block">
-      <div class="welcome-avatar" id="avatar">…</div>
-      <div class="welcome-text">
-        <h2 id="welcome-name">Welcome</h2>
-        <p id="welcome-email"></p>
-      </div>
+    <section class="greeting">
+      <h1 class="greeting-title" id="welcome-name">Welcome</h1>
+      <p class="greeting-meta" id="welcome-email"></p>
+    </section>
+
+    <div class="charter">
+      <p>This is your community's platform — built by your neighbours, shaped by everyone. Share ideas below or tap the button in any page corner. When approved, they get built here.</p>
     </div>
 
-    <p class="orientation-text">This is your community's platform — built by your neighbours, shaped by everyone. Share ideas using the button below or in the corner of any page. When approved, they get built here.</p>
+    <button class="cta-btn" onclick="openFeedbackWidget()">
+      Share an idea or report a problem
+      <span class="cta-arrow">→</span>
+    </button>
 
-    <div class="share-cta">
-      <button class="share-cta-btn" onclick="openFeedbackWidget()">+ Share an idea or report a problem</button>
+    <div class="section-rule">
+      <span class="section-rule-text">Community</span>
+      <div class="section-rule-line"></div>
     </div>
 
-    <p class="section-title">Community</p>
-    <div class="nav-grid">
+    <nav class="nav-grid">
       <a href="directory.html" class="nav-card">
-        <div class="nav-icon">👥</div>
-        <div class="nav-title">Members</div>
-        <div class="nav-desc">Browse everyone in the community</div>
+        <span class="nav-card-emoji">👥</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Members</div>
+          <div class="nav-card-desc">Browse everyone in the community</div>
+        </div>
       </a>
 
       <a href="changelog.html" class="nav-card">
-        <div class="nav-icon">📦</div>
-        <div class="nav-title">What we've built</div>
-        <div class="nav-desc">Features the community has shaped</div>
+        <span class="nav-card-emoji">📦</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">What we've built</div>
+          <div class="nav-card-desc">Features the community has shaped</div>
+        </div>
       </a>
 
       <a href="my-feedback.html" class="nav-card">
-        <div class="nav-icon">💬</div>
-        <div class="nav-title">Share an idea<span id="validation-badge" class="nav-card-badge" style="display:none"></span></div>
-        <div class="nav-desc">Tell us what would help — and track what happens next</div>
+        <span class="nav-card-emoji">💬</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">My ideas<span id="validation-badge" class="nav-card-badge" style="display:none"></span></div>
+          <div class="nav-card-desc">Track what's happening with your ideas</div>
+        </div>
       </a>
 
       <a href="proposals.html" class="nav-card">
-        <div class="nav-icon">💡</div>
-        <div class="nav-title">Proposals</div>
-        <div class="nav-desc">See what the community is building</div>
+        <span class="nav-card-emoji">💡</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Proposals</div>
+          <div class="nav-card-desc">See what the community is building</div>
+        </div>
       </a>
-    </div>
+    </nav>
 
     <footer class="page-footer">
-      <span id="joined-date" style="font-size: var(--font-size-xs); color: var(--color-text-light);"></span>
-      <button class="sign-out-btn" onclick="handleSignOut()">Sign out</button>
+      <span class="footer-left" id="joined-date"></span>
+      <div class="footer-right" id="footer-right">
+        <button class="sign-out-btn" onclick="handleSignOut()">Sign out</button>
+      </div>
     </footer>
+
   </div>
 
   <script>
@@ -298,17 +401,20 @@
 
       initFeedbackWidget(member.id);
 
-      const name = member.display_name || 'Member';
+      const name     = member.display_name || 'Member';
       const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-      document.getElementById('avatar').textContent = initials;
-      document.getElementById('welcome-name').textContent = `Welcome, ${name.split(' ')[0]}`;
+      document.getElementById('avatar').textContent       = initials;
+      document.getElementById('welcome-name').textContent = `Good to see you, ${name.split(' ')[0]}.`;
       document.getElementById('welcome-email').textContent = member.email;
 
       const badge = document.getElementById('role-badge');
       badge.textContent = member.role;
-      badge.className = `member-role-badge${member.role === 'admin' ? ' admin' : ''}`;
+      badge.className   = `role-pill${member.role === 'admin' ? ' admin' : ''}`;
       badge.style.display = 'inline-block';
+
+      document.getElementById('masthead-date').textContent =
+        new Date().toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
 
       if (member.joined_at) {
         const d = new Date(member.joined_at);
@@ -317,22 +423,22 @@
       }
 
       if (member.role === 'admin') {
-        const adminLink = document.createElement('a');
-        adminLink.href = 'admin.html';
-        adminLink.textContent = 'Admin ↗';
-        adminLink.style.cssText = `font-size:var(--font-size-xs);color:var(--color-primary);text-decoration:none;font-family:var(--font-family);`;
-        document.getElementById('joined-date').insertAdjacentElement('afterend', adminLink);
+        const link   = document.createElement('a');
+        link.href    = 'admin.html';
+        link.textContent = 'Admin ↗';
+        link.className = 'footer-admin-link';
+        document.getElementById('footer-right').insertAdjacentElement('afterbegin', link);
       }
 
-      const { data: settings } = await getSupabase().from('settings').select('value').eq('key', 'community_name').single();
+      const { data: settings } = await getSupabase()
+        .from('settings').select('value').eq('key', 'community_name').single();
       if (settings?.value) document.getElementById('community-name').textContent = settings.value;
 
-      // Show badge on My Feedback if there are proposals awaiting validation
       getPendingValidations(member.id).then(pending => {
         if (pending.length > 0) {
-          const badge = document.getElementById('validation-badge');
-          badge.textContent = pending.length;
-          badge.style.display = 'inline-flex';
+          const b = document.getElementById('validation-badge');
+          b.textContent   = pending.length;
+          b.style.display = 'inline-flex';
         }
       }).catch(() => {});
     }
