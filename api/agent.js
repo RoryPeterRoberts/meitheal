@@ -215,13 +215,17 @@ async function executeTool(name, args, env) {
     }
 
     case 'run_sql': {
-      const r = await fetch(`https://api.supabase.com/v1/projects/${extractRef(SUPABASE_URL)}/database/query`, {
+      // Calls a SECURITY DEFINER Postgres function (migration 05) via the service key.
+      // Locked to service_role only — see migrations/05_run_sql_function.sql.
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/run_sql_admin`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: args.sql })
+        headers: { ...sbHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sql: args.sql })
       });
+      if (!r.ok) { const t = await r.text(); throw new Error(`run_sql failed: ${t}`); }
       const result = await r.json();
-      return { result };
+      if (result?.error) throw new Error(result.error);
+      return { ok: true };
     }
 
     case 'query_data': {
