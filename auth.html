@@ -92,22 +92,21 @@
           return;
         }
 
-        // Link auth_id to member record if not already done
-        const user = data.session.user;
-        const { data: members } = await sb.from('members').select('id,role').eq('auth_id', user.id);
-        if (!members?.length) {
-          // Try to match by email
-          const { data: byEmail } = await sb.from('members').select('id,role').eq('email', user.email);
-          if (byEmail?.length) {
-            await sb.from('members').update({ auth_id: user.id }).eq('id', byEmail[0].id);
-            const role = byEmail[0].role;
-            window.location.href = role === 'admin' ? 'admin.html' : 'index.html';
-          } else {
-            window.location.href = 'index.html';
-          }
-        } else {
-          window.location.href = members[0].role === 'admin' ? 'admin.html' : 'index.html';
+        // Link auth_id server-side (client can't do this due to RLS)
+        const linkR = await fetch('/api/link-auth', {
+          method:  'POST',
+          headers: { 'Authorization': `Bearer ${data.session.access_token}` }
+        });
+
+        if (!linkR.ok) {
+          const err = await linkR.json().catch(() => ({}));
+          document.getElementById('loading').textContent =
+            err.error || 'Sign-in failed. Please contact your community admin.';
+          return;
         }
+
+        const { role } = await linkR.json();
+        window.location.href = role === 'admin' ? 'admin.html' : 'home.html';
         return;
       }
 

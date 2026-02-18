@@ -51,7 +51,11 @@
 
       const { data: members } = await sb.from('members').select('role').eq('auth_id', session.user.id);
       const member = members?.[0];
-      if (!member) { window.location.href = 'auth.html'; return; }
+      if (!member) {
+        document.querySelector('.loading').innerHTML =
+          'Your account isn\'t set up yet. Please contact your community admin.';
+        return;
+      }
 
       // Redirect to appropriate home
       window.location.href = member.role === 'admin' ? 'admin.html' : 'home.html';
