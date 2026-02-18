@@ -120,6 +120,7 @@
         <label>Provider</label>
         <select id="ai-provider" onchange="updateProviderFields()">
           <option value="anthropic">Anthropic (Claude) — Recommended</option>
+          <option value="deepseek">DeepSeek — Best value</option>
           <option value="openai">OpenAI (GPT)</option>
           <option value="groq">Groq (fast, free tier)</option>
           <option value="ollama">Ollama (local, free)</option>
@@ -241,6 +242,10 @@
           ['claude-haiku-4-5-20251001', 'Claude Haiku 4.5 — Faster, cheaper'],
           ['claude-opus-4-6', 'Claude Opus 4.6 — Most capable'],
         ],
+        deepseek: [
+          ['deepseek-chat', 'DeepSeek V3 — ~$0.28/M tokens'],
+          ['deepseek-reasoner', 'DeepSeek R1 — reasoning model'],
+        ],
         openai: [
           ['gpt-4o', 'GPT-4o — Best'],
           ['gpt-4o-mini', 'GPT-4o Mini — Cheaper'],
@@ -266,6 +271,7 @@
 
       const hints = {
         anthropic: 'Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.',
+        deepseek: 'Get your key at <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a>. Very cheap — ~$0.28 per million tokens.',
         openai: 'Get your key at <a href="https://platform.openai.com" target="_blank">platform.openai.com</a>.',
         groq: 'Get a free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>.',
       };

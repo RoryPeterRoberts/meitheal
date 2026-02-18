@@ -11,6 +11,8 @@ const COSTS = {
   'claude-haiku-4-5-20251001':{ input:  0.25, output:  1.25 },
   'gpt-4o':                   { input:  2.50, output: 10.00 },
   'gpt-4o-mini':              { input:  0.15, output:  0.60 },
+  'deepseek-chat':            { input:  0.27, output:  1.10 }, // DeepSeek V3
+  'deepseek-reasoner':        { input:  0.55, output:  2.19 }, // DeepSeek R1
   'llama3':                   { input:  0,    output:  0    }, // local
 };
 
@@ -427,8 +429,9 @@ async function runAgent(userMessage, conversationId, env) {
       response = await callAnthropic(messages, systemPrompt, model, apiKey);
     } else {
       // openai-compatible: openai, groq, ollama
-      const baseUrl = provider === 'groq'   ? 'https://api.groq.com/openai'
-                    : provider === 'ollama' ? ollamaUrl
+      const baseUrl = provider === 'groq'     ? 'https://api.groq.com/openai'
+                    : provider === 'deepseek' ? 'https://api.deepseek.com'
+                    : provider === 'ollama'   ? ollamaUrl
                     : null; // default openai
       response = await callOpenAI(messages, systemPrompt, model, apiKey, baseUrl);
     }
