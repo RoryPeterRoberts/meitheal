@@ -1590,6 +1590,14 @@
       startBuild(proposalId, title, false);
     }
 
+    // Used by Feature Library — resets to approved without auto-starting the build
+    async function resetLibraryProposal(proposalId, btn) {
+      btn.disabled = true;
+      btn.textContent = 'Resetting…';
+      await resetProposalToApproved(proposalId, null);
+      showPanel('build', document.querySelector('[data-panel="build"]'));
+    }
+
     // ---- Build console ----
 
     async function startBuild(proposalId, title, planOnly) {
@@ -2287,7 +2295,7 @@
         } else if (existing.status === 'building') {
           btnLabel   = '⚠️ Reset & retry →';
           btnStyle   = 'background:var(--color-status-hold);color:#fff;';
-          btnOnclick = `data-id="${existing.id}" data-title="${escHtml(f.title)}" onclick="retryBuild(this.dataset.id, this.dataset.title)"`;
+          btnOnclick = `data-id="${existing.id}" onclick="resetLibraryProposal(this.dataset.id, this)"`;
         } else if (existing.status === 'done') {
           btnLabel    = '✓ Built';
           btnClass   += ' queued';
