@@ -363,6 +363,14 @@
     </div>
 
     <nav class="nav-grid">
+      <a href="noticeboard.html" class="nav-card">
+        <span class="nav-card-emoji">📌</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Noticeboard</div>
+          <div class="nav-card-desc">Announcements from your community</div>
+        </div>
+      </a>
+
       <a href="directory.html" class="nav-card">
         <span class="nav-card-emoji">👥</span>
         <div class="nav-card-body">
@@ -464,7 +472,7 @@
       document.getElementById('community-name').textContent = communityName;
       document.getElementById('community-label').textContent = communityName;
       if (settingsMap.community_charter) {
-        document.getElementById('charter-text').textContent = settingsMap.community_charter.split('\n\n')[0];
+        document.getElementById('charter-text').textContent = settingsMap.community_charter.split('\\n\\n')[0];
       }
 
       // Badge = pending validations + ideas that were promoted to a proposal (progress update)
