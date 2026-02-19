@@ -279,8 +279,12 @@
     /* Proposals board */
     .proposals-kanban {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: var(--space-3);
+    }
+
+    @media (max-width: 1100px) {
+      .proposals-kanban { grid-template-columns: 1fr 1fr; }
     }
 
     .kanban-col {
@@ -1066,7 +1070,7 @@
       body { grid-template-columns: 1fr; }
       .sidebar { display: none; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
-      .proposals-kanban { grid-template-columns: 1fr; }
+      .proposals-kanban { grid-template-columns: 1fr 1fr; }
       .invite-form { flex-direction: column; }
       .invite-select { flex: unset; }
       .member-meta, .member-actions { display: none; }
@@ -1203,7 +1207,11 @@
             <div id="kanban-approved"><div class="kanban-empty">Loading…</div></div>
           </div>
           <div class="kanban-col">
-            <div class="kanban-header">Building / Done</div>
+            <div class="kanban-header">Building</div>
+            <div id="kanban-building"><div class="kanban-empty">Loading…</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">Done</div>
             <div id="kanban-done"><div class="kanban-empty">Loading…</div></div>
           </div>
         </div>
@@ -1487,10 +1495,17 @@
       const grouped = {
         proposed: proposals.filter(p => p.status === 'proposed'),
         approved:  proposals.filter(p => p.status === 'approved'),
-        done:      proposals.filter(p => p.status === 'building' || p.status === 'done'),
+        building:  proposals.filter(p => p.status === 'building'),
+        done:      proposals.filter(p => p.status === 'done'),
       };
 
-      const cols = { proposed: 'kanban-proposed', approved: 'kanban-approved', done: 'kanban-done' };
+      const cols = {
+        proposed: 'kanban-proposed',
+        approved:  'kanban-approved',
+        building:  'kanban-building',
+        done:      'kanban-done',
+      };
+
       for (const [key, elId] of Object.entries(cols)) {
         const el = document.getElementById(elId);
         const items = grouped[key];
@@ -1501,10 +1516,13 @@
             const approveBtn = key === 'proposed'
               ? `<button class="kanban-approve-btn" onclick="approveProposal('${p.id}')">Approve →</button>`
               : '';
+            const validatedTag = key === 'done' && p.member_validated
+              ? `<div class="kanban-item-meta" style="color:var(--color-status-accepted)">✓ Member validated</div>`
+              : '';
             return `<div class="kanban-item">
               ${escHtml(p.title)}
               <div class="kanban-item-meta">${timeAgo(p.created_at)}</div>
-              ${approveBtn}
+              ${approveBtn}${validatedTag}
             </div>`;
           }).join('');
         }
