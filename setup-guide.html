@@ -492,6 +492,96 @@
       border-top: 1px solid var(--color-border);
       margin: var(--space-6) 0;
     }
+
+    /* AI provider section */
+    .ai-section {
+      margin-bottom: var(--space-5);
+    }
+
+    .ai-section-title {
+      font-family: var(--font-family);
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-3);
+    }
+
+    .ai-intro {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-4);
+    }
+
+    .ai-providers {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .ai-provider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-card);
+      text-decoration: none;
+    }
+
+    .ai-provider:hover {
+      border-color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    .ai-provider.recommended {
+      border-color: var(--color-status-accepted);
+      background: var(--color-status-accepted-bg);
+    }
+
+    .ai-provider-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      flex: 1;
+    }
+
+    .ai-provider-model {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      font-family: monospace;
+    }
+
+    .ai-badge {
+      font-size: 9px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      background: var(--color-status-accepted);
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .ai-badge.neutral {
+      background: var(--color-border);
+      color: var(--color-text-muted);
+    }
+
+    .ai-warning {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-relaxed);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-bg-muted);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
   </style>
 </head>
 <body>
@@ -705,9 +795,50 @@
               <tr><td>GITHUB_TOKEN</td><td>Your GitHub token from Step 3</td></tr>
               <tr><td>GITHUB_REPO</td><td>Your GitHub username + <code>/my-community</code> — e.g. <code>janesmith/my-community</code></td></tr>
               <tr><td>GITHUB_BRANCH</td><td>Type <code>main</code></td></tr>
-              <tr><td>AI_API_KEY</td><td>Leave blank for now — you can add this in settings later</td></tr>
+              <tr><td>AI_API_KEY</td><td>Your AI provider key — get this from the provider you choose below</td></tr>
             </tbody>
           </table>
+
+          <div class="ai-section">
+            <div class="ai-section-title">Choosing an AI provider</div>
+            <div class="ai-intro">
+              The AI key powers the build agent — the part of Meitheal that turns approved community proposals into actual features. You'll need an account with one of these providers and a small amount of credit (most builds cost a few cents each).
+            </div>
+            <div class="ai-intro" style="margin-bottom:var(--space-3)">
+              <strong>We've confirmed these models work reliably:</strong>
+            </div>
+            <div class="ai-providers">
+              <a class="ai-provider recommended" href="https://console.anthropic.com/settings/keys" target="_blank">
+                <div class="ai-provider-name">Anthropic — Claude 4.6</div>
+                <div class="ai-provider-model">claude-sonnet-4-6</div>
+                <div class="ai-badge">Confirmed ✓</div>
+              </a>
+              <a class="ai-provider recommended" href="https://platform.openai.com/api-keys" target="_blank">
+                <div class="ai-provider-name">OpenAI — GPT-5 / GPT-4o</div>
+                <div class="ai-provider-model">gpt-4o</div>
+                <div class="ai-badge">Confirmed ✓</div>
+              </a>
+              <a class="ai-provider recommended" href="https://aistudio.google.com/app/apikey" target="_blank">
+                <div class="ai-provider-name">Google — Gemini 3 Pro</div>
+                <div class="ai-provider-model">gemini-3-pro-preview</div>
+                <div class="ai-badge">Confirmed ✓</div>
+              </a>
+              <a class="ai-provider" href="https://platform.deepseek.com/api_keys" target="_blank">
+                <div class="ai-provider-name">DeepSeek</div>
+                <div class="ai-provider-model">deepseek-chat</div>
+                <div class="ai-badge neutral">Available</div>
+              </a>
+              <a class="ai-provider" href="https://platform.moonshot.cn/console/api-keys" target="_blank">
+                <div class="ai-provider-name">Kimi K2.5</div>
+                <div class="ai-provider-model">kimi-k2</div>
+                <div class="ai-badge neutral">Available</div>
+              </a>
+            </div>
+            <div class="ai-warning">
+              ⚠ Smaller or older models (GPT-3.5, Claude Haiku, etc.) may not produce reliable builds. The agent needs a capable model to write correct code. If builds produce errors or nothing happens, try switching to a confirmed model.
+            </div>
+          </div>
+
           <div class="checklist">
             <div class="check-item">
               <input type="checkbox" id="chk-deployed" onchange="updateBtn(4)">
