@@ -262,6 +262,30 @@
       margin-top: var(--space-3);
     }
 
+    /* Decline note */
+    .decline-note {
+      margin-top: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-md);
+    }
+
+    .decline-note-label {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #991b1b;
+      margin-bottom: var(--space-1);
+    }
+
+    .decline-note-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-normal);
+    }
+
     /* Empty / state */
     .state-msg {
       text-align: center;
@@ -421,6 +445,13 @@
         </div>
       ` : (linkedProposal?.member_validated ? `<div class="validated-badge">✅ You confirmed this was built right</div>` : '');
 
+      const declineNote = (f.status === 'declined' && f.admin_note) ? `
+        <div class="decline-note">
+          <div class="decline-note-label">Admin's note</div>
+          <div class="decline-note-text">${escHtml(f.admin_note)}</div>
+        </div>
+      ` : '';
+
       return `
         <div class="feedback-card" id="fb-${f.id}">
           <div class="card-top">
@@ -434,6 +465,7 @@
               <div class="card-date">${date}</div>
             </div>
           </div>
+          ${declineNote}
           ${proposalSection}
           ${validationSection}
         </div>

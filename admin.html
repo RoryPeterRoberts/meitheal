@@ -556,6 +556,71 @@
     .console-spinner.active { display: block; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ---- First-run checklist ----------------------------- */
+    .first-run {
+      background: var(--color-primary-bg);
+      border: 1px solid var(--color-primary-lighter);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+
+    .first-run-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .first-run-sub {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-4);
+      line-height: var(--line-height-normal);
+    }
+
+    .first-run-steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .first-run-step {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-normal);
+    }
+
+    .first-run-num {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: white;
+      font-size: 11px;
+      font-weight: var(--font-weight-bold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .first-run-action {
+      color: var(--color-primary);
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      padding: 0;
+    }
+
     /* ---- Misc -------------------------------------------- */
     .empty-state {
       text-align: center;
@@ -977,6 +1042,27 @@
 
     <!-- Overview panel -->
     <div class="panel active" id="panel-overview">
+
+      <!-- First-run guide (shown until members exist) -->
+      <div class="first-run" id="first-run-checklist" style="display:none">
+        <div class="first-run-title">Your community is live — here's how to get started</div>
+        <div class="first-run-sub">You're the only member right now. Three things to do first:</div>
+        <div class="first-run-steps">
+          <div class="first-run-step">
+            <span class="first-run-num">1</span>
+            <span><strong>Invite your first members</strong> — go to <button class="first-run-action" onclick="showPanel('members', document.querySelector('[data-panel=\'members\']'))">Members</button> and send invite emails. They'll receive a magic link to join.</span>
+          </div>
+          <div class="first-run-step">
+            <span class="first-run-num">2</span>
+            <span><strong>Post a welcome notice</strong> — visit the <a href="home.html" class="first-run-action">community home</a>, open the Noticeboard, and write something to greet people when they arrive.</span>
+          </div>
+          <div class="first-run-step">
+            <span class="first-run-num">3</span>
+            <span><strong>Submit your first idea</strong> — use the feedback button on any page to share something you'd like to build. This shows members how the feedback loop works and gives the AI its first brief.</span>
+          </div>
+        </div>
+      </div>
+
       <div class="stats-grid">
         <div class="stat-card" onclick="window.location.href='triage.html'" title="Go to triage">
           <div class="stat-number" id="stat-new-feedback">—</div>
@@ -1192,10 +1278,19 @@
 
     async function loadOverview() {
       try {
-        [allFeedback, allProposals] = await Promise.all([
+        const [feedbackRes, proposalsRes, membersRes] = await Promise.all([
           getAllFeedback(),
           getAllProposals(),
+          getSupabase().from('members').select('id, role').eq('status', 'active'),
         ]);
+        allFeedback  = feedbackRes;
+        allProposals = proposalsRes;
+
+        // Show first-run checklist until the community has members beyond the admin
+        const members    = membersRes.data || [];
+        const nonAdmins  = members.filter(m => m.role !== 'admin');
+        document.getElementById('first-run-checklist').style.display =
+          nonAdmins.length === 0 ? 'block' : 'none';
 
         const newFeedback  = allFeedback.filter(f => f.status === 'new');
         const proposed     = allProposals.filter(p => p.status === 'proposed');

@@ -2,103 +2,160 @@
 
 > *Meitheal* — the Irish tradition of neighbours gathering to work together.
 
-**A community platform that builds itself.** Any community can deploy their own instance, describe what they need, and an embedded AI builds it — no developers, no code, no platform to depend on.
-
-## What it is
-
-- A minimal community app (auth, members, feedback)
-- An AI agent embedded inside it that can build new features through conversation
-- Fully owned by the community — their GitHub repo, their database, their AI key
-- Open source. Fork it, run it, change it.
-
-## Deploy in 20 minutes
-
-### What you need
-- A [GitHub](https://github.com) account
-- A [Supabase](https://supabase.com) account (free)
-- A [Vercel](https://vercel.com) account (free)
-- An AI API key — [Anthropic](https://console.anthropic.com), [OpenAI](https://platform.openai.com), [Groq](https://console.groq.com), or a local [Ollama](https://ollama.ai) instance
-
-### Steps
-
-**1. Fork this repo**
-Click "Use this template" at the top of this page. Give your repo a name (e.g. `my-community`).
-
-**2. Create a Supabase project**
-Go to [supabase.com](https://supabase.com) → New Project. Name it after your community.
-Copy your **Project URL**, **Anon Key**, and **Service Role Key** from Project Settings → API.
-
-**3. Deploy to Vercel**
+**A community platform that builds itself.** Members share ideas, the community decides, an AI agent writes the code. No developer needed after setup.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/RoryPeterRoberts/meitheal)
 
-Connect your forked repo. When prompted, add these environment variables:
+---
 
-| Variable | Where to find it |
-|----------|-----------------|
-| `SUPABASE_URL` | Supabase → Settings → API → Project URL |
-| `SUPABASE_ANON_KEY` | Supabase → Settings → API → Anon Key |
-| `SUPABASE_SERVICE_KEY` | Supabase → Settings → API → Service Role Key |
-| `GITHUB_TOKEN` | GitHub → Settings → Developer Settings → Personal Access Tokens → Fine-grained (repo read/write) |
-| `GITHUB_REPO` | `your-username/your-repo-name` |
+## What it is
 
-Also add your AI key (at least one):
-- `ANTHROPIC_API_KEY`
-- `OPENAI_API_KEY`
-- `AI_API_KEY` (generic — works with any provider configured in settings)
+Meitheal is a template any community group can deploy as their own — mutual aid networks, residents' associations, sports clubs, housing co-ops. It starts small and grows into whatever your community needs.
 
-**4. Run the setup wizard**
-Visit your Vercel URL. The setup wizard walks you through the rest — initialises the database, creates your admin account, and sends you a sign-in link.
+**The loop:**
+1. A member submits an idea ("We need an events calendar")
+2. The admin triages it and promotes it to a proposal
+3. The community sees it on the proposals board
+4. The admin approves it for building
+5. An AI agent writes the code, commits it to your GitHub, Vercel deploys automatically
+6. The changelog credits the member who suggested it
 
-**5. Start building**
-Log in as admin. Invite your members, then watch the feedback come in. Triage it, create proposals, approve them, and trigger builds from the build queue. The AI writes the features directly to your repo.
+The AI can only build what has been approved. The community owns everything.
 
 ---
 
-## How it works
+## Before you start — what you'll need
 
-```
-Member submits: "We need a tool-lending library for the street"
-     ↓
-Admin reviews in triage → promotes it to a proposal
-     ↓
-Admin approves the proposal → it enters the build queue
-     ↓
-Admin triggers a build → AI reads the codebase, writes the feature
-     ↓
-Commits to your GitHub repo → Vercel auto-deploys → feature is live
-     ↓
-Member validates: "Yes, this is what I meant" → loop closes
-```
+You'll need four free accounts. Set them up first, then come back here.
 
-The AI can only build what's been approved. It cannot modify the governance system that controls it.
+- **GitHub** — [github.com](https://github.com) — where your community's code lives
+- **Vercel** — [vercel.com](https://vercel.com) — hosts the platform (connect to GitHub when signing up)
+- **Supabase** — [supabase.com](https://supabase.com) — your community's database
+- **An AI API key** — the setup wizard will guide you through this. Recommended: [Anthropic Claude](https://console.anthropic.com) — new accounts get free credits. Alternatives: [OpenAI](https://platform.openai.com), [Groq](https://console.groq.com) (has a free tier), or a local [Ollama](https://ollama.ai) instance.
 
-## AI Provider support
+Allow 30–40 minutes if this is your first time working with these services.
 
-Switch providers any time from the admin panel. Supported:
+---
 
-| Provider | Models | Cost |
-|----------|--------|------|
-| Anthropic | Claude Sonnet, Haiku, Opus | ~$3-15/M tokens |
-| OpenAI | GPT-4o, GPT-4o Mini | ~$2.50-10/M tokens |
-| Groq | Llama, Mixtral | Free tier available |
-| Ollama | Any local model | Free |
+## Setup — step by step
 
-## Cost tracking
+### Step 1 — Deploy to Vercel
 
-Every AI call is logged. The admin panel shows monthly and all-time cost. Communities decide for themselves how to share or cover costs.
+Click the **Deploy with Vercel** button at the top of this page.
 
-## Philosophy
+- You'll be asked to create a GitHub repository for your community — Vercel does this automatically. Give it a name.
+- Click **Deploy**. It may show an error — that's fine. You need to add settings before it will work.
+- Make a note of your Vercel project name (e.g. `my-community`) — this becomes your URL.
 
-- Communities own everything: their code, their data, their AI relationship
-- No lock-in: if this project disappeared tomorrow, every community keeps running
-- No platform: no one can deplatform you, raise prices on you, or read your data
-- The AI is a craftsperson, not a product: it builds exactly what the community needs, nothing more
+### Step 2 — Create a Supabase project
 
-## Contributing
+1. Sign in to [supabase.com](https://supabase.com)
+2. Click **New project**, give it a name, set a database password, click **Create**
+3. Wait about a minute for it to be ready
+4. Go to **Project Settings** (gear icon, bottom-left) → **API**
+5. Keep this page open — you'll need values from it in the next step
 
-Pull requests welcome. The core should stay small — the value is in what communities build on top of it, not in the template itself.
+### Step 3 — Create a GitHub token for the AI
 
-## Licence
+The AI agent needs permission to write code to your repository. Here's how to give it that:
 
-MIT
+1. In GitHub, click your **profile photo** (top-right) → **Settings**
+2. In the left sidebar, scroll all the way to the bottom → click **Developer settings**
+3. Click **Personal access tokens** → **Fine-grained tokens** → **Generate new token**
+4. Fill in:
+   - **Token name:** anything you like (e.g. "Meitheal agent")
+   - **Expiration:** 1 year is fine
+   - **Repository access:** select **Only select repositories**, then choose the Meitheal repo Vercel created for you
+5. Under **Permissions** → find **Contents** → set it to **Read and write**
+6. Click **Generate token**
+7. **Copy the token immediately** — you won't be able to see it again after you leave this page
+
+### Step 4 — Add settings to Vercel
+
+1. In Vercel, open your project → **Settings** → **Environment Variables**
+2. Add each of these five variables exactly as shown:
+
+| Variable name | Where to find it |
+|---|---|
+| `SUPABASE_URL` | Supabase → Project Settings → API → **Project URL** |
+| `SUPABASE_ANON_KEY` | Supabase → Project Settings → API → **anon public** key |
+| `SUPABASE_SERVICE_KEY` | Supabase → Project Settings → API → **service_role** key (click Reveal to see it) |
+| `GITHUB_TOKEN` | The token you generated in Step 3 |
+| `GITHUB_REPO` | Your repo in `owner/repo` format — e.g. `acmecorp/meitheal` |
+
+3. After saving all five variables, go to **Deployments** → find your latest deployment → click **⋯** → **Redeploy**
+4. Wait about a minute for the redeployment to finish
+
+### Step 5 — Run the setup wizard
+
+Visit your site (e.g. `my-community.vercel.app`). You'll be taken to the setup wizard automatically.
+
+The wizard will:
+1. Ask for your community name, your email address, and your name
+2. Ask you to choose an AI provider and paste your API key
+3. Show you a SQL block — copy it, open the Supabase SQL editor (the wizard gives you a direct link), paste it in and click **Run**
+4. Once you click **Verify**, the wizard confirms everything is working and sends you a magic sign-in link
+
+**Check your email and click the link.** You're now signed in as the founding admin.
+
+---
+
+## After setup — your first three moves
+
+You've signed in. Your community's platform is live. Here's what to do next:
+
+1. **Invite your first members** — Admin panel → Members → enter their name and email → Send invite. They'll get a magic link.
+2. **Post a welcome notice** — Go to the community home → Noticeboard → write something welcoming.
+3. **Submit your own first idea** — Tap the button on any page and share something you'd like. This shows members how the feedback loop works.
+
+When ideas come in, you'll see them in **Triage**. Promote the good ones to proposals, approve them when ready, and the AI builds them. Every build is logged in the changelog with credit to the member who suggested it.
+
+---
+
+## How the AI works
+
+The AI agent only does one thing: it builds features that have been approved. It cannot:
+- Build anything that hasn't gone through the triage → proposal → approval workflow
+- Modify the governance system that controls it
+- Access member data beyond what's needed to build the feature
+
+Every build is committed to your GitHub repository and can be rolled back from the Admin panel if something goes wrong. The admin panel shows how much each build costs.
+
+---
+
+## AI provider options
+
+| Provider | Setup | Cost |
+|----------|-------|------|
+| Anthropic (Claude) | [console.anthropic.com](https://console.anthropic.com) | ~$3–15 per million tokens |
+| OpenAI | [platform.openai.com](https://platform.openai.com) | ~$2.50–10 per million tokens |
+| Groq | [console.groq.com](https://console.groq.com) | Free tier available |
+| Ollama | Local, no account needed | Free |
+
+A typical feature build costs less than $0.10. Switch providers any time from the Admin panel → Settings.
+
+---
+
+## Your community owns everything
+
+- **Code** lives in your GitHub repository — you can read it, change it, fork it
+- **Data** lives in your Supabase project — export it any time
+- Meitheal has no access to either. If this project shut down tomorrow, your community's platform keeps running exactly as it was.
+
+MIT licensed.
+
+---
+
+## Troubleshooting
+
+**"Database not ready" during setup**
+Make sure you copied the full SQL block and pasted it into the Supabase SQL editor, then clicked **Run** (not just saving it). Then click Verify again.
+
+**Builds fail / AI can't write files**
+Check that your `GITHUB_TOKEN` has **Contents: Read and write** permission on the correct repository, and that `GITHUB_REPO` is in `owner/repo` format with no extra spaces.
+
+**Magic link not arriving**
+Check spam. Wait 2 minutes. You can request a new one from the sign-in page.
+
+**Something else**
+Open an issue at [github.com/RoryPeterRoberts/meitheal/issues](https://github.com/RoryPeterRoberts/meitheal/issues).
