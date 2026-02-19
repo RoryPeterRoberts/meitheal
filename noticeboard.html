@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Noticeboard — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-4) var(--space-12);
+      min-height: 100vh;
+    }
+
+    .header {
+      margin-bottom: var(--space-8);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-6);
+      transition: color var(--transition-fast);
+    }
+
+    .back-link:hover {
+      color: var(--color-primary);
+    }
+
+    .title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-muted);
+    }
+
+    /* ---- Admin Form ---- */
+    .post-form {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-10);
+      display: none; /* Shown if admin/steward */
+    }
+
+    .form-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-4);
+      color: var(--color-text);
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-1);
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .form-checkbox-group input {
+      cursor: pointer;
+    }
+
+    .post-btn {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-md);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      width: 100%;
+      margin-top: var(--space-2);
+    }
+
+    .post-btn:hover {
+      background: var(--color-primary-dark);
+    }
+
+    /* ---- Notices List ---- */
+    .notices-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .notice-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      position: relative;
+      transition: transform var(--transition-fast);
+    }
+
+    .notice-card.pinned {
+      border-color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    .pin-indicator {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-5);
+      font-size: 14px;
+      color: var(--color-primary);
+    }
+
+    .notice-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-2);
+      color: var(--color-text);
+      padding-right: var(--space-8);
+    }
+
+    .notice-body {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      white-space: pre-wrap;
+      margin-bottom: var(--space-4);
+    }
+
+    .notice-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+
+    .notice-meta-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .author-name {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+    }
+
+    .delete-btn {
+      background: none;
+      border: 1px solid var(--color-border);
+      color: var(--color-status-hold);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 10px;
+    }
+
+    .delete-btn:hover {
+      background: var(--color-status-hold-bg);
+      border-color: var(--color-status-hold);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-12) 0;
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="feedback-widget.js"></script>
+
+  <div class="page">
+    <header class="header">
+      <a href="home.html" class="back-link">← Back to home</a>
+      <h1 class="title">Noticeboard</h1>
+      <p class="subtitle">Announcements from your community</p>
+    </header>
+
+    <div id="admin-panel" class="post-form">
+      <h2 class="form-title">Post a notice</h2>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" id="notice-title" class="form-input" placeholder="What's happening?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Body</label>
+        <textarea id="notice-body" class="form-textarea" placeholder="Add details..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-checkbox-group">
+          <input type="checkbox" id="notice-pinned">
+          <span class="form-label" style="margin-bottom:0">Pin to top</span>
+        </label>
+      </div>
+      <button id="post-btn" class="post-btn">Post Notice</button>
+    </div>
+
+    <div id="notices-list" class="notices-list">
+      <div class="empty-state">Loading notices...</div>
+    </div>
+  </div>
+
+  <script>
+    let currentMember = null;
+
+    async function init() {
+      currentMember = await requireAuthAsync();
+      if (!currentMember) return;
+
+      initFeedbackWidget(currentMember.id);
+
+      if (['admin', 'steward'].includes(currentMember.role)) {
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('post-btn').addEventListener('click', handlePost);
+      }
+
+      loadNotices();
+    }
+
+    async function loadNotices() {
+      const { data: notices, error } = await getSupabase()
+        .from('notices')
+        .select('*, members(display_name)')
+        .order('pinned', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      const container = document.getElementById('notices-list');
+
+      if (error) {
+        container.innerHTML = `<div class="empty-state">Error loading notices: ${error.message}</div>`;
+        return;
+      }
+
+      if (!notices || notices.length === 0) {
+        container.innerHTML = '<div class="empty-state">No notices yet.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      notices.forEach(notice => {
+        const card = document.createElement('div');
+        card.className = `notice-card ${notice.pinned ? 'pinned' : ''}`;
+        
+        const dateStr = new Date(notice.created_at).toLocaleDateString('en-IE', { 
+          day: 'numeric', 
+          month: 'short', 
+          year: 'numeric' 
+        });
+
+        card.innerHTML = `
+          ${notice.pinned ? '<span class="pin-indicator">📌</span>' : ''}
+          <div class="notice-title">${escapeHtml(notice.title)}</div>
+          <div class="notice-body">${escapeHtml(notice.body)}</div>
+          <div class="notice-footer">
+            <div class="notice-meta-left">
+              <span class="author-name">${escapeHtml(notice.members?.display_name || 'Anonymous')}</span>
+              <span>${dateStr}</span>
+            </div>
+            ${['admin', 'steward'].includes(currentMember.role) ? `
+              <button class="delete-btn" onclick="handleDelete('${notice.id}')">Delete</button>
+            ` : ''}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function handlePost() {
+      const title = document.getElementById('notice-title').value.trim();
+      const body = document.getElementById('notice-body').value.trim();
+      const pinned = document.getElementById('notice-pinned').checked;
+
+      if (!title || !body) {
+        alert('Please fill in both title and body.');
+        return;
+      }
+
+      const btn = document.getElementById('post-btn');
+      btn.disabled = true;
+      btn.textContent = 'Posting...';
+
+      try {
+        const { error } = await getSupabase()
+          .from('notices')
+          .insert([{
+            title,
+            body,
+            pinned,
+            author_id: currentMember.id
+          }]);
+
+        if (error) throw error;
+
+        // Reset form
+        document.getElementById('notice-title').value = '';
+        document.getElementById('notice-body').value = '';
+        document.getElementById('notice-pinned').checked = false;
+        
+        loadNotices();
+      } catch (err) {
+        alert('Error posting notice: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Post Notice';
+      }
+    }
+
+    async function handleDelete(id) {
+      if (!confirm('Are you sure you want to delete this notice?')) return;
+
+      const { error } = await getSupabase()
+        .from('notices')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        alert('Error deleting notice: ' + error.message);
+      } else {
+        loadNotices();
+      }
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    init();
+  </script>
+</body>
+</html>
