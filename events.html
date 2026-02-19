@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Events — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 var(--space-5) var(--space-12);
+      min-height: 100vh;
+      animation: pageIn 300ms ease-out both;
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Nav ---- */
+    .top-nav {
+      padding: var(--space-6) 0 var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .back-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      transition: color var(--transition-fast);
+    }
+
+    .back-link:hover {
+      color: var(--color-primary);
+    }
+
+    /* ---- Header ---- */
+    .header {
+      margin-bottom: var(--space-8);
+    }
+
+    .header-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .header-desc {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    /* ---- Form ---- */
+    #admin-form-container {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-8);
+    }
+
+    .form-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 11px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-light);
+    }
+
+    input, textarea {
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: var(--font-size-sm);
+      background: var(--color-bg);
+      color: var(--color-text);
+      transition: border-color var(--transition-fast);
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    .submit-btn {
+      margin-top: var(--space-4);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* ---- List ---- */
+    .month-group {
+      margin-bottom: var(--space-8);
+    }
+
+    .month-title {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--color-text-light);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .event-card {
+      display: flex;
+      gap: var(--space-5);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .event-card:last-child {
+      border-bottom: none;
+    }
+
+    .event-date-block {
+      flex-shrink: 0;
+      width: 50px;
+      text-align: center;
+    }
+
+    .event-day {
+      display: block;
+      font-family: var(--font-family-heading);
+      font-size: 24px;
+      font-weight: var(--font-weight-bold);
+      line-height: 1;
+      color: var(--color-primary);
+    }
+
+    .event-month {
+      display: block;
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      letter-spacing: 0.05em;
+    }
+
+    .event-content {
+      flex: 1;
+    }
+
+    .event-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-1);
+      color: var(--color-text);
+    }
+
+    .event-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .event-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .event-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      white-space: pre-wrap;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--color-status-hold);
+      font-size: 10px;
+      cursor: pointer;
+      padding: 4px 0;
+      text-decoration: underline;
+      opacity: 0.6;
+    }
+
+    .delete-btn:hover {
+      opacity: 1;
+    }
+
+    .empty-state {
+      padding: var(--space-12) 0;
+      text-align: center;
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    .toggle-past {
+      display: block;
+      margin: var(--space-8) auto;
+      padding: var(--space-2) var(--space-4);
+      background: none;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+
+    .toggle-past:hover {
+      background: var(--color-bg-card);
+      color: var(--color-text);
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="feedback-widget.js"></script>
+
+  <div class="page">
+    <nav class="top-nav">
+      <a href="home.html" class="back-link">← Back</a>
+    </nav>
+
+    <header class="header">
+      <h1 class="header-title">Events</h1>
+      <p class="header-desc">What's coming up in our community.</p>
+    </header>
+
+    <div id="admin-form-container" class="hidden">
+      <div class="form-title"><span>📅</span> Post a New Event</div>
+      <form id="event-form">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="title">Event Title</label>
+            <input type="text" id="title" required placeholder="e.g. Community Cleanup">
+          </div>
+          <div class="form-group">
+            <label for="event_date">Date</label>
+            <input type="date" id="event_date" required>
+          </div>
+          <div class="form-group">
+            <label for="event_time">Time (Optional)</label>
+            <input type="text" id="event_time" placeholder="e.g. 10:00 AM">
+          </div>
+          <div class="form-group full">
+            <label for="location">Location (Optional)</label>
+            <input type="text" id="location" placeholder="e.g. Town Hall Square">
+          </div>
+          <div class="form-group full">
+            <label for="description">Description</label>
+            <textarea id="description" rows="3" placeholder="Tell everyone what's happening..."></textarea>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn">Create Event</button>
+      </form>
+    </div>
+
+    <div id="events-list">
+      <!-- Grouped events go here -->
+    </div>
+
+    <button id="toggle-past-btn" class="toggle-past hidden">Show past events</button>
+    <div id="past-events-list" class="hidden">
+      <!-- Past events go here -->
+    </div>
+
+    <div id="empty-state" class="empty-state hidden">No upcoming events.</div>
+  </div>
+
+  <script>
+    let currentMember = null;
+    let showPast = false;
+
+    async function init() {
+      currentMember = await requireAuthAsync();
+      if (!currentMember) return;
+
+      initFeedbackWidget(currentMember.id);
+
+      if (['admin', 'steward'].includes(currentMember.role)) {
+        document.getElementById('admin-form-container').classList.remove('hidden');
+        setupForm();
+      }
+
+      await loadEvents();
+    }
+
+    function setupForm() {
+      const form = document.getElementById('event-form');
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+
+        const title = document.getElementById('title').value;
+        const event_date = document.getElementById('event_date').value;
+        const event_time = document.getElementById('event_time').value;
+        const location = document.getElementById('location').value;
+        const description = document.getElementById('description').value;
+
+        try {
+          const { error } = await getSupabase()
+            .from('events')
+            .insert([{
+              title,
+              event_date,
+              event_time,
+              location,
+              description,
+              author_id: currentMember.id
+            }]);
+
+          if (error) throw error;
+          
+          form.reset();
+          await loadEvents();
+        } catch (err) {
+          alert('Error creating event: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Create Event';
+        }
+      };
+    }
+
+    async function loadEvents() {
+      const { data: events, error } = await getSupabase()
+        .from('events')
+        .select('*')
+        .order('event_date', { ascending: true });
+
+      if (error) {
+        console.error('Error loading events:', error);
+        return;
+      }
+
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      const upcoming = events.filter(e => new Date(e.event_date) >= now);
+      const past = events.filter(e => new Date(e.event_date) < now).reverse(); // Newest past first
+
+      renderEvents(upcoming, 'events-list');
+      renderEvents(past, 'past-events-list');
+
+      document.getElementById('empty-state').classList.toggle('hidden', upcoming.length > 0);
+      document.getElementById('toggle-past-btn').classList.toggle('hidden', past.length === 0);
+      
+      const toggleBtn = document.getElementById('toggle-past-btn');
+      toggleBtn.onclick = () => {
+        showPast = !showPast;
+        document.getElementById('past-events-list').classList.toggle('hidden', !showPast);
+        toggleBtn.textContent = showPast ? 'Hide past events' : 'Show past events';
+      };
+    }
+
+    function renderEvents(events, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      if (events.length === 0) return;
+
+      // Group by Month Year
+      const groups = {};
+      events.forEach(event => {
+        const d = new Date(event.event_date);
+        const monthYear = d.toLocaleDateString('en-IE', { month: 'long', year: 'numeric' });
+        if (!groups[monthYear]) groups[monthYear] = [];
+        groups[monthYear].push(event);
+      });
+
+      for (const [monthYear, monthEvents] of Object.entries(groups)) {
+        const groupEl = document.createElement('div');
+        groupEl.className = 'month-group';
+        
+        const titleEl = document.createElement('h2');
+        titleEl.className = 'month-title';
+        titleEl.textContent = monthYear;
+        groupEl.appendChild(titleEl);
+
+        monthEvents.forEach(event => {
+          const card = renderEventCard(event);
+          groupEl.appendChild(card);
+        });
+
+        container.appendChild(groupEl);
+      }
+    }
+
+    function renderEventCard(event) {
+      const d = new Date(event.event_date);
+      const day = d.getDate();
+      const monthShort = d.toLocaleDateString('en-IE', { month: 'short' }).toUpperCase();
+
+      const el = document.createElement('div');
+      el.className = 'event-card';
+      el.innerHTML = `
+        <div class="event-date-block">
+          <span class="event-day">${day}</span>
+          <span class="event-month">${monthShort}</span>
+        </div>
+        <div class="event-content">
+          <h3 class="event-title">${escapeHtml(event.title)}</h3>
+          <div class="event-meta">
+            ${event.event_time ? `<div class="event-meta-item"><span>🕒</span> ${escapeHtml(event.event_time)}</div>` : ''}
+            ${event.location ? `<div class="event-meta-item"><span>📍</span> ${escapeHtml(event.location)}</div>` : ''}
+          </div>
+          ${event.description ? `<div class="event-description">${escapeHtml(event.description)}</div>` : ''}
+          ${['admin', 'steward'].includes(currentMember.role) ? `
+            <button class="delete-btn" onclick="deleteEvent('${event.id}')">Delete event</button>
+          ` : ''}
+        </div>
+      `;
+      return el;
+    }
+
+    async function deleteEvent(id) {
+      if (!confirm('Are you sure you want to delete this event?')) return;
+      
+      const { error } = await getSupabase()
+        .from('events')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        alert('Error deleting event: ' + error.message);
+      } else {
+        await loadEvents();
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    init();
+  </script>
+</body>
+</html>
