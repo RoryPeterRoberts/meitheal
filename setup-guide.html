@@ -713,6 +713,52 @@
       padding-top: var(--space-4);
       border-top: 1px solid var(--color-border);
     }
+
+    /* CLI prereq groups */
+    .cli-prereq-group {
+      margin-bottom: var(--space-5);
+    }
+    .cli-prereq-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+    .cli-prereq-links {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .cli-prereq-link {
+      display: block;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+    .cli-prereq-link:hover { border-color: var(--color-primary); }
+    .cli-prereq-os-hints {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    .cli-prereq-os-hints span {
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-muted);
+      border-radius: var(--radius-sm);
+    }
+    .cli-prereq-os-hints kbd {
+      font-family: monospace;
+      background: var(--color-border);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
   </style>
 </head>
 <body>
@@ -765,38 +811,53 @@
       <!-- Step 0: Prerequisites -->
       <div class="cli-step cli-active" id="cli-step-0">
         <div class="cli-step-label">Before you start</div>
-        <div class="cli-step-title">What you need</div>
-        <div class="cli-step-desc">
-          You'll need free accounts on <a href="https://github.com/signup" target="_blank">GitHub ↗</a>,
-          <a href="https://supabase.com/dashboard/sign-up" target="_blank">Supabase ↗</a>, and
-          <a href="https://vercel.com/signup" target="_blank">Vercel ↗</a> — plus
-          <strong>git</strong> and <strong>Node.js</strong> installed on your machine.
-        </div>
-        <details style="margin-top:var(--space-2)">
-          <summary style="font-size:var(--font-size-sm);color:var(--color-primary);cursor:pointer;list-style:none;display:flex;align-items:center;gap:var(--space-2)">
-            <span id="terminal-arrow" style="font-size:10px">▶</span> How do I open a terminal?
-          </summary>
-          <div style="margin-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)">
-            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);padding:var(--space-3) var(--space-4);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md)">
-              <strong style="color:var(--color-text)">Mac</strong> — Press <kbd style="font-family:monospace;background:var(--color-border);padding:1px 5px;border-radius:3px">⌘ Space</kbd>, type <em>Terminal</em>, press Enter
-            </div>
-            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);padding:var(--space-3) var(--space-4);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md)">
-              <strong style="color:var(--color-text)">Windows</strong> — Press <kbd style="font-family:monospace;background:var(--color-border);padding:1px 5px;border-radius:3px">Win</kbd>, type <em>PowerShell</em>, press Enter
-            </div>
-            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);padding:var(--space-3) var(--space-4);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md)">
-              <strong style="color:var(--color-text)">Linux</strong> — Press <kbd style="font-family:monospace;background:var(--color-border);padding:1px 5px;border-radius:3px">Ctrl Alt T</kbd>
-            </div>
+        <div class="cli-step-title">Set up your accounts and tools</div>
+
+        <div class="cli-prereq-group">
+          <div class="cli-prereq-title">1. Create three free accounts</div>
+          <div class="cli-prereq-links">
+            <a href="https://github.com/signup" target="_blank" class="cli-prereq-link">Sign up to GitHub ↗</a>
+            <a href="https://supabase.com/dashboard/sign-up" target="_blank" class="cli-prereq-link">Sign up to Supabase ↗</a>
+            <a href="https://vercel.com/signup" target="_blank" class="cli-prereq-link">Sign up to Vercel ↗</a>
           </div>
-        </details>
+        </div>
+
+        <div class="cli-prereq-group">
+          <div class="cli-prereq-title">2. Open a terminal</div>
+          <div class="cli-prereq-os-hints">
+            <span><strong>Mac</strong> — <kbd>⌘ Space</kbd> → type Terminal → Enter</span>
+            <span><strong>Windows</strong> — <kbd>Win</kbd> → type PowerShell → Enter</span>
+            <span><strong>Linux</strong> — <kbd>Ctrl Alt T</kbd></span>
+          </div>
+        </div>
+
+        <div class="cli-prereq-group">
+          <div class="cli-prereq-title">3. Check git is installed</div>
+          <div class="cmd-block">
+            <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+            <pre><span class="prompt">$ </span>git --version</pre>
+          </div>
+          <div class="cli-note">You should see something like <code>git version 2.x.x</code>. If you get "command not found", <a href="https://git-scm.com/downloads" target="_blank">download git ↗</a> and re-run.</div>
+        </div>
+
+        <div class="cli-prereq-group">
+          <div class="cli-prereq-title">4. Check Node.js is installed</div>
+          <div class="cmd-block">
+            <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+            <pre><span class="prompt">$ </span>node --version</pre>
+          </div>
+          <div class="cli-note">You should see something like <code>v20.x.x</code>. If you get "command not found", <a href="https://nodejs.org" target="_blank">download Node.js LTS ↗</a> and re-run.</div>
+        </div>
+
         <div class="cli-step-footer">
           <div class="checklist">
             <div class="check-item">
               <input type="checkbox" id="cli-chk-0-a" onchange="cliUpdateStep(0)">
-              <label for="cli-chk-0-a">I have accounts on <a href="https://github.com/signup" target="_blank">GitHub ↗</a>, <a href="https://supabase.com/dashboard/sign-up" target="_blank">Supabase ↗</a>, and <a href="https://vercel.com/signup" target="_blank">Vercel ↗</a></label>
+              <label for="cli-chk-0-a">I have accounts on GitHub, Supabase, and Vercel</label>
             </div>
             <div class="check-item">
               <input type="checkbox" id="cli-chk-0-b" onchange="cliUpdateStep(0)">
-              <label for="cli-chk-0-b">I have <strong>git</strong> and <strong>Node.js</strong> installed</label>
+              <label for="cli-chk-0-b"><code>git --version</code> and <code>node --version</code> both show version numbers</label>
             </div>
           </div>
           <button class="confirm-btn" id="cli-btn-0" onclick="cliCompleteStep(0)" disabled style="margin-top:var(--space-3)">
