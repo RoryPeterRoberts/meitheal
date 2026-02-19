@@ -714,6 +714,41 @@
       border-top: 1px solid var(--color-border);
     }
 
+    /* CLI variable inputs */
+    .cli-inputs {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .cli-input-row { display: flex; flex-direction: column; gap: var(--space-1); }
+    .cli-input-row label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .cli-input-row small { text-transform: none; font-weight: normal; letter-spacing: 0; }
+    .cli-input-row input {
+      font-family: monospace;
+      font-size: var(--font-size-sm);
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+      color: var(--color-text);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .cli-input-row input:focus { outline: none; border-color: var(--color-primary); }
+    .cli-var { color: var(--color-primary); font-style: italic; }
+    .cli-var.filled { color: var(--color-text); font-style: normal; }
+
     /* CLI prereq groups */
     .cli-prereq-group {
       margin-bottom: var(--space-5);
@@ -893,12 +928,22 @@
         <div class="cli-step-title">Clone the platform into your own repo</div>
         <div class="cli-step-desc">
           First, <a href="https://github.com/RoryPeterRoberts/meitheal/fork" target="_blank">fork the repo on GitHub ↗</a>
-          into your account. Then clone your fork:
+          into your account. Then fill in your details below — the command will update automatically.
+        </div>
+        <div class="cli-inputs">
+          <div class="cli-input-row">
+            <label>Your GitHub username</label>
+            <input type="text" id="inp-github-user" placeholder="e.g. janesmith" oninput="updateCliVars()" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="cli-input-row">
+            <label>Project name <small>(lowercase, hyphens ok)</small></label>
+            <input type="text" id="inp-repo-name" placeholder="my-community" oninput="updateCliVars()" spellcheck="false" autocomplete="off">
+          </div>
         </div>
         <div class="cmd-block">
           <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
-          <pre><span class="prompt">$ </span>git clone https://github.com/YOUR_USERNAME/meitheal my-community
-<span class="prompt">$ </span>cd my-community</pre>
+          <pre><span class="prompt">$ </span>git clone https://github.com/<span class="cli-var" data-var="github-user">YOUR_USERNAME</span>/meitheal <span class="cli-var" data-var="repo-name">my-community</span>
+<span class="prompt">$ </span>cd <span class="cli-var" data-var="repo-name">my-community</span></pre>
         </div>
         <div class="cli-step-footer">
           <div class="checklist">
@@ -919,14 +964,18 @@
         <div class="cli-step-title">Create your Supabase project and run migrations</div>
         <div class="cli-step-desc">
           Go to <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard ↗</a>
-          and create a new project. Once ready, note your <strong>project ref</strong>
-          (the part before <code>.supabase.co</code> in your project URL — e.g. <code>abcdefgh</code>).
-          Then:
+          and create a new project. Once ready, find your <strong>project ref</strong> — it's the short code before <code>.supabase.co</code> in your project URL (e.g. <code>abcdefgh</code>). Paste it below.
+        </div>
+        <div class="cli-inputs">
+          <div class="cli-input-row">
+            <label>Supabase project ref <small>(e.g. abcdefgh)</small></label>
+            <input type="text" id="inp-project-ref" placeholder="abcdefgh" oninput="updateCliVars()" spellcheck="false" autocomplete="off">
+          </div>
         </div>
         <div class="cmd-block">
           <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
           <pre><span class="prompt">$ </span>supabase login
-<span class="prompt">$ </span>supabase link --project-ref YOUR_PROJECT_REF
+<span class="prompt">$ </span>supabase link --project-ref <span class="cli-var" data-var="project-ref">YOUR_PROJECT_REF</span>
 <span class="prompt">$ </span>supabase db push</pre>
         </div>
         <div class="cli-note">
@@ -984,7 +1033,7 @@
 <span class="prompt">$ </span>vercel --prod</pre>
         </div>
         <div class="cli-step-desc">
-          Vercel will give you a URL like <code>my-community.vercel.app</code>.
+          Vercel will give you a URL like <code><span class="cli-var" data-var="repo-name">my-community</span>.vercel.app</code>.
         </div>
         <div class="cli-step-footer">
           <div class="checklist">
@@ -1008,7 +1057,7 @@
         </div>
         <div class="cmd-block">
           <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
-          <pre><span class="prompt">$ </span>open https://my-community.vercel.app/setup.html</pre>
+          <pre><span class="prompt">$ </span>open https://<span class="cli-var" data-var="repo-name">my-community</span>.vercel.app/setup.html</pre>
         </div>
         <div class="cli-step-desc">
           Fill in your community name, admin email, and AI provider. A sign-in link will arrive by email — click it and you're in as admin.
@@ -1352,6 +1401,26 @@
       document.getElementById('btn-browser').classList.toggle('active', !isCli);
       document.getElementById('cli-path').classList.toggle('visible', isCli);
       document.getElementById('browser-path').style.display = isCli ? 'none' : '';
+    }
+
+    // ---- Live variable substitution in CLI commands ----
+    function updateCliVars() {
+      const vars = {
+        'github-user':  document.getElementById('inp-github-user')?.value.trim(),
+        'repo-name':    document.getElementById('inp-repo-name')?.value.trim(),
+        'project-ref':  document.getElementById('inp-project-ref')?.value.trim(),
+      };
+      const defaults = {
+        'github-user':  'YOUR_USERNAME',
+        'repo-name':    'my-community',
+        'project-ref':  'YOUR_PROJECT_REF',
+      };
+      document.querySelectorAll('[data-var]').forEach(el => {
+        const key = el.dataset.var;
+        const val = vars[key];
+        el.textContent = val || defaults[key];
+        el.classList.toggle('filled', !!val);
+      });
     }
 
     // ---- Copy terminal command ----
