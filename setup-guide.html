@@ -904,16 +904,16 @@
       <!-- Step 1: Install CLI tools -->
       <div class="cli-step" id="cli-step-1">
         <div class="cli-step-label">Step 1 of 6</div>
-        <div class="cli-step-title">Install the CLI tools</div>
+        <div class="cli-step-title">Install the Vercel CLI</div>
         <div class="cmd-block">
           <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
-          <pre><span class="prompt">$ </span>npm install -g vercel supabase</pre>
+          <pre><span class="prompt">$ </span>npm install -g vercel</pre>
         </div>
         <div class="cli-step-footer">
           <div class="checklist">
             <div class="check-item">
               <input type="checkbox" id="cli-chk-1" onchange="cliUpdateStep(1)">
-              <label for="cli-chk-1">CLI tools installed — no errors in the terminal</label>
+              <label for="cli-chk-1">Vercel CLI installed — no errors in the terminal</label>
             </div>
           </div>
           <button class="confirm-btn" id="cli-btn-1" onclick="cliCompleteStep(1)" disabled style="margin-top:var(--space-3)">
@@ -958,34 +958,28 @@
         </div>
       </div>
 
-      <!-- Step 3: Supabase project + migrations -->
+      <!-- Step 3: Supabase project + keys -->
       <div class="cli-step" id="cli-step-3">
         <div class="cli-step-label">Step 3 of 6</div>
-        <div class="cli-step-title">Create your Supabase project and run migrations</div>
+        <div class="cli-step-title">Create your Supabase project and collect your keys</div>
         <div class="cli-step-desc">
           Go to <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard ↗</a>
-          and create a new project. Once ready, find your <strong>project ref</strong> — it's the short code before <code>.supabase.co</code> in your project URL (e.g. <code>abcdefgh</code>). Paste it below.
+          → <strong>New project</strong>. Wait about 60 seconds for it to spin up, then collect four values:
         </div>
-        <div class="cli-inputs">
-          <div class="cli-input-row">
-            <label>Supabase project ref <small>(e.g. abcdefgh)</small></label>
-            <input type="text" id="inp-project-ref" placeholder="abcdefgh" oninput="updateCliVars()" spellcheck="false" autocomplete="off">
-          </div>
-        </div>
-        <div class="cmd-block">
-          <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
-          <pre><span class="prompt">$ </span>supabase login
-<span class="prompt">$ </span>supabase link --project-ref <span class="cli-var" data-var="project-ref">YOUR_PROJECT_REF</span>
-<span class="prompt">$ </span>supabase db push</pre>
-        </div>
+        <ol style="font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:var(--line-height-relaxed);padding-left:var(--space-5);margin:var(--space-3) 0 var(--space-4)">
+          <li><strong>Project Settings → API</strong> → copy <strong>Project URL</strong></li>
+          <li><strong>Project Settings → API</strong> → copy <strong>anon / public key</strong></li>
+          <li><strong>Project Settings → API</strong> → copy <strong>service_role key</strong></li>
+          <li><a href="https://supabase.com/dashboard/account/tokens" target="_blank">Account → Access Tokens ↗</a> → <strong>Generate new token</strong>, name it <em>Meitheal setup</em>, copy it</li>
+        </ol>
         <div class="cli-note">
-          This runs all the database migrations automatically — no SQL editor needed.
+          The database tables are created automatically when you run the setup wizard — no SQL needed.
         </div>
         <div class="cli-step-footer">
           <div class="checklist">
             <div class="check-item">
               <input type="checkbox" id="cli-chk-3" onchange="cliUpdateStep(3)">
-              <label for="cli-chk-3">Supabase project created and <code>db push</code> completed without errors</label>
+              <label for="cli-chk-3">I have all four values saved</label>
             </div>
           </div>
           <button class="confirm-btn" id="cli-btn-3" onclick="cliCompleteStep(3)" disabled style="margin-top:var(--space-3)">
@@ -999,11 +993,8 @@
         <div class="cli-step-label">Step 4 of 6</div>
         <div class="cli-step-title">Configure your environment</div>
         <div class="cli-step-desc">
-          Copy the example env file and fill in your values. You'll find your Supabase keys at
-          <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard ↗</a>
-          → Project Settings → API. Your GitHub token comes from
-          <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens ↗</a>
-          (repo scope, no expiry).
+          Copy the example env file and fill in the four Supabase values from Step 3, plus a GitHub token
+          (<a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens ↗</a> — repo scope, no expiry).
         </div>
         <div class="cmd-block">
           <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
