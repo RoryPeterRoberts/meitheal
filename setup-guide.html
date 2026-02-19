@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Set up your community — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    body {
+      min-height: 100vh;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-family);
+      margin: 0;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-5) var(--space-12);
+    }
+
+    .guide-header {
+      text-align: center;
+      padding: var(--space-8) 0 var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-8);
+    }
+
+    .guide-wordmark {
+      font-family: var(--font-family-heading);
+      font-size: 2.5rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: var(--space-3);
+    }
+
+    .guide-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .guide-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+
+    /* Progress */
+    .progress-wrap {
+      margin-bottom: var(--space-8);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+      font-family: var(--font-family);
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: var(--radius-full);
+      transition: width 0.5s ease;
+    }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .step {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color var(--transition-base), opacity var(--transition-base);
+    }
+
+    .step.active {
+      border-color: var(--color-primary);
+    }
+
+    .step.done {
+      border-color: var(--color-status-accepted);
+    }
+
+    .step.locked {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: var(--color-bg-card);
+    }
+
+    .step.done .step-header {
+      background: var(--color-status-accepted-bg);
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      background: var(--color-border);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--font-family);
+      transition: background var(--transition-base), color var(--transition-base);
+    }
+
+    .step.active .step-number {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .step.done .step-number {
+      background: var(--color-status-accepted);
+      color: white;
+    }
+
+    .step-header-text { flex: 1; }
+
+    .step-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+
+    .step-desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .step-done-tag {
+      font-size: var(--font-size-xs);
+      color: var(--color-status-accepted);
+      font-weight: var(--font-weight-semibold);
+      display: none;
+    }
+
+    .step.done .step-done-tag { display: block; }
+
+    /* Step body */
+    .step-body {
+      padding: var(--space-5);
+      border-top: 1px solid var(--color-border);
+      display: none;
+    }
+
+    .step.active .step-body { display: block; }
+
+    /* Instructions */
+    .instructions {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-4);
+    }
+
+    .instructions ol, .instructions ul {
+      padding-left: var(--space-5);
+      margin: var(--space-3) 0;
+    }
+
+    .instructions li { margin-bottom: var(--space-2); }
+    .instructions strong { color: var(--color-text); }
+
+    .instructions code {
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 1px 5px;
+      font-size: 0.85em;
+      font-family: monospace;
+    }
+
+    .instructions a { color: var(--color-primary); }
+
+    /* Key box */
+    .key-box {
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .key-box-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-3);
+      font-family: var(--font-family);
+    }
+
+    .key-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .key-row:last-child { border-bottom: none; }
+
+    .key-name {
+      font-family: monospace;
+      font-size: var(--font-size-sm);
+      color: var(--color-primary);
+      flex-shrink: 0;
+      min-width: 150px;
+    }
+
+    .key-hint {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Note */
+    .note {
+      background: var(--color-primary-bg);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* Checklist */
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-bottom: var(--space-5);
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .check-item label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      cursor: pointer;
+      line-height: var(--line-height-normal);
+    }
+
+    .check-item label a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .check-item label a:hover { text-decoration: underline; }
+
+    /* Confirm button */
+    .confirm-btn {
+      width: 100%;
+      padding: var(--space-4) var(--space-5);
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .confirm-btn:hover:not(:disabled) {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .confirm-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Deploy button */
+    .deploy-wrap {
+      text-align: center;
+      padding: var(--space-4) 0 var(--space-5);
+    }
+
+    /* Env table */
+    .env-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-4);
+    }
+
+    .env-table th {
+      text-align: left;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      font-family: var(--font-family);
+    }
+
+    .env-table td {
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--color-border-light);
+      vertical-align: top;
+    }
+
+    .env-table td:first-child {
+      font-family: monospace;
+      color: var(--color-primary);
+      font-size: 0.85em;
+      white-space: nowrap;
+    }
+
+    .env-table td:last-child { color: var(--color-text-secondary); }
+
+    /* Final */
+    .final-cta {
+      text-align: center;
+      padding: var(--space-10) var(--space-4);
+      border-top: 1px solid var(--color-border);
+      margin-top: var(--space-6);
+    }
+
+    .final-emoji { font-size: 3rem; margin-bottom: var(--space-4); }
+
+    .final-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .final-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-6);
+    }
+
+    .final-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4) var(--space-8);
+      background: var(--color-primary);
+      color: white;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      text-decoration: none;
+      transition: all var(--transition-base);
+    }
+
+    .final-btn:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .reset-link {
+      display: block;
+      text-align: center;
+      margin-top: var(--space-10);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header class="guide-header">
+      <div class="guide-wordmark">Meitheal</div>
+      <div class="guide-title">Set up your community platform</div>
+      <div class="guide-subtitle">Your progress is saved automatically — come back any time</div>
+    </header>
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label">Step 1 of 5</span>
+        <span id="progress-pct">0% complete</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="steps">
+
+      <!-- Step 1: Accounts -->
+      <div class="step" id="step-1">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-header-text">
+            <div class="step-title">Create your accounts</div>
+            <div class="step-desc">Three free services — takes about 5 minutes</div>
+          </div>
+          <div class="step-done-tag">✓ Done</div>
+        </div>
+        <div class="step-body">
+          <div class="instructions">
+            Meitheal uses three free services to run your platform. Sign up to each one — you'll need all three before continuing.
+          </div>
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="chk-github" onchange="updateBtn(1)">
+              <label for="chk-github"><a href="https://github.com/signup" target="_blank">Sign up to GitHub ↗</a> — stores your community's platform code</label>
+            </div>
+            <div class="check-item">
+              <input type="checkbox" id="chk-supabase" onchange="updateBtn(1)">
+              <label for="chk-supabase"><a href="https://supabase.com/dashboard/sign-up" target="_blank">Sign up to Supabase ↗</a> — your community's database and login system</label>
+            </div>
+            <div class="check-item">
+              <input type="checkbox" id="chk-vercel" onchange="updateBtn(1)">
+              <label for="chk-vercel"><a href="https://vercel.com/signup" target="_blank">Sign up to Vercel ↗</a> — hosts your platform on the web</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="btn-1" onclick="completeStep(1)" disabled>
+            I have all three accounts <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Supabase -->
+      <div class="step locked" id="step-2">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-header-text">
+            <div class="step-title">Set up your database</div>
+            <div class="step-desc">Create a Supabase project and save your keys</div>
+          </div>
+          <div class="step-done-tag">✓ Done</div>
+        </div>
+        <div class="step-body">
+          <div class="instructions">
+            Supabase is where your members, feedback, and proposals are stored. Follow these steps:
+            <ol>
+              <li>Go to <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard ↗</a> and click <strong>New project</strong></li>
+              <li>Give it a name — e.g. <em>Blackwater Community</em></li>
+              <li>Set a strong database password and save it somewhere safe</li>
+              <li>Choose the region closest to your community</li>
+              <li>Click <strong>Create new project</strong> and wait about 60 seconds</li>
+            </ol>
+            Once ready, go to <strong>Project Settings → API</strong> and copy these three values:
+          </div>
+          <div class="key-box">
+            <div class="key-box-label">From Supabase → Project Settings → API</div>
+            <div class="key-row">
+              <div class="key-name">Project URL</div>
+              <div class="key-hint">Looks like <code>https://abcdefgh.supabase.co</code></div>
+            </div>
+            <div class="key-row">
+              <div class="key-name">anon / public key</div>
+              <div class="key-hint">Long string starting with <code>eyJ…</code></div>
+            </div>
+            <div class="key-row">
+              <div class="key-name">service_role key</div>
+              <div class="key-hint">Another long string — keep this one private</div>
+            </div>
+          </div>
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="chk-sb-project" onchange="updateBtn(2)">
+              <label for="chk-sb-project">I've created my Supabase project</label>
+            </div>
+            <div class="check-item">
+              <input type="checkbox" id="chk-sb-keys" onchange="updateBtn(2)">
+              <label for="chk-sb-keys">I've copied and saved my Project URL, anon key, and service_role key</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="btn-2" onclick="completeStep(2)" disabled>
+            My Supabase project is ready <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: GitHub Token -->
+      <div class="step locked" id="step-3">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-header-text">
+            <div class="step-title">Get a GitHub token</div>
+            <div class="step-desc">Lets the AI agent build features into your platform</div>
+          </div>
+          <div class="step-done-tag">✓ Done</div>
+        </div>
+        <div class="step-body">
+          <div class="instructions">
+            When community ideas get approved, an AI agent builds them into your platform by writing code to GitHub. It needs permission to do this — a token gives it access.
+            <ol>
+              <li>Go to <a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer settings → Personal access tokens (classic) ↗</a></li>
+              <li>Give it a name like <em>Meitheal agent</em></li>
+              <li>Set expiry to <strong>No expiration</strong></li>
+              <li>Tick the <strong>repo</strong> checkbox</li>
+              <li>Click <strong>Generate token</strong></li>
+              <li>Copy it immediately — you won't see it again</li>
+            </ol>
+          </div>
+          <div class="note">
+            Keep this token private. It gives write access to your repository. Don't share it or post it anywhere.
+          </div>
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="chk-token" onchange="updateBtn(3)">
+              <label for="chk-token">I've generated and saved my GitHub token</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="btn-3" onclick="completeStep(3)" disabled>
+            I have my GitHub token <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Deploy -->
+      <div class="step locked" id="step-4">
+        <div class="step-header">
+          <div class="step-number">4</div>
+          <div class="step-header-text">
+            <div class="step-title">Deploy your platform</div>
+            <div class="step-desc">One click — then fill in your keys</div>
+          </div>
+          <div class="step-done-tag">✓ Done</div>
+        </div>
+        <div class="step-body">
+          <div class="instructions">
+            Click the button below. Vercel will:
+            <ol>
+              <li>Create a copy of the platform in your GitHub account</li>
+              <li>Ask you to fill in your keys (use the table below as your guide)</li>
+              <li>Deploy your platform live to a web address like <code>my-community.vercel.app</code></li>
+            </ol>
+            Nothing is installed on your computer. Everything runs in the cloud.
+          </div>
+          <div class="deploy-wrap">
+            <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FRoryPeterRoberts%2Fmeitheal&env=SUPABASE_URL,SUPABASE_ANON_KEY,SUPABASE_SERVICE_KEY,GITHUB_TOKEN,GITHUB_REPO,GITHUB_BRANCH,AI_API_KEY&envDescription=You%27ll%20need%20your%20Supabase%20keys%20and%20a%20GitHub%20token.%20See%20the%20setup%20guide%20for%20each%20one.&envLink=https%3A%2F%2Fgithub.com%2FRoryPeterRoberts%2Fmeitheal%2Fblob%2Fmain%2FSETUP.md&project-name=my-community&repository-name=my-community" target="_blank">
+              <img src="https://vercel.com/button" alt="Deploy with Vercel" style="height:36px">
+            </a>
+          </div>
+          <div class="instructions">When Vercel asks for environment variables, enter the following:</div>
+          <table class="env-table">
+            <thead>
+              <tr><th>Field</th><th>What to enter</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>SUPABASE_URL</td><td>Your Supabase Project URL from Step 2</td></tr>
+              <tr><td>SUPABASE_ANON_KEY</td><td>Your Supabase anon/public key from Step 2</td></tr>
+              <tr><td>SUPABASE_SERVICE_KEY</td><td>Your Supabase service_role key from Step 2</td></tr>
+              <tr><td>GITHUB_TOKEN</td><td>Your GitHub token from Step 3</td></tr>
+              <tr><td>GITHUB_REPO</td><td>Your GitHub username + <code>/my-community</code> — e.g. <code>janesmith/my-community</code></td></tr>
+              <tr><td>GITHUB_BRANCH</td><td>Type <code>main</code></td></tr>
+              <tr><td>AI_API_KEY</td><td>Leave blank for now — you can add this in settings later</td></tr>
+            </tbody>
+          </table>
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="chk-deployed" onchange="updateBtn(4)">
+              <label for="chk-deployed">Vercel shows <strong>Congratulations!</strong> and gives me a live URL</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="btn-4" onclick="completeStep(4)" disabled>
+            My platform is live <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 5: Setup Wizard -->
+      <div class="step locked" id="step-5">
+        <div class="step-header">
+          <div class="step-number">5</div>
+          <div class="step-header-text">
+            <div class="step-title">Run the setup wizard</div>
+            <div class="step-desc">Name your community and create your admin account</div>
+          </div>
+          <div class="step-done-tag">✓ Done</div>
+        </div>
+        <div class="step-body">
+          <div class="instructions">
+            Your platform is live but not yet configured. The setup wizard creates your database, names your community, and sets up your admin account.
+            <ol>
+              <li>Take your Vercel URL and add <code>/setup.html</code> — e.g. <code>my-community.vercel.app/setup.html</code></li>
+              <li>Enter your community name, type, and your email address</li>
+              <li>Click <strong>Set up community</strong></li>
+              <li>Check your email — a sign-in link will arrive within a minute</li>
+              <li>Click the link — you're in as admin</li>
+            </ol>
+          </div>
+          <div class="note">
+            If you see an error saying "Database not ready", wait 30 seconds and try again — your Supabase project may still be initialising.
+          </div>
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="chk-wizard" onchange="updateBtn(5)">
+              <label for="chk-wizard">I've completed the setup wizard and received my sign-in link</label>
+            </div>
+            <div class="check-item">
+              <input type="checkbox" id="chk-signin" onchange="updateBtn(5)">
+              <label for="chk-signin">I've signed in and can see my admin panel</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="btn-5" onclick="completeStep(5)" disabled>
+            Setup complete — let's go! <span>🎉</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Final CTA -->
+    <div id="final-cta" style="display:none">
+      <div class="final-cta">
+        <div class="final-emoji">🎉</div>
+        <div class="final-title">Your community platform is live</div>
+        <div class="final-desc">Invite your first members and start gathering ideas.</div>
+        <a href="/home.html" class="final-btn">Go to your community →</a>
+      </div>
+    </div>
+
+    <span class="reset-link" onclick="resetProgress()">Start over</span>
+
+  </div>
+
+  <script>
+    const TOTAL = 5;
+    const CHECKS = {
+      1: ['chk-github', 'chk-supabase', 'chk-vercel'],
+      2: ['chk-sb-project', 'chk-sb-keys'],
+      3: ['chk-token'],
+      4: ['chk-deployed'],
+      5: ['chk-wizard', 'chk-signin'],
+    };
+
+    function save() {
+      const s = {};
+      for (let i = 1; i <= TOTAL; i++) {
+        s[`done_${i}`] = document.getElementById(`step-${i}`).classList.contains('done');
+      }
+      Object.values(CHECKS).flat().forEach(id => {
+        const el = document.getElementById(id);
+        if (el) s[id] = el.checked;
+      });
+      localStorage.setItem('meitheal_setup_v1', JSON.stringify(s));
+    }
+
+    function updateBtn(stepNum) {
+      const allChecked = CHECKS[stepNum].every(id => document.getElementById(id)?.checked);
+      document.getElementById(`btn-${stepNum}`).disabled = !allChecked;
+      save();
+    }
+
+    function completeStep(stepNum) {
+      const el = document.getElementById(`step-${stepNum}`);
+      el.classList.remove('active', 'locked');
+      el.classList.add('done');
+
+      const next = document.getElementById(`step-${stepNum + 1}`);
+      if (next) {
+        next.classList.remove('locked');
+        next.classList.add('active');
+        setTimeout(() => next.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      }
+
+      if (stepNum === TOTAL) {
+        document.getElementById('final-cta').style.display = 'block';
+        setTimeout(() => document.getElementById('final-cta').scrollIntoView({ behavior: 'smooth' }), 100);
+      }
+
+      updateProgress();
+      save();
+    }
+
+    function updateProgress() {
+      const done = document.querySelectorAll('.step.done').length;
+      const pct  = Math.round((done / TOTAL) * 100);
+      document.getElementById('progress-fill').style.width = `${pct}%`;
+      document.getElementById('progress-pct').textContent  = `${pct}% complete`;
+      document.getElementById('progress-label').textContent =
+        done === TOTAL ? 'All done!' : `Step ${Math.min(done + 1, TOTAL)} of ${TOTAL}`;
+    }
+
+    function resetProgress() {
+      if (!confirm('Clear your progress and start over?')) return;
+      localStorage.removeItem('meitheal_setup_v1');
+      location.reload();
+    }
+
+    function init() {
+      // First step always active
+      document.getElementById('step-1').classList.add('active');
+
+      // Restore saved state
+      try {
+        const raw = localStorage.getItem('meitheal_setup_v1');
+        if (!raw) return;
+        const s = JSON.parse(raw);
+
+        // Restore checkboxes
+        Object.values(CHECKS).flat().forEach(id => {
+          const el = document.getElementById(id);
+          if (el && s[id]) el.checked = true;
+        });
+
+        // Restore completed steps in order
+        for (let i = 1; i <= TOTAL; i++) {
+          if (s[`done_${i}`]) {
+            const el = document.getElementById(`step-${i}`);
+            el.classList.remove('active', 'locked');
+            el.classList.add('done');
+            const next = document.getElementById(`step-${i + 1}`);
+            if (next) { next.classList.remove('locked'); next.classList.add('active'); }
+          }
+          updateBtn(i);
+        }
+
+        if (s[`done_${TOTAL}`]) {
+          document.getElementById('final-cta').style.display = 'block';
+        }
+      } catch (e) { /* ignore */ }
+
+      updateProgress();
+    }
+
+    init();
+  </script>
+</body>
+</html>
