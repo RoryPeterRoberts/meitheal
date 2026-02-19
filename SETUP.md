@@ -72,7 +72,7 @@ When you're ready, here's what each field means:
 Supabase is where your members, feedback, and proposals are stored.
 
 1. Go to [supabase.com](https://supabase.com) → **New project**
-2. Give it a name (e.g. "Blackwater Community")
+2. Give it a name (e.g. "Your Community Name")
 3. Choose a strong database password — **save this somewhere**
 4. Choose the region closest to your community (e.g. EU West for Ireland)
 5. Click **Create new project** — wait about 60 seconds for it to spin up
@@ -138,7 +138,7 @@ In the Vercel project setup screen, find **Environment Variables** and add each 
 | `SUPABASE_ANON_KEY` | Your Supabase anon/public key from Step 2 |
 | `SUPABASE_SERVICE_KEY` | Your Supabase service_role key from Step 2 |
 | `GITHUB_TOKEN` | See below |
-| `GITHUB_REPO` | Your forked repo, e.g. `your-username/blackwater-community` |
+| `GITHUB_REPO` | Your forked repo, e.g. `your-username/your-community` |
 | `GITHUB_BRANCH` | `main` |
 | `AI_API_KEY` | Your AI provider API key (can add later) |
 
@@ -159,19 +159,19 @@ Once all environment variables are added:
 
 1. Click **Deploy**
 2. Wait ~30 seconds
-3. Vercel will give you a URL like `blackwater-community.vercel.app` — this is your platform
+3. Vercel will give you a URL like `your-community.vercel.app` — this is your platform
 
 ### Connect a custom domain (optional)
 
-In Vercel → your project → **Settings** → **Domains**, you can add a custom domain like `platform.blackwaterresidents.ie`.
+In Vercel → your project → **Settings** → **Domains**, you can add a custom domain like `platform.yourcommunity.ie`.
 
 ---
 
 ## Step 4 — Run the setup wizard
 
-1. Go to your Vercel URL + `/setup.html` — e.g. `blackwater-community.vercel.app/setup.html`
+1. Go to your Vercel URL + `/setup.html` — e.g. `your-community.vercel.app/setup.html`
 2. Fill in:
-   - **Community name** — e.g. "Blackwater Residents' Association"
+   - **Community name** — e.g. "Your Community Name"
    - **Community type** — choose the closest match
    - **Your name and email** — this becomes the admin account
 3. Click **Set up community**
