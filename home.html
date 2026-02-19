@@ -388,6 +388,22 @@
           <div class="nav-card-desc">See what the community is building</div>
         </div>
       </a>
+
+      <a href="charter.html" class="nav-card">
+        <span class="nav-card-emoji">📜</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Charter</div>
+          <div class="nav-card-desc">How this community is run</div>
+        </div>
+      </a>
+
+      <a href="audit.html" class="nav-card">
+        <span class="nav-card-emoji">📋</span>
+        <div class="nav-card-body">
+          <div class="nav-card-title">Governance log</div>
+          <div class="nav-card-desc">Every decision, openly recorded</div>
+        </div>
+      </a>
     </nav>
 
     <footer class="page-footer">
@@ -441,10 +457,19 @@
       document.getElementById('community-name').textContent = communityName;
       document.getElementById('community-label').textContent = communityName;
 
-      getPendingValidations(member.id).then(pending => {
-        if (pending.length > 0) {
+      // Badge = pending validations + ideas that were promoted to a proposal (progress update)
+      Promise.all([
+        getPendingValidations(member.id),
+        getSupabase()
+          .from('proposals')
+          .select('id, status, feedback!inner(author_id)')
+          .in('status', ['proposed', 'approved', 'building'])
+          .eq('feedback.author_id', member.id),
+      ]).then(([pending, { data: promoted }]) => {
+        const total = (pending?.length || 0) + (promoted?.length || 0);
+        if (total > 0) {
           const b = document.getElementById('validation-badge');
-          b.textContent   = pending.length;
+          b.textContent   = total;
           b.style.display = 'inline-flex';
         }
       }).catch(() => {});

@@ -136,3 +136,31 @@ async function getCommunityName() {
   return await getSetting('community_name') || 'Our Community';
 }
 
+// ---- Votes ----
+
+async function getVotesForProposals(proposalIds) {
+  if (!proposalIds.length) return [];
+  const { data, error } = await getSupabase()
+    .from('votes')
+    .select('proposal_id, member_id')
+    .in('proposal_id', proposalIds);
+  if (error) throw error;
+  return data || [];
+}
+
+async function castVote(proposalId, memberId) {
+  const { error } = await getSupabase()
+    .from('votes')
+    .insert([{ proposal_id: proposalId, member_id: memberId }]);
+  if (error) throw error;
+}
+
+async function removeVote(proposalId, memberId) {
+  const { error } = await getSupabase()
+    .from('votes')
+    .delete()
+    .eq('proposal_id', proposalId)
+    .eq('member_id', memberId);
+  if (error) throw error;
+}
+

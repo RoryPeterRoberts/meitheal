@@ -1138,9 +1138,15 @@
               <option value="member">Member</option>
               <option value="steward">Steward</option>
             </select>
+            <textarea id="invite-note" class="invite-input" rows="2" placeholder="Personal note (optional) — e.g. 'Hi Mary, I'm inviting you to our residents' platform…'" style="resize:none;font-family:var(--font-family);font-size:var(--font-size-sm)"></textarea>
             <button class="invite-btn" onclick="sendInvite()">Send invite</button>
           </div>
           <div id="invite-status" class="invite-status" style="display:none"></div>
+          <div id="invite-followup" style="display:none;margin-top:var(--space-3);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-4)">
+            <div style="font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-2)">Send this to them alongside the magic link:</div>
+            <div id="invite-followup-text" style="font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:var(--line-height-relaxed);white-space:pre-wrap;margin-bottom:var(--space-3)"></div>
+            <button onclick="copyFollowup()" style="padding:var(--space-1) var(--space-3);background:var(--color-primary);color:var(--color-text-inverse);border:none;border-radius:var(--radius-sm);font-family:var(--font-family);font-size:var(--font-size-xs);cursor:pointer;" id="copy-followup-btn">Copy message</button>
+          </div>
         </div>
 
         <div class="section-header">
@@ -1199,6 +1205,11 @@
             <label class="field-label">Community name</label>
             <input class="field-input" type="text" id="s-community-name" placeholder="e.g. Blackwater Residents">
           </div>
+          <div class="field-row">
+            <label class="field-label">Community charter</label>
+            <textarea class="field-input" id="s-community-charter" rows="6" placeholder="Write your community's values, rules, and purpose here. Members will see this on the Charter page." style="resize:vertical;font-family:var(--font-family);font-size:var(--font-size-sm);line-height:var(--line-height-relaxed)"></textarea>
+            <p class="settings-hint">Plain text. Shown on the Charter page — visible to all members.</p>
+          </div>
         </div>
 
         <div class="settings-section">
@@ -1234,7 +1245,10 @@
 
         <div class="settings-section">
           <div class="settings-section-title">Agent memory</div>
-          <textarea class="memory-textarea" id="agent-memory-input" placeholder="Loading…" spellcheck="false"></textarea>
+          <textarea class="memory-textarea" id="agent-memory-input" placeholder="Loading…" spellcheck="false" oninput="checkMemorySize()"></textarea>
+          <div id="memory-size-warn" style="display:none;margin-top:var(--space-2);padding:var(--space-2) var(--space-3);background:#fff8e6;border:1px solid #f0c040;border-radius:var(--radius-sm);font-size:var(--font-size-xs);color:#7a5c00;">
+            ⚠️ Agent memory is getting large (<span id="memory-char-count">0</span> characters). Consider trimming completed build notes — a large AGENT.md can reduce the agent's effective context window.
+          </div>
           <p class="memory-hint">This is AGENT.md — the agent reads it before every build. Edit it to correct mistakes, add context, or guide future builds. Changes commit directly to the repo.</p>
           <div class="settings-save-row" style="margin-top:var(--space-3)">
             <button class="settings-save-btn" onclick="saveAgentMemory()">Save memory</button>
@@ -1436,9 +1450,11 @@
       status.textContent   = planOnly ? 'Generating build plan…' : 'Sending proposal to agent…';
       document.getElementById('console-links').style.display = 'none';
 
-      // Remove any leftover execute button from a previous plan
-      const prevExec = console_.querySelector('.console-execute-btn');
+      // Remove any leftover buttons from a previous run
+      const prevExec   = console_.querySelector('.console-execute-btn');
+      const prevFail   = document.getElementById('console-status')?.querySelector('div[style*="display:flex"]');
       if (prevExec) prevExec.remove();
+      if (prevFail) prevFail.remove();
 
       console_.classList.add('open');
       console_.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1500,6 +1516,37 @@
         msgs.textContent = `Error: ${e.message}`;
         status.textContent = 'Failed';
         spinner.classList.remove('active');
+
+        // Show retry + reset buttons on failure
+        const failRow = document.createElement('div');
+        failRow.style.cssText = 'display:flex;gap:var(--space-2);margin-top:var(--space-3);flex-wrap:wrap;';
+        failRow.innerHTML = `
+          <button onclick="this.parentElement.remove(); startBuild(${JSON.stringify(proposalId)}, ${JSON.stringify(title)}, false)"
+            style="padding:var(--space-2) var(--space-4);background:var(--color-primary);color:var(--color-text-inverse);border:none;border-radius:var(--radius-md);font-family:var(--font-family);font-size:var(--font-size-sm);cursor:pointer;">
+            Retry build
+          </button>
+          <button onclick="resetProposalToApproved(${JSON.stringify(proposalId)}, this.parentElement)"
+            style="padding:var(--space-2) var(--space-4);background:none;color:var(--color-text-muted);border:1px solid var(--color-border);border-radius:var(--radius-md);font-family:var(--font-family);font-size:var(--font-size-sm);cursor:pointer;"
+            title="If this proposal got stuck in 'building' status, this resets it so you can try again">
+            Reset to approved
+          </button>`;
+        document.getElementById('console-status').appendChild(failRow);
+      }
+    }
+
+    async function resetProposalToApproved(proposalId, btnParent) {
+      try {
+        const { error } = await getSupabase()
+          .from('proposals')
+          .update({ status: 'approved', build_started_at: null })
+          .eq('id', proposalId);
+        if (error) throw error;
+        if (btnParent) btnParent.remove();
+        document.getElementById('console-status-text').textContent = 'Reset — ready to retry';
+        // Reload overview data so the queue reflects the reset proposal
+        await loadOverview();
+      } catch (e) {
+        alert('Reset failed: ' + e.message);
       }
     }
 
@@ -1721,9 +1768,11 @@
       const nameEl   = document.getElementById('invite-name');
       const emailEl  = document.getElementById('invite-email');
       const roleEl   = document.getElementById('invite-role');
+      const noteEl   = document.getElementById('invite-note');
       const btn      = document.querySelector('.invite-btn');
       const name     = nameEl.value.trim();
       const email    = emailEl.value.trim();
+      const note     = noteEl?.value.trim() || '';
 
       if (!name || !email) {
         showInviteStatus('Please enter both name and email.', false);
@@ -1736,6 +1785,8 @@
       try {
         const sb = getSupabase();
         const { data: { session } } = await sb.auth.getSession();
+
+        const communityName = document.getElementById('community-name')?.textContent || 'the community';
 
         const r = await fetch('/api/invite', {
           method:  'POST',
@@ -1755,8 +1806,18 @@
             data.warning || `Invite sent to ${email}.`,
             !data.warning
           );
-          nameEl.value  = '';
+          // Show a follow-up message the admin can copy alongside the magic link
+          const firstName = name.split(' ')[0];
+          const followupParts = [
+            note || `Hi ${firstName}, I've invited you to join ${communityName} — our community platform where members share ideas and help shape what we build together.`,
+            `\nYou should receive a sign-in link by email shortly. Click it to join — no password needed.`,
+          ];
+          document.getElementById('invite-followup-text').textContent = followupParts.join('');
+          document.getElementById('invite-followup').style.display = 'block';
+
+          nameEl.value = '';
           emailEl.value = '';
+          if (noteEl) noteEl.value = '';
           membersLoaded = false;
           await loadMembers();
         }
@@ -1767,6 +1828,15 @@
         btn.disabled    = false;
         btn.textContent = 'Send invite';
       }
+    }
+
+    function copyFollowup() {
+      const text = document.getElementById('invite-followup-text').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-followup-btn');
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => { btn.textContent = 'Copy message'; }, 2000);
+      });
     }
 
     function showInviteStatus(msg, success) {
@@ -1851,10 +1921,11 @@
       const { data } = await sb.from('settings').select('key,value');
       if (!data) return;
       const s = Object.fromEntries(data.map(r => [r.key, r.value]));
-      if (s.community_name) document.getElementById('s-community-name').value = s.community_name;
-      if (s.ai_provider)    document.getElementById('s-ai-provider').value    = s.ai_provider;
-      if (s.ai_model)       document.getElementById('s-ai-model').value       = s.ai_model;
-      if (s.ai_api_key)     document.getElementById('s-ai-api-key').value     = s.ai_api_key;
+      if (s.community_name)    document.getElementById('s-community-name').value    = s.community_name;
+      if (s.community_charter) document.getElementById('s-community-charter').value = s.community_charter;
+      if (s.ai_provider)       document.getElementById('s-ai-provider').value       = s.ai_provider;
+      if (s.ai_model)          document.getElementById('s-ai-model').value          = s.ai_model;
+      if (s.ai_api_key)        document.getElementById('s-ai-api-key').value        = s.ai_api_key;
       loadAgentMemory();
     }
 
@@ -1869,11 +1940,12 @@
     async function saveSettings() {
       const sb = getSupabase();
       const updates = [
-        { key: 'community_name', value: document.getElementById('s-community-name').value.trim() },
-        { key: 'ai_provider',   value: document.getElementById('s-ai-provider').value },
-        { key: 'ai_model',      value: document.getElementById('s-ai-model').value.trim() },
-        { key: 'ai_api_key',    value: document.getElementById('s-ai-api-key').value.trim() },
-      ].filter(u => u.value);
+        { key: 'community_name',    value: document.getElementById('s-community-name').value.trim() },
+        { key: 'community_charter', value: document.getElementById('s-community-charter').value.trim() },
+        { key: 'ai_provider',       value: document.getElementById('s-ai-provider').value },
+        { key: 'ai_model',          value: document.getElementById('s-ai-model').value.trim() },
+        { key: 'ai_api_key',        value: document.getElementById('s-ai-api-key').value.trim() },
+      ].filter(u => u.value !== undefined && u.value !== null);
 
       const msg = document.getElementById('settings-saved-msg');
       msg.style.color = '';
@@ -1895,6 +1967,15 @@
 
     // ---- Agent memory ----
 
+    function checkMemorySize() {
+      const ta    = document.getElementById('agent-memory-input');
+      const warn  = document.getElementById('memory-size-warn');
+      const count = document.getElementById('memory-char-count');
+      const len   = ta.value.length;
+      count.textContent = len.toLocaleString();
+      warn.style.display = len > 6000 ? 'block' : 'none';
+    }
+
     async function loadAgentMemory() {
       const ta = document.getElementById('agent-memory-input');
       ta.placeholder = 'Loading…';
@@ -1907,6 +1988,7 @@
         if (!r.ok) throw new Error(`${r.status}`);
         const { content } = await r.json();
         ta.value = content;
+        checkMemorySize();
       } catch (e) {
         ta.placeholder = 'Could not load AGENT.md — ' + e.message;
       }

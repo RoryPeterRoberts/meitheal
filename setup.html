@@ -301,6 +301,18 @@
         <label>Your name</label>
         <input type="text" id="admin-name" placeholder="How members will see you">
       </div>
+      <div class="fg">
+        <label>What kind of community is this?</label>
+        <select id="community-type" onchange="updateCharterPreview()">
+          <option value="">— Choose one (optional) —</option>
+          <option value="residents">Residents' Association</option>
+          <option value="mutual-aid">Mutual Aid Group</option>
+          <option value="sports">Sports Club</option>
+          <option value="housing">Housing Co-op / Tenant Group</option>
+          <option value="other">Other</option>
+        </select>
+        <div class="hint">We'll pre-fill your community charter with a relevant starting point.</div>
+      </div>
 
       <div class="err" id="err-1"></div>
       <button class="btn btn-primary" onclick="s1Next()">Continue →</button>
@@ -500,15 +512,27 @@
 
     // ---- Step 1 ----
 
+    const COMMUNITY_CHARTERS = {
+      'residents': `This is a residents' association — a platform for neighbours to share ideas, flag problems, and shape the local area together.\n\nIdeas go through a transparent process: submitted by members, reviewed by stewards, approved by admins, then built by the AI agent with full community credit.\n\nEveryone's voice counts. Every decision is recorded.`,
+      'mutual-aid': `This is a mutual aid group — a community of neighbours helping neighbours. We build tools that make it easier to offer help, request support, and share what we have.\n\nNo one leads, everyone contributes. Ideas are shared openly, decisions are made together, and what gets built reflects what the community actually needs.\n\nHelp is not charity — it is community.`,
+      'sports': `This is a sports club — a platform for members to communicate, organise, and grow together.\n\nMembers can suggest new features, vote on what matters, and see their ideas turned into real tools. The club is run for members, by members.\n\nWhat we build here reflects what we need on and off the pitch.`,
+      'housing': `This is a housing co-op or tenant group — a democratic community where residents shape how we live together.\n\nAll decisions are transparent. Members propose, the community debates, admins approve, and every build is recorded in the changelog. No one acts alone.\n\nThis platform belongs to the residents.`,
+      'other': `This is a community platform built and shaped by its members.\n\nAnyone can submit an idea. Good ideas become proposals. Proposals get approved and built. Everything is logged.\n\nWhat this community builds reflects what this community actually needs.`,
+    };
+
+    function updateCharterPreview() { /* future: show preview */ }
+
     function s1Next() {
       clearErr('err-1');
-      const name      = v('community-name');
-      const email     = v('admin-email');
-      const adminName = v('admin-name');
+      const name          = v('community-name');
+      const email         = v('admin-email');
+      const adminName     = v('admin-name');
+      const communityType = v('community-type');
       if (!name)  return err('err-1', 'Please enter a community name.');
       if (!email || !email.includes('@')) return err('err-1', 'Please enter a valid email address.');
       if (!adminName) return err('err-1', 'Please enter your name.');
-      Object.assign(form, { communityName: name, adminEmail: email, adminName });
+      const charter = communityType ? COMMUNITY_CHARTERS[communityType] || '' : '';
+      Object.assign(form, { communityName: name, adminEmail: email, adminName, communityType, communityCharter: charter });
       save();
       goStep(2);
     }
@@ -675,13 +699,14 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            communityName: form.communityName,
-            adminEmail:    form.adminEmail,
-            adminName:     form.adminName,
-            provider:      form.provider,
-            model:         form.model,
-            apiKey:        form.apiKey,
-            ollamaUrl:     form.ollamaUrl,
+            communityName:    form.communityName,
+            adminEmail:       form.adminEmail,
+            adminName:        form.adminName,
+            provider:         form.provider,
+            model:            form.model,
+            apiKey:           form.apiKey,
+            ollamaUrl:        form.ollamaUrl,
+            communityCharter: form.communityCharter || '',
             siteUrl,
           }),
         });

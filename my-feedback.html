@@ -349,6 +349,11 @@
       </button>
     </div>
 
+    <div id="updates-banner" style="display:none;margin-bottom:var(--space-4);background:var(--color-primary-bg);border:1px solid var(--color-primary-lighter);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5)">
+      <div style="font-size:10px;font-weight:var(--font-weight-bold);text-transform:uppercase;letter-spacing:0.1em;color:var(--color-primary);margin-bottom:var(--space-2)">Updates on your ideas</div>
+      <div id="updates-list" style="display:flex;flex-direction:column;gap:var(--space-2)"></div>
+    </div>
+
     <div id="state" class="state-msg">
       <div class="icon">💬</div>
       Loading…
@@ -411,6 +416,28 @@
       state.style.display = 'none';
       list.style.display = 'flex';
       list.innerHTML = myFeedback.map(buildCard).join('');
+
+      // Updates banner: show promoted/done proposals for this member's feedback
+      const updates = [];
+      for (const p of allProposals) {
+        const isMine = p.feedback?.some(fb => fb.author_id === currentMember.id);
+        if (!isMine) continue;
+        if (p.status === 'done' && !p.member_validated) {
+          updates.push(`✨ <strong>${escHtml(p.title)}</strong> was built from your idea — did it turn out right?`);
+        } else if (p.status === 'approved' || p.status === 'building') {
+          updates.push(`🔨 <strong>${escHtml(p.title)}</strong> — your idea has been approved and is being built.`);
+        } else if (p.status === 'proposed') {
+          updates.push(`💡 <strong>${escHtml(p.title)}</strong> — your idea became a community proposal.`);
+        }
+      }
+      const banner = document.getElementById('updates-banner');
+      const updatesList = document.getElementById('updates-list');
+      if (updates.length > 0) {
+        updatesList.innerHTML = updates.map(u =>
+          `<div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:var(--line-height-relaxed)">${u}</div>`
+        ).join('');
+        banner.style.display = 'block';
+      }
     }
 
     function buildCard(f) {

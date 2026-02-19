@@ -262,6 +262,49 @@
       border-color: var(--color-primary);
     }
 
+    /* Vote button */
+    .vote-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .vote-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .vote-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    .vote-btn.voted {
+      background: var(--color-primary-bg);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .vote-count {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
     /* Empty state */
     .state-msg {
       text-align: center;
@@ -357,6 +400,8 @@
     let allProposals = [];
     let currentFilter = 'active';
     let currentMember = null;
+    let votesByProposal = {}; // { proposalId: Set of member_ids who voted }
+    let myVotedIds = new Set(); // proposal_ids the current member has voted on
 
     async function init() {
       const member = await requireAuthAsync();
@@ -367,6 +412,16 @@
 
       try {
         allProposals = await getAllProposals();
+        // Load votes for all proposals
+        const ids = allProposals.map(p => p.id);
+        const votes = ids.length ? await getVotesForProposals(ids) : [];
+        votesByProposal = {};
+        myVotedIds = new Set();
+        for (const v of votes) {
+          if (!votesByProposal[v.proposal_id]) votesByProposal[v.proposal_id] = new Set();
+          votesByProposal[v.proposal_id].add(v.member_id);
+          if (v.member_id === member.id) myVotedIds.add(v.proposal_id);
+        }
         render();
       } catch (e) {
         console.error(e);
@@ -433,6 +488,19 @@
              </div>`
           : '');
 
+      // Vote row — show for proposed/approved status so community can express interest
+      const canVote = p.status === 'proposed' || p.status === 'approved';
+      const voteCount = votesByProposal[p.id]?.size || 0;
+      const hasVoted  = myVotedIds.has(p.id);
+      const voteSection = canVote ? `
+        <div class="vote-row">
+          <button class="vote-btn ${hasVoted ? 'voted' : ''}" id="vote-btn-${p.id}"
+            onclick="toggleVote('${p.id}', this)">
+            ${hasVoted ? '👍 Supported' : '👍 Support this'}
+          </button>
+          <span class="vote-count" id="vote-count-${p.id}">${voteCount > 0 ? `${voteCount} ${voteCount === 1 ? 'vote' : 'votes'}` : ''}</span>
+        </div>` : '';
+
       return `
         <div class="proposal-card status-${p.status}">
           <div class="card-top">
@@ -446,8 +514,39 @@
             <span>· ${date}</span>
           </div>
           ${clarificationSection}
+          ${voteSection}
         </div>
       `;
+    }
+
+    async function toggleVote(proposalId, btn) {
+      if (!currentMember) return;
+      btn.disabled = true;
+      try {
+        const hasVoted = myVotedIds.has(proposalId);
+        if (hasVoted) {
+          await removeVote(proposalId, currentMember.id);
+          myVotedIds.delete(proposalId);
+          if (votesByProposal[proposalId]) votesByProposal[proposalId].delete(currentMember.id);
+        } else {
+          await castVote(proposalId, currentMember.id);
+          myVotedIds.add(proposalId);
+          if (!votesByProposal[proposalId]) votesByProposal[proposalId] = new Set();
+          votesByProposal[proposalId].add(currentMember.id);
+        }
+        // Update button and count in place
+        const nowVoted = myVotedIds.has(proposalId);
+        btn.className = `vote-btn ${nowVoted ? 'voted' : ''}`;
+        btn.textContent = nowVoted ? '👍 Supported' : '👍 Support this';
+        const countEl = document.getElementById(`vote-count-${proposalId}`);
+        const n = votesByProposal[proposalId]?.size || 0;
+        if (countEl) countEl.textContent = n > 0 ? `${n} ${n === 1 ? 'vote' : 'votes'}` : '';
+      } catch (e) {
+        showToast('Could not save vote');
+        console.error(e);
+      } finally {
+        btn.disabled = false;
+      }
     }
 
     function toggleClarify(id) {

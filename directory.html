@@ -166,6 +166,32 @@
       color: var(--color-primary);
     }
 
+    .trust-bar {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .trust-pip {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-border);
+    }
+
+    .trust-pip.filled {
+      background: var(--color-primary);
+    }
+
+    .trust-label {
+      font-size: 9px;
+      color: var(--color-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-left: 4px;
+    }
+
     /* States */
     .state-msg {
       text-align: center;
@@ -234,7 +260,7 @@
 
       const { data: members, error } = await getSupabase()
         .from('members')
-        .select('id, display_name, email, role, status, joined_at')
+        .select('id, display_name, email, role, status, trust_level, joined_at')
         .order('joined_at', { ascending: true });
 
       const state = document.getElementById('state');
@@ -267,6 +293,13 @@
           ? new Date(m.joined_at).toLocaleDateString('en-IE', { month: 'short', year: 'numeric' })
           : '';
 
+        const tl = m.trust_level ?? 1;
+        const TRUST_LABELS = ['Invited', 'Member', 'Active', 'Steward', 'Admin'];
+        const trustLabel = TRUST_LABELS[Math.min(tl, 4)];
+        const pips = Array.from({length: 4}, (_, i) =>
+          `<div class="trust-pip${i < tl ? ' filled' : ''}"></div>`).join('');
+        const trustBar = `<div class="trust-bar">${pips}<span class="trust-label">${trustLabel}</span></div>`;
+
         const card = document.createElement('div');
         card.className = 'member-card';
         card.innerHTML = `
@@ -274,6 +307,7 @@
           <div class="member-info">
             <div class="member-name">${escHtml(name)}</div>
             <div class="member-joined">${joined ? `Joined ${joined}` : ''}</div>
+            ${trustBar}
           </div>
           <span class="member-badge ${m.role === 'admin' ? 'admin' : ''}">${escHtml(m.role)}</span>
         `;

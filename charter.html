@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Community Charter</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-5) var(--space-12);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    .page-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
+    }
+
+    .page-sub {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    /* Charter body */
+    .charter-body {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .charter-body p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-base);
+      margin-bottom: var(--space-4);
+    }
+
+    .charter-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Empty state */
+    .charter-empty {
+      text-align: center;
+      padding: var(--space-10) var(--space-6);
+      color: var(--color-text-muted);
+    }
+
+    .charter-empty .icon {
+      font-size: 36px;
+      margin-bottom: var(--space-3);
+    }
+
+    .charter-empty-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-lg);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .charter-empty-desc {
+      font-size: var(--font-size-sm);
+      max-width: 360px;
+      margin: 0 auto;
+    }
+
+    .charter-admin-link {
+      display: inline-block;
+      margin-top: var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .charter-admin-link:hover {
+      color: var(--color-primary-dark);
+    }
+
+    /* Stewards section */
+    .section-label {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-text-light);
+      margin-bottom: var(--space-3);
+    }
+
+    .stewards-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+
+    .steward-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .steward-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
+    }
+
+    .steward-avatar.accent    { background: var(--color-accent); }
+    .steward-avatar.secondary { background: var(--color-secondary); }
+
+    .steward-name {
+      flex: 1;
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+    }
+
+    .steward-badge {
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px var(--space-2);
+      border-radius: var(--radius-full);
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+    }
+
+    /* Governance panel */
+    .governance-panel {
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+
+    .governance-panel-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+    }
+
+    .governance-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .governance-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .gov-check {
+      color: var(--color-status-accepted);
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="feedback-widget.js"></script>
+
+  <div class="page">
+    <header class="page-header">
+      <a href="home.html" class="back-btn" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="page-title" id="charter-title">Community Charter</h1>
+        <p class="page-sub" id="charter-sub">How this community is run</p>
+      </div>
+    </header>
+
+    <div id="charter-body-wrap">
+      <!-- populated by JS -->
+    </div>
+
+    <div class="governance-panel">
+      <div class="governance-panel-title">How this platform is governed</div>
+      <ul class="governance-list">
+        <li><span class="gov-check">✓</span> Members submit ideas through the feedback button on any page</li>
+        <li><span class="gov-check">✓</span> Admins triage ideas and promote them to proposals</li>
+        <li><span class="gov-check">✓</span> The community can see every proposal and its status</li>
+        <li><span class="gov-check">✓</span> Approved proposals are built by an AI agent — nothing is built without admin approval</li>
+        <li><span class="gov-check">✓</span> Every build is logged in the changelog with credit to the member who suggested it</li>
+        <li><span class="gov-check">✓</span> Your data lives in your community's own database — not controlled by Meitheal</li>
+      </ul>
+    </div>
+
+    <div class="section-label" id="stewards-label" style="display:none">Admins & Stewards</div>
+    <div class="stewards-list" id="stewards-list"></div>
+  </div>
+
+  <script>
+    const AVATAR_COLOURS = ['', 'accent', 'secondary'];
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderCharter(text, isAdmin) {
+      const wrap = document.getElementById('charter-body-wrap');
+      if (!text || !text.trim()) {
+        wrap.innerHTML = `
+          <div class="charter-body charter-empty">
+            <div class="icon">📜</div>
+            <div class="charter-empty-title">No charter yet</div>
+            <p class="charter-empty-desc">The admin hasn't written a community charter yet. This is where your values, rules, and purpose live.</p>
+            ${isAdmin ? '<a href="admin.html#settings" class="charter-admin-link">Write the charter in Admin → Settings →</a>' : ''}
+          </div>`;
+        return;
+      }
+
+      // Render paragraphs (split on double newline or single newline)
+      const paras = text.trim().split(/\n\n+/);
+      const html = paras.map(p => {
+        const lines = escHtml(p.trim()).replace(/\n/g, '<br>');
+        return `<p>${lines}</p>`;
+      }).join('');
+      wrap.innerHTML = `<div class="charter-body">${html}</div>`;
+    }
+
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
+
+      initFeedbackWidget(member.id);
+
+      const sb = getSupabase();
+
+      // Load community name and charter in parallel
+      const [{ data: nameRow }, { data: charterRow }, { data: stewards }] = await Promise.all([
+        sb.from('settings').select('value').eq('key', 'community_name').single(),
+        sb.from('settings').select('value').eq('key', 'community_charter').single(),
+        sb.from('members').select('id, display_name, role').in('role', ['admin', 'steward']).eq('status', 'active').order('role'),
+      ]);
+
+      const communityName = nameRow?.value || 'Our Community';
+      document.getElementById('charter-title').textContent = `${escHtml(communityName)} Charter`;
+      document.getElementById('charter-sub').textContent   = `How ${escHtml(communityName)} is run`;
+      document.title = `Charter — ${escHtml(communityName)}`;
+
+      const isAdmin = member.role === 'admin';
+      renderCharter(charterRow?.value, isAdmin);
+
+      if (stewards && stewards.length > 0) {
+        document.getElementById('stewards-label').style.display = 'block';
+        const list = document.getElementById('stewards-list');
+        stewards.forEach((s, i) => {
+          const name     = s.display_name || 'Member';
+          const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+          const colour   = AVATAR_COLOURS[i % AVATAR_COLOURS.length];
+          const row      = document.createElement('div');
+          row.className  = 'steward-row';
+          row.innerHTML  = `
+            <div class="steward-avatar ${colour}">${initials}</div>
+            <span class="steward-name">${escHtml(name)}</span>
+            <span class="steward-badge">${escHtml(s.role)}</span>
+          `;
+          list.appendChild(row);
+        });
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

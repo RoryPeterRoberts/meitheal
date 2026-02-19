@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   }
 
   // ---- Setup: seed settings, create admin, send magic link ----
-  const { communityName, provider, model, apiKey, ollamaUrl, adminEmail, adminName, siteUrl } = req.body;
+  const { communityName, provider, model, apiKey, ollamaUrl, adminEmail, adminName, siteUrl, communityCharter } = req.body;
 
   const origin = siteUrl
     || req.headers.origin
@@ -64,15 +64,16 @@ export default async function handler(req, res) {
       method:  'POST',
       headers: sbHeaders,
       body: JSON.stringify([
-        { key: 'community_name', value: communityName || 'My Community' },
-        { key: 'ai_provider',    value: provider      || 'anthropic'    },
-        { key: 'ai_model',       value: model         || 'claude-sonnet-4-6' },
-        { key: 'ai_api_key',     value: apiKey        || ''             },
-        { key: 'ollama_url',     value: ollamaUrl     || ''             },
-        { key: 'site_url',       value: origin                         },
-        { key: 'initialized',    value: 'true'                         },
-        { key: 'steward_enabled', value: 'true'                        },
-        { key: 'voting_enabled',  value: 'false'                       },
+        { key: 'community_name',    value: communityName    || 'My Community'       },
+        { key: 'community_charter', value: communityCharter || ''                   },
+        { key: 'ai_provider',       value: provider         || 'anthropic'          },
+        { key: 'ai_model',          value: model            || 'claude-sonnet-4-6'  },
+        { key: 'ai_api_key',        value: apiKey           || ''                   },
+        { key: 'ollama_url',        value: ollamaUrl        || ''                   },
+        { key: 'site_url',          value: origin                                   },
+        { key: 'initialized',       value: 'true'                                   },
+        { key: 'steward_enabled',   value: 'true'                                   },
+        { key: 'voting_enabled',    value: 'true'                                   },
       ])
     });
 

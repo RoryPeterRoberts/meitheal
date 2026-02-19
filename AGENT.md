@@ -5,11 +5,13 @@ This file is your persistent memory. Read it before every build. Update it after
 ## Platform structure
 
 ### Member-facing pages
-- `home.html` — landing page: welcome block, nav grid (Members, What we've built, My ideas, Proposals)
+- `home.html` — landing page: welcome block, nav grid (Members, What we've built, My ideas, Proposals, Charter)
 - `directory.html` — member list with role badges and join dates
 - `my-feedback.html` — member's own submissions, linked proposals, validation prompts
 - `proposals.html` — full proposals board (all statuses, clarification notes)
 - `changelog.html` — history of built features with file chips and suggester attribution
+- `charter.html` — community charter (values/rules from settings key `community_charter`) + governance model + admins/stewards list
+- `audit.html` — governance log: builds from changelog + proposal approvals/declines, filterable by type
 
 ### Admin pages (role: admin or steward)
 - `admin.html` — three-panel dashboard:
@@ -34,7 +36,9 @@ This file is your persistent memory. Read it before every build. Update it after
 - `feedback` — id, author_id→members, type (idea/bug/question/other), message, status, ref_number, admin_note
 - `proposals` — id, feedback_id→feedback, title, description, status (proposed/approved/building/done/declined), promoted_by, approved_by, build_started_at, build_finished_at, member_validated, member_validated_at, clarification_note
 - `changelog` — id, ts, description, files_changed (jsonb [{action,path}]), sql_run, proposal_id, suggested_by, suggested_by_name, admin_id, conversation_id
-- `settings` — key/value: community_name, ai_provider, ai_model, ai_api_key, site_url, initialized, steward_enabled, voting_enabled
+- `settings` — key/value: community_name, community_charter, ai_provider, ai_model, ai_api_key, site_url, initialized, steward_enabled, voting_enabled
+- `votes` — proposal_id→proposals, member_id→members, created_at. UNIQUE(proposal_id, member_id). Used for community voting on proposals.
+  Migration: `migrations/09_votes.sql` (must be run in Supabase SQL editor)
 - `ai_usage` — provider, model, prompt_tokens, completion_tokens, cost_usd, ts, conversation_id
 - `conversations` — id, messages (jsonb), updated_at
 
