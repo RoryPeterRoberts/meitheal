@@ -1584,7 +1584,6 @@
     }
 
     async function retryBuild(proposalId, title) {
-      libLoaded = false; // force library to re-check statuses
       await resetProposalToApproved(proposalId, null);
       startBuild(proposalId, title, false);
     }
@@ -2253,15 +2252,12 @@
     const CAT_LABELS = { general: 'General', neighbourhood: 'Neighbourhood', mutual_aid: 'Mutual Aid', sports: 'Sports', housing: 'Housing' };
     let libCurrentCat = 'all';
     let libProposals = new Map(); // title.toLowerCase() → {status, id}
-    let libLoaded = false;
 
     async function loadLibrary() {
-      if (libLoaded) return;
       try {
         const { data } = await getSupabase().from('proposals').select('id, title, status');
         libProposals = new Map((data || []).map(p => [p.title.toLowerCase(), { status: p.status, id: p.id }]));
       } catch (e) { /* non-fatal */ }
-      libLoaded = true;
       renderLibrary();
     }
 
