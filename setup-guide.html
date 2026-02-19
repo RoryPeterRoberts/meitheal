@@ -704,6 +704,15 @@
       border-radius: var(--radius-md);
       border: 1px solid var(--color-border);
     }
+
+    /* CLI step progression */
+    .cli-step { display: none; }
+    .cli-step.cli-active { display: block; }
+    .cli-step-footer {
+      margin-top: var(--space-5);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
   </style>
 </head>
 <body>
@@ -753,7 +762,8 @@
     <!-- CLI path -->
     <div class="cli-path visible" id="cli-path">
 
-      <div class="cli-step">
+      <!-- Step 0: Prerequisites -->
+      <div class="cli-step cli-active" id="cli-step-0">
         <div class="cli-step-label">Before you start</div>
         <div class="cli-step-title">What you need</div>
         <div class="cli-step-desc">
@@ -778,21 +788,47 @@
             </div>
           </div>
         </details>
+        <div class="cli-step-footer">
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-0-a" onchange="cliUpdateStep(0)">
+              <label for="cli-chk-0-a">I have accounts on <a href="https://github.com/signup" target="_blank">GitHub ↗</a>, <a href="https://supabase.com/dashboard/sign-up" target="_blank">Supabase ↗</a>, and <a href="https://vercel.com/signup" target="_blank">Vercel ↗</a></label>
+            </div>
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-0-b" onchange="cliUpdateStep(0)">
+              <label for="cli-chk-0-b">I have <strong>git</strong> and <strong>Node.js</strong> installed</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="cli-btn-0" onclick="cliCompleteStep(0)" disabled style="margin-top:var(--space-3)">
+            Let's go <span>→</span>
+          </button>
+        </div>
       </div>
 
-      <hr class="cli-divider">
-
-      <div class="cli-step">
-        <div class="cli-step-label">Step 1</div>
+      <!-- Step 1: Install CLI tools -->
+      <div class="cli-step" id="cli-step-1">
+        <div class="cli-step-label">Step 1 of 6</div>
         <div class="cli-step-title">Install the CLI tools</div>
         <div class="cmd-block">
           <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
           <pre><span class="prompt">$ </span>npm install -g vercel supabase</pre>
         </div>
+        <div class="cli-step-footer">
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-1" onchange="cliUpdateStep(1)">
+              <label for="cli-chk-1">CLI tools installed — no errors in the terminal</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="cli-btn-1" onclick="cliCompleteStep(1)" disabled style="margin-top:var(--space-3)">
+            Next step <span>→</span>
+          </button>
+        </div>
       </div>
 
-      <div class="cli-step">
-        <div class="cli-step-label">Step 2</div>
+      <!-- Step 2: Fork and clone -->
+      <div class="cli-step" id="cli-step-2">
+        <div class="cli-step-label">Step 2 of 6</div>
         <div class="cli-step-title">Clone the platform into your own repo</div>
         <div class="cli-step-desc">
           First, <a href="https://github.com/RoryPeterRoberts/meitheal/fork" target="_blank">fork the repo on GitHub ↗</a>
@@ -803,10 +839,22 @@
           <pre><span class="prompt">$ </span>git clone https://github.com/YOUR_USERNAME/meitheal my-community
 <span class="prompt">$ </span>cd my-community</pre>
         </div>
+        <div class="cli-step-footer">
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-2" onchange="cliUpdateStep(2)">
+              <label for="cli-chk-2">I've forked the repo and cloned it to my machine</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="cli-btn-2" onclick="cliCompleteStep(2)" disabled style="margin-top:var(--space-3)">
+            Next step <span>→</span>
+          </button>
+        </div>
       </div>
 
-      <div class="cli-step">
-        <div class="cli-step-label">Step 3</div>
+      <!-- Step 3: Supabase project + migrations -->
+      <div class="cli-step" id="cli-step-3">
+        <div class="cli-step-label">Step 3 of 6</div>
         <div class="cli-step-title">Create your Supabase project and run migrations</div>
         <div class="cli-step-desc">
           Go to <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard ↗</a>
@@ -823,10 +871,22 @@
         <div class="cli-note">
           This runs all the database migrations automatically — no SQL editor needed.
         </div>
+        <div class="cli-step-footer">
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-3" onchange="cliUpdateStep(3)">
+              <label for="cli-chk-3">Supabase project created and <code>db push</code> completed without errors</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="cli-btn-3" onclick="cliCompleteStep(3)" disabled style="margin-top:var(--space-3)">
+            Next step <span>→</span>
+          </button>
+        </div>
       </div>
 
-      <div class="cli-step">
-        <div class="cli-step-label">Step 4</div>
+      <!-- Step 4: Configure environment -->
+      <div class="cli-step" id="cli-step-4">
+        <div class="cli-step-label">Step 4 of 6</div>
         <div class="cli-step-title">Configure your environment</div>
         <div class="cli-step-desc">
           Copy the example env file and fill in your values. You'll find your Supabase keys at
@@ -840,10 +900,22 @@
           <pre><span class="prompt">$ </span>cp .env.example .env.local
 <span class="comment"># Open .env.local and fill in your Supabase keys, GitHub token, and AI key</span></pre>
         </div>
+        <div class="cli-step-footer">
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-4" onchange="cliUpdateStep(4)">
+              <label for="cli-chk-4">I've filled in <code>.env.local</code> with all required values</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="cli-btn-4" onclick="cliCompleteStep(4)" disabled style="margin-top:var(--space-3)">
+            Next step <span>→</span>
+          </button>
+        </div>
       </div>
 
-      <div class="cli-step">
-        <div class="cli-step-label">Step 5</div>
+      <!-- Step 5: Deploy -->
+      <div class="cli-step" id="cli-step-5">
+        <div class="cli-step-label">Step 5 of 6</div>
         <div class="cli-step-title">Deploy to Vercel</div>
         <div class="cmd-block">
           <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
@@ -853,10 +925,22 @@
         <div class="cli-step-desc">
           Vercel will give you a URL like <code>my-community.vercel.app</code>.
         </div>
+        <div class="cli-step-footer">
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-5" onchange="cliUpdateStep(5)">
+              <label for="cli-chk-5">My platform is live at a Vercel URL</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="cli-btn-5" onclick="cliCompleteStep(5)" disabled style="margin-top:var(--space-3)">
+            Next step <span>→</span>
+          </button>
+        </div>
       </div>
 
-      <div class="cli-step">
-        <div class="cli-step-label">Step 6</div>
+      <!-- Step 6: Setup wizard -->
+      <div class="cli-step" id="cli-step-6">
+        <div class="cli-step-label">Step 6 of 6</div>
         <div class="cli-step-title">Run the setup wizard</div>
         <div class="cli-step-desc">
           Open your deployment URL and add <code>/setup.html</code>:
@@ -868,12 +952,29 @@
         <div class="cli-step-desc">
           Fill in your community name, admin email, and AI provider. A sign-in link will arrive by email — click it and you're in as admin.
         </div>
+        <div class="cli-step-footer">
+          <div class="checklist">
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-6-a" onchange="cliUpdateStep(6)">
+              <label for="cli-chk-6-a">I've completed the setup wizard and received my sign-in link</label>
+            </div>
+            <div class="check-item">
+              <input type="checkbox" id="cli-chk-6-b" onchange="cliUpdateStep(6)">
+              <label for="cli-chk-6-b">I've signed in and can see my admin panel</label>
+            </div>
+          </div>
+          <button class="confirm-btn" id="cli-btn-6" onclick="cliCompleteStep(6)" disabled style="margin-top:var(--space-3)">
+            Setup complete — let's go! <span>🎉</span>
+          </button>
+        </div>
       </div>
 
-      <div class="final-cta" style="display:block">
+      <!-- Final CTA -->
+      <div class="final-cta" id="cli-final" style="display:none">
         <div class="final-emoji">🎉</div>
-        <div class="final-title">That's it</div>
-        <div class="final-desc">Six commands and your community platform is live.</div>
+        <div class="final-title">That's it — your community platform is live</div>
+        <div class="final-desc">Invite your first members and start gathering ideas.</div>
+        <a href="/home.html" class="final-btn">Go to your community →</a>
       </div>
 
     </div><!-- end cli-path -->
@@ -1268,10 +1369,85 @@
     function resetProgress() {
       if (!confirm('Clear your progress and start over?')) return;
       localStorage.removeItem('meitheal_setup_v1');
+      localStorage.removeItem('meitheal_cli_v1');
       location.reload();
     }
 
+    // ---- CLI path progression ----
+    const CLI_CHECKS = {
+      0: ['cli-chk-0-a', 'cli-chk-0-b'],
+      1: ['cli-chk-1'],
+      2: ['cli-chk-2'],
+      3: ['cli-chk-3'],
+      4: ['cli-chk-4'],
+      5: ['cli-chk-5'],
+      6: ['cli-chk-6-a', 'cli-chk-6-b'],
+    };
+    const CLI_TOTAL = 6;
+
+    function cliUpdateStep(stepNum) {
+      const checks = CLI_CHECKS[stepNum] || [];
+      const allDone = checks.every(id => document.getElementById(id)?.checked);
+      const btn = document.getElementById(`cli-btn-${stepNum}`);
+      if (btn) btn.disabled = !allDone;
+    }
+
+    function cliCompleteStep(stepNum) {
+      try {
+        const s = JSON.parse(localStorage.getItem('meitheal_cli_v1') || '{}');
+        (CLI_CHECKS[stepNum] || []).forEach(id => { s[id] = true; });
+        s[`done_${stepNum}`] = true;
+        localStorage.setItem('meitheal_cli_v1', JSON.stringify(s));
+      } catch (e) {}
+
+      const next = stepNum + 1;
+      if (next <= CLI_TOTAL) {
+        const el = document.getElementById(`cli-step-${next}`);
+        if (el) {
+          el.classList.add('cli-active');
+          setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+        }
+      } else {
+        const fin = document.getElementById('cli-final');
+        if (fin) {
+          fin.style.display = 'block';
+          setTimeout(() => fin.scrollIntoView({ behavior: 'smooth' }), 200);
+        }
+      }
+    }
+
+    function cliRestoreProgress() {
+      try {
+        const s = JSON.parse(localStorage.getItem('meitheal_cli_v1') || '{}');
+        let lastDone = -1;
+        for (let i = 0; i <= CLI_TOTAL; i++) {
+          if (s[`done_${i}`]) {
+            (CLI_CHECKS[i] || []).forEach(id => {
+              const el = document.getElementById(id);
+              if (el) el.checked = true;
+            });
+            lastDone = i;
+          }
+        }
+        // Show steps 0 through lastDone+1
+        const showUpTo = Math.min(lastDone + 1, CLI_TOTAL);
+        for (let i = 0; i <= showUpTo; i++) {
+          const el = document.getElementById(`cli-step-${i}`);
+          if (el) el.classList.add('cli-active');
+        }
+        if (s[`done_${CLI_TOTAL}`]) {
+          const fin = document.getElementById('cli-final');
+          if (fin) fin.style.display = 'block';
+        }
+        // Update all button states
+        for (let i = 0; i <= CLI_TOTAL; i++) cliUpdateStep(i);
+      } catch (e) {}
+    }
+
     function init() {
+      // Restore CLI progress
+      cliRestoreProgress();
+
       // First step always active
       document.getElementById('step-1').classList.add('active');
 
