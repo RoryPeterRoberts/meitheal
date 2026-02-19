@@ -969,6 +969,99 @@
       color: var(--color-status-accepted);
     }
 
+    /* ---- Library panel --------------------------------- */
+    .library-panel { max-width: 760px; }
+
+    .library-filters {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-5);
+    }
+
+    .lib-filter-btn {
+      padding: var(--space-1) var(--space-3);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .lib-filter-btn:hover { border-color: var(--color-primary-lighter); color: var(--color-text); }
+    .lib-filter-btn.active { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-text-inverse); }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .lib-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .lib-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .lib-card-emoji { font-size: 24px; flex-shrink: 0; line-height: 1; padding-top: 2px; }
+
+    .lib-card-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      line-height: var(--line-height-tight);
+      margin-bottom: 2px;
+    }
+
+    .lib-card-category {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-light);
+    }
+
+    .lib-card-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-relaxed);
+      flex: 1;
+    }
+
+    .lib-add-btn {
+      width: 100%;
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      margin-top: auto;
+    }
+
+    .lib-add-btn:hover:not(:disabled) { background: var(--color-primary-dark); }
+    .lib-add-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .lib-add-btn.queued { background: var(--color-status-accepted); }
+
     @media (max-width: 768px) {
       body { grid-template-columns: 1fr; }
       .sidebar { display: none; }
@@ -1006,6 +1099,9 @@
       </button>
       <button class="nav-item" data-panel="settings" onclick="showPanel('settings', this)">
         <span class="nav-icon">⚙️</span> Settings
+      </button>
+      <button class="nav-item" data-panel="library" onclick="showPanel('library', this)">
+        <span class="nav-icon">📚</span> Feature library
       </button>
 
       <div class="nav-section-label">Navigate to</div>
@@ -1256,6 +1352,25 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- Feature library panel -->
+    <div class="panel" id="panel-library">
+      <div class="library-panel">
+        <h2 class="section-title">Feature library</h2>
+        <p class="section-sub" style="margin-bottom:var(--space-5);font-size:var(--font-size-sm);color:var(--color-text-muted)">Pre-written features ready to build. Add any to your build queue — the agent will build them from there.</p>
+        <div class="library-filters">
+          <button class="lib-filter-btn active" onclick="filterLibrary('all', this)">All</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('general', this)">General</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('neighbourhood', this)">Neighbourhood</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('mutual_aid', this)">Mutual Aid</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('sports', this)">Sports</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('housing', this)">Housing</button>
+        </div>
+        <div class="library-grid" id="library-grid">
+          <div style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Loading…</div>
+        </div>
       </div>
     </div>
 
@@ -1896,11 +2011,12 @@
       document.querySelectorAll('.nav-item[data-panel]').forEach(b => b.classList.remove('active'));
       document.getElementById(`panel-${panelId}`).classList.add('active');
       if (btn) btn.classList.add('active');
-      const titles = { overview: 'Overview', build: 'Build queue', members: 'Members', settings: 'Settings' };
+      const titles = { overview: 'Overview', build: 'Build queue', members: 'Members', settings: 'Settings', library: 'Feature library' };
       document.getElementById('main-title').textContent = titles[panelId] || panelId;
       if (panelId === 'members' && !membersLoaded) loadMembers();
       if (panelId === 'settings') loadSettings();
       if (panelId === 'build') loadBuildHistory();
+      if (panelId === 'library') loadLibrary();
     }
 
     // ---- Settings ----
@@ -2028,6 +2144,152 @@
       if (hours < 24) return `${hours}h ago`;
       if (days  < 30) return `${days}d ago`;
       return new Date(ts).toLocaleDateString('en-IE', { day: 'numeric', month: 'short' });
+    }
+
+    // ---- Feature Library ----
+
+    const FEATURE_LIBRARY = [
+      {
+        id: 'noticeboard', emoji: '📌', title: 'Noticeboard', category: 'general',
+        desc: 'Admins post announcements and notices. Members see a chronological feed.',
+        brief: `Build a community noticeboard page (noticeboard.html).\n\nAdmins and stewards can post notices. Members read only.\n\nDatabase: Create a \`notices\` table: id uuid pk, title text not null, body text, author_id uuid refs members, pinned boolean default false, created_at timestamptz default now(). RLS: all authenticated can read; admin/steward can insert/update/delete.\n\nPage: standard member page (auth, back button to home, feedback widget). Title "Noticeboard", subtitle "Announcements from your community". If admin/steward: inline form at top (title input, body textarea, pinned checkbox, post button). List notices newest first, pinned always at top with a pin indicator. Each card: title bold, body, date, author name. Admin sees delete button. Empty state: "No notices yet."\n\nAdd nav card to home.html (emoji 📌, title "Noticeboard", desc "Announcements from your community"). Update AGENT.md.`,
+      },
+      {
+        id: 'events', emoji: '📅', title: 'Events', category: 'general',
+        desc: 'Upcoming community events. Admins add events; members browse.',
+        brief: `Build a community events page (events.html).\n\nAdmins/stewards post events. Members view.\n\nDatabase: Create an \`events\` table: id uuid pk, title text not null, description text, location text, event_date date not null, event_time text, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Events". If admin/steward: inline form (title, date, time optional, location optional, description). Events in date order grouped by month for large lists. Past events hidden with show toggle. Each card: date displayed prominently (large day number, month text), title, time, location, description. Admin delete button. Empty state: "No upcoming events."\n\nAdd nav card to home.html (emoji 📅, title "Events", desc "What's coming up"). Update AGENT.md.`,
+      },
+      {
+        id: 'faq', emoji: '❓', title: 'FAQ', category: 'general',
+        desc: 'Frequently asked questions and answers that admins manage. Accordion UI.',
+        brief: `Build a FAQ page (faq.html).\n\nAdmins manage Q&A pairs. Members read.\n\nDatabase: Create a \`faqs\` table: id uuid pk, question text not null, answer text not null, sort_order int default 0, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "FAQ", subtitle "Common questions answered". If admin/steward: inline add form (question, answer textarea). FAQs as accordion: question is header, click to expand answer, one open at a time. Admin delete button on each item. Empty state: "No FAQs yet. Admins can add common questions."\n\nAdd nav card to home.html (emoji ❓, title "FAQ", desc "Common questions answered"). Update AGENT.md.`,
+      },
+      {
+        id: 'resources', emoji: '📋', title: 'Resource Library', category: 'general',
+        desc: 'Curated links and documents for members. Admins manage; members browse by category.',
+        brief: `Build a resource library page (resources.html).\n\nAdmins curate useful links and documents. Members browse.\n\nDatabase: Create a \`resources\` table: id uuid pk, title text not null, url text, description text, category text default 'general', author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Resources", subtitle "Useful links and information". If admin/steward: inline form (title, URL, category dropdown [General/Documents/Contacts/External], description). Resources grouped by category with section headers. Each item: title as link (opens new tab), description, category chip, admin delete button. Empty state: "No resources yet."\n\nAdd nav card to home.html (emoji 📋, title "Resources", desc "Useful links and documents"). Update AGENT.md.`,
+      },
+      {
+        id: 'poll', emoji: '🗳️', title: 'Community Poll', category: 'general',
+        desc: 'Admins post polls with 2–4 options. Members vote once. Results shown after voting.',
+        brief: `Build a community polls page (polls.html).\n\nAdmins create polls. Each member votes once per poll. Results shown after voting.\n\nDatabase: Create a \`polls\` table: id uuid pk, question text not null, options jsonb not null (array of strings), status text default 'open', author_id uuid refs members, closes_at timestamptz, created_at timestamptz default now(). Create a \`poll_votes\` table: id uuid pk, poll_id uuid refs polls on delete cascade, member_id uuid refs members, option_index int not null, created_at timestamptz default now(), UNIQUE(poll_id, member_id). RLS: all authenticated read both tables; member inserts own vote; admin/steward insert/update/delete polls.\n\nPage: standard member page. Title "Polls", subtitle "Have your say". If admin/steward: inline form (question, 2–4 option inputs, optional close date). Each poll: if member hasn't voted, show option buttons; after voting show results as percentage bars with counts. Winning option highlighted. Closed polls show results to all. Admin sees close poll button. Empty state: "No polls yet."\n\nAdd nav card to home.html (emoji 🗳️, title "Polls", desc "Have your say"). Update AGENT.md.`,
+      },
+      {
+        id: 'lost-found', emoji: '🔍', title: 'Lost & Found', category: 'neighbourhood',
+        desc: 'Members post lost or found items. Open until marked resolved.',
+        brief: `Build a lost & found page (lost-found.html).\n\nAny member can post a lost or found item.\n\nDatabase: Create a \`lost_found\` table: id uuid pk, type text check in ('lost','found'), title text not null, description text, location text, contact text, status text default 'open', author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; member inserts own; author or admin updates status.\n\nPage: standard member page. Title "Lost & Found". Inline post form (type toggle Lost/Found, title, description, location optional, contact optional). Filter tabs: All / Lost / Found. Cards: type badge (red=Lost, green=Found), title, description, location, date, posted by name. "Mark resolved" button for author or admin. Resolved posts faded at bottom. Empty state: "Nothing reported yet."\n\nAdd nav card to home.html (emoji 🔍, title "Lost & Found", desc "Lost something? Found something?"). Update AGENT.md.`,
+      },
+      {
+        id: 'neighbours', emoji: '🏘️', title: 'Neighbour Help', category: 'neighbourhood',
+        desc: 'Members post help requests or offers. Simple board to match people who need with people who can.',
+        brief: `Build a neighbour help page (help.html).\n\nMembers post requests for help or offers to help.\n\nDatabase: Create a \`help_posts\` table: id uuid pk, type text check in ('request','offer'), title text not null, description text, member_id uuid refs members, status text default 'open', created_at timestamptz default now(). RLS: all authenticated read; member inserts own; author or admin updates.\n\nPage: standard member page. Title "Neighbour Help", subtitle "Ask for or offer a hand". Post button opens inline form (type toggle Need Help / Can Help, title, description). Filter tabs: All / Needing Help / Offering Help. Cards: type badge (amber=Need Help, green=Can Help), title, description, posted by name, date. "Mark done" for own post or admin. Resolved posts grayed at bottom. Empty state: "Nothing posted yet."\n\nAdd nav card to home.html (emoji 🏘️, title "Neighbour Help", desc "Ask for or offer a hand"). Update AGENT.md.`,
+      },
+      {
+        id: 'skills', emoji: '🤝', title: 'Skills Exchange', category: 'mutual_aid',
+        desc: 'Members list skills they offer or need. Browse and connect.',
+        brief: `Build a skills exchange page (skills.html).\n\nMembers list skills to offer or skills they need.\n\nDatabase: Create a \`skills\` table: id uuid pk, type text check in ('offer','need'), skill text not null, description text, member_id uuid refs members, active boolean default true, created_at timestamptz default now(). RLS: all authenticated read active skills; member inserts/updates/deletes own.\n\nPage: standard member page. Title "Skills Exchange", subtitle "Offer or find skills in your community". Inline add form (type toggle Offering/Needed, skill name, description optional). Filter tabs: All / Offering / Needed. Cards: type badge (green=Offering, amber=Needed), skill name, description, member name. Remove button on own posts. My Skills section at top for member's own listings. Empty state: "No skills listed yet."\n\nAdd nav card to home.html (emoji 🤝, title "Skills", desc "Offer or find skills in your community"). Update AGENT.md.`,
+      },
+      {
+        id: 'sharing', emoji: '📦', title: 'Items to Share', category: 'mutual_aid',
+        desc: 'Members post items to lend or give away. Browse what\'s available.',
+        brief: `Build an items-to-share page (sharing.html).\n\nMembers post items to lend or give away.\n\nDatabase: Create a \`sharing\` table: id uuid pk, type text check in ('lend','give'), title text not null, description text, condition text, member_id uuid refs members, available boolean default true, created_at timestamptz default now(). RLS: all authenticated read; member inserts/updates/deletes own.\n\nPage: standard member page. Title "Sharing", subtitle "Borrow, lend, and share in the community". Inline form (type toggle Lending / Giving Away, item name, description, condition optional). Filter tabs: All / Lending / Giving Away. Cards: type badge (blue=Lending, green=Giving), item title, description, condition, posted by name, date. Mark unavailable button for own posts or admin. My Listings section at top. Empty state: "Nothing listed yet."\n\nAdd nav card to home.html (emoji 📦, title "Sharing", desc "Borrow, lend, and share"). Update AGENT.md.`,
+      },
+      {
+        id: 'fixtures', emoji: '⚽', title: 'Fixtures & Results', category: 'sports',
+        desc: 'Upcoming matches and recorded results. Win/draw/loss calculated automatically.',
+        brief: `Build a fixtures and results page (fixtures.html).\n\nAdmins post upcoming fixtures and record results after matches.\n\nDatabase: Create a \`fixtures\` table: id uuid pk, opponent text not null, venue text, fixture_date date not null, fixture_time text, home_away text check in ('home','away','neutral') default 'home', score_us int, score_them int, notes text, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Fixtures & Results". If admin/steward: inline form to add fixture (opponent, date, time optional, home/away/neutral, venue optional). Edit button on each card for admin to add scores. Upcoming section: no scores, in date order. Results section: scores recorded, newest first, W/D/L badge colour-coded calculated from scores. Cards show date, opponent, home/away badge, venue, time, notes, score if recorded. Empty state: "No fixtures added yet."\n\nAdd nav card to home.html (emoji ⚽, title "Fixtures", desc "Upcoming matches and results"). Update AGENT.md.`,
+      },
+      {
+        id: 'maintenance', emoji: '🔧', title: 'Maintenance Log', category: 'housing',
+        desc: 'Members submit maintenance requests. Admins track and update status.',
+        brief: `Build a maintenance request log (maintenance.html).\n\nMembers submit issues; admins update status.\n\nDatabase: Create a \`maintenance\` table: id uuid pk, title text not null, description text, location text, priority text check in ('low','medium','high') default 'medium', status text check in ('open','in_progress','done') default 'open', submitted_by uuid refs members, assigned_note text, created_at timestamptz default now(), updated_at timestamptz default now(). RLS: all authenticated read; member inserts own; admin/steward updates.\n\nPage: standard member page. Title "Maintenance", subtitle "Report and track maintenance issues". Report button opens inline form (title, description, location, priority). Filter tabs: All / Open / In Progress / Done. Stat at top showing count of open issues. Cards: status badge colour-coded, priority indicator, title, description, location, submitted by, date, admin note if set. Admin/steward: inline status dropdown and note field on each card. Empty state: "No issues reported."\n\nAdd nav card to home.html (emoji 🔧, title "Maintenance", desc "Report and track maintenance issues"). Update AGENT.md.`,
+      },
+      {
+        id: 'minutes', emoji: '📝', title: 'Meeting Minutes', category: 'housing',
+        desc: 'Archive of meeting minutes. Admins post after each meeting; members browse the record.',
+        brief: `Build a meeting minutes archive page (minutes.html).\n\nAdmins post minutes after meetings. All members can read the archive.\n\nDatabase: Create a \`meeting_minutes\` table: id uuid pk, meeting_date date not null, title text not null, body text not null, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Meeting Minutes", subtitle "A record of every meeting". If admin/steward: inline form (meeting date, title e.g. "AGM January 2026", body textarea). Minutes listed newest first. Each entry: date prominent, title, body text preserving line breaks (show first 200 chars with expand button for longer entries), posted by name. Admin delete button. Empty state: "No minutes posted yet."\n\nAdd nav card to home.html (emoji 📝, title "Meeting Minutes", desc "A record of every meeting"). Update AGENT.md.`,
+      },
+    ];
+
+    const CAT_LABELS = { general: 'General', neighbourhood: 'Neighbourhood', mutual_aid: 'Mutual Aid', sports: 'Sports', housing: 'Housing' };
+    let libCurrentCat = 'all';
+    let libQueuedTitles = new Set();
+    let libLoaded = false;
+
+    async function loadLibrary() {
+      if (libLoaded) return;
+      try {
+        const { data } = await getSupabase().from('proposals').select('title');
+        libQueuedTitles = new Set((data || []).map(p => p.title.toLowerCase()));
+      } catch (e) { /* non-fatal */ }
+      libLoaded = true;
+      renderLibrary();
+    }
+
+    function filterLibrary(cat, btn) {
+      libCurrentCat = cat;
+      document.querySelectorAll('.lib-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderLibrary();
+    }
+
+    function renderLibrary() {
+      const grid = document.getElementById('library-grid');
+      if (!grid) return;
+      const features = libCurrentCat === 'all' ? FEATURE_LIBRARY : FEATURE_LIBRARY.filter(f => f.category === libCurrentCat);
+      if (features.length === 0) {
+        grid.innerHTML = '<div style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No features in this category.</div>';
+        return;
+      }
+      grid.innerHTML = features.map(f => {
+        const queued = libQueuedTitles.has(f.title.toLowerCase());
+        return `
+          <div class="lib-card">
+            <div class="lib-card-top">
+              <span class="lib-card-emoji">${f.emoji}</span>
+              <div>
+                <div class="lib-card-title">${escHtml(f.title)}</div>
+                <div class="lib-card-category">${CAT_LABELS[f.category] || f.category}</div>
+              </div>
+            </div>
+            <div class="lib-card-desc">${escHtml(f.desc)}</div>
+            <button class="lib-add-btn${queued ? ' queued' : ''}" ${queued ? 'disabled' : ''} onclick="addLibraryFeature('${f.id}', this)">
+              ${queued ? '✓ In queue' : '+ Add to build queue'}
+            </button>
+          </div>`;
+      }).join('');
+    }
+
+    async function addLibraryFeature(featureId, btn) {
+      const feature = FEATURE_LIBRARY.find(f => f.id === featureId);
+      if (!feature || !currentAdmin) return;
+      btn.disabled = true;
+      btn.textContent = 'Adding…';
+      try {
+        const { error } = await getSupabase().from('proposals').insert([{
+          feedback_id:  null,
+          title:        feature.title,
+          description:  feature.brief,
+          promoted_by:  currentAdmin.id,
+          approved_by:  currentAdmin.id,
+          status:       'approved',
+        }]);
+        if (error) throw error;
+        libQueuedTitles.add(feature.title.toLowerCase());
+        btn.textContent = '✓ In queue';
+        btn.classList.add('queued');
+        // Refresh build badge
+        const buildBadge = document.getElementById('build-badge');
+        if (buildBadge) {
+          const count = parseInt(buildBadge.textContent || '0') + 1;
+          buildBadge.textContent = count;
+          buildBadge.style.display = 'inline-flex';
+        }
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = '+ Add to build queue';
+        alert('Could not add to queue: ' + e.message);
+      }
     }
 
     function escHtml(str) {

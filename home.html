@@ -349,7 +349,7 @@
     </section>
 
     <div class="charter">
-      <p>This is your community's platform — built by your neighbours, shaped by everyone. Share ideas below or tap the button in any page corner. When approved, they get built here.</p>
+      <p id="charter-text">This is your community's platform — built by your neighbours, shaped by everyone. Share ideas below or tap the button in any page corner. When approved, they get built here.</p>
     </div>
 
     <button class="cta-btn" onclick="openFeedbackWidget()">
@@ -457,11 +457,15 @@
         document.getElementById('footer-right').insertAdjacentElement('afterbegin', link);
       }
 
-      const { data: settings } = await getSupabase()
-        .from('settings').select('value').eq('key', 'community_name').single();
-      const communityName = settings?.value || 'Community';
+      const { data: settingsRows } = await getSupabase()
+        .from('settings').select('key, value').in('key', ['community_name', 'community_charter']);
+      const settingsMap = Object.fromEntries((settingsRows || []).map(r => [r.key, r.value]));
+      const communityName = settingsMap.community_name || 'Community';
       document.getElementById('community-name').textContent = communityName;
       document.getElementById('community-label').textContent = communityName;
+      if (settingsMap.community_charter) {
+        document.getElementById('charter-text').textContent = settingsMap.community_charter.split('\n\n')[0];
+      }
 
       // Badge = pending validations + ideas that were promoted to a proposal (progress update)
       Promise.all([
