@@ -493,6 +493,128 @@
       margin: var(--space-6) 0;
     }
 
+    /* Path toggle */
+    .path-toggle {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-8);
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-1);
+    }
+
+    .path-btn {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      border: none;
+      border-radius: var(--radius-md);
+      background: transparent;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .path-btn.active {
+      background: var(--color-bg-card);
+      color: var(--color-text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* CLI path */
+    .cli-path { display: none; }
+    .cli-path.visible { display: block; }
+
+    .cli-step {
+      margin-bottom: var(--space-6);
+    }
+
+    .cli-step-label {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+      font-family: var(--font-family);
+    }
+
+    .cli-step-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .cli-step-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-3);
+    }
+
+    .cli-step-desc a { color: var(--color-primary); }
+
+    .cmd-block {
+      position: relative;
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+    }
+
+    .cmd-block pre {
+      margin: 0;
+      padding: var(--space-4);
+      font-family: monospace;
+      font-size: var(--font-size-sm);
+      color: #e0e0e0;
+      overflow-x: auto;
+      line-height: 1.7;
+    }
+
+    .cmd-block pre .comment { color: #555; }
+    .cmd-block pre .prompt  { color: #4b8cf5; user-select: none; }
+
+    .cmd-copy {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      padding: 3px 10px;
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-size: 11px;
+      color: #999;
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .cmd-copy:hover { background: #3a3a3a; color: #fff; }
+    .cmd-copy.copied { background: var(--color-status-accepted); color: white; border-color: var(--color-status-accepted); }
+
+    .cli-note {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-relaxed);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-primary-bg);
+      border-left: 3px solid var(--color-primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: var(--space-3);
+    }
+
+    .cli-divider {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: var(--space-6) 0;
+    }
+
     /* AI provider section */
     .ai-section {
       margin-bottom: var(--space-5);
@@ -622,6 +744,141 @@
       </div>
     </div>
 
+    <!-- Path toggle -->
+    <div class="path-toggle">
+      <button class="path-btn active" id="btn-cli" onclick="setPath('cli')">Command line <span style="font-size:10px;opacity:0.7">(recommended)</span></button>
+      <button class="path-btn" id="btn-browser" onclick="setPath('browser')">Browser guide</button>
+    </div>
+
+    <!-- CLI path -->
+    <div class="cli-path visible" id="cli-path">
+
+      <div class="cli-step">
+        <div class="cli-step-label">Before you start</div>
+        <div class="cli-step-title">What you need</div>
+        <div class="cli-step-desc">
+          You'll need free accounts on <a href="https://github.com/signup" target="_blank">GitHub ↗</a>,
+          <a href="https://supabase.com/dashboard/sign-up" target="_blank">Supabase ↗</a>, and
+          <a href="https://vercel.com/signup" target="_blank">Vercel ↗</a> — plus
+          <strong>git</strong> and <strong>Node.js</strong> installed on your machine.
+        </div>
+        <details style="margin-top:var(--space-2)">
+          <summary style="font-size:var(--font-size-sm);color:var(--color-primary);cursor:pointer;list-style:none;display:flex;align-items:center;gap:var(--space-2)">
+            <span id="terminal-arrow" style="font-size:10px">▶</span> How do I open a terminal?
+          </summary>
+          <div style="margin-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)">
+            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);padding:var(--space-3) var(--space-4);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md)">
+              <strong style="color:var(--color-text)">Mac</strong> — Press <kbd style="font-family:monospace;background:var(--color-border);padding:1px 5px;border-radius:3px">⌘ Space</kbd>, type <em>Terminal</em>, press Enter
+            </div>
+            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);padding:var(--space-3) var(--space-4);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md)">
+              <strong style="color:var(--color-text)">Windows</strong> — Press <kbd style="font-family:monospace;background:var(--color-border);padding:1px 5px;border-radius:3px">Win</kbd>, type <em>PowerShell</em>, press Enter
+            </div>
+            <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);padding:var(--space-3) var(--space-4);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md)">
+              <strong style="color:var(--color-text)">Linux</strong> — Press <kbd style="font-family:monospace;background:var(--color-border);padding:1px 5px;border-radius:3px">Ctrl Alt T</kbd>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <hr class="cli-divider">
+
+      <div class="cli-step">
+        <div class="cli-step-label">Step 1</div>
+        <div class="cli-step-title">Install the CLI tools</div>
+        <div class="cmd-block">
+          <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+          <pre><span class="prompt">$ </span>npm install -g vercel supabase</pre>
+        </div>
+      </div>
+
+      <div class="cli-step">
+        <div class="cli-step-label">Step 2</div>
+        <div class="cli-step-title">Clone the platform into your own repo</div>
+        <div class="cli-step-desc">
+          First, <a href="https://github.com/RoryPeterRoberts/meitheal/fork" target="_blank">fork the repo on GitHub ↗</a>
+          into your account. Then clone your fork:
+        </div>
+        <div class="cmd-block">
+          <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+          <pre><span class="prompt">$ </span>git clone https://github.com/YOUR_USERNAME/meitheal my-community
+<span class="prompt">$ </span>cd my-community</pre>
+        </div>
+      </div>
+
+      <div class="cli-step">
+        <div class="cli-step-label">Step 3</div>
+        <div class="cli-step-title">Create your Supabase project and run migrations</div>
+        <div class="cli-step-desc">
+          Go to <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard ↗</a>
+          and create a new project. Once ready, note your <strong>project ref</strong>
+          (the part before <code>.supabase.co</code> in your project URL — e.g. <code>abcdefgh</code>).
+          Then:
+        </div>
+        <div class="cmd-block">
+          <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+          <pre><span class="prompt">$ </span>supabase login
+<span class="prompt">$ </span>supabase link --project-ref YOUR_PROJECT_REF
+<span class="prompt">$ </span>supabase db push</pre>
+        </div>
+        <div class="cli-note">
+          This runs all the database migrations automatically — no SQL editor needed.
+        </div>
+      </div>
+
+      <div class="cli-step">
+        <div class="cli-step-label">Step 4</div>
+        <div class="cli-step-title">Configure your environment</div>
+        <div class="cli-step-desc">
+          Copy the example env file and fill in your values. You'll find your Supabase keys at
+          <a href="https://supabase.com/dashboard" target="_blank">supabase.com/dashboard ↗</a>
+          → Project Settings → API. Your GitHub token comes from
+          <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens ↗</a>
+          (repo scope, no expiry).
+        </div>
+        <div class="cmd-block">
+          <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+          <pre><span class="prompt">$ </span>cp .env.example .env.local
+<span class="comment"># Open .env.local and fill in your Supabase keys, GitHub token, and AI key</span></pre>
+        </div>
+      </div>
+
+      <div class="cli-step">
+        <div class="cli-step-label">Step 5</div>
+        <div class="cli-step-title">Deploy to Vercel</div>
+        <div class="cmd-block">
+          <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+          <pre><span class="prompt">$ </span>vercel login
+<span class="prompt">$ </span>vercel --prod</pre>
+        </div>
+        <div class="cli-step-desc">
+          Vercel will give you a URL like <code>my-community.vercel.app</code>.
+        </div>
+      </div>
+
+      <div class="cli-step">
+        <div class="cli-step-label">Step 6</div>
+        <div class="cli-step-title">Run the setup wizard</div>
+        <div class="cli-step-desc">
+          Open your deployment URL and add <code>/setup.html</code>:
+        </div>
+        <div class="cmd-block">
+          <button class="cmd-copy" onclick="copyCmd(this)">Copy</button>
+          <pre><span class="prompt">$ </span>open https://my-community.vercel.app/setup.html</pre>
+        </div>
+        <div class="cli-step-desc">
+          Fill in your community name, admin email, and AI provider. A sign-in link will arrive by email — click it and you're in as admin.
+        </div>
+      </div>
+
+      <div class="final-cta" style="display:block">
+        <div class="final-emoji">🎉</div>
+        <div class="final-title">That's it</div>
+        <div class="final-desc">Six commands and your community platform is live.</div>
+      </div>
+
+    </div><!-- end cli-path -->
+
+    <div id="browser-path" style="display:none">
     <div class="progress-wrap">
       <div class="progress-meta">
         <span id="progress-label">Step 1 of 5</span>
@@ -921,9 +1178,36 @@
 
     <span class="reset-link" onclick="resetProgress()">Start over</span>
 
+    </div><!-- end browser-path -->
+
   </div>
 
   <script>
+    // ---- Path toggle ----
+    function setPath(path) {
+      const isCli = path === 'cli';
+      document.getElementById('btn-cli').classList.toggle('active', isCli);
+      document.getElementById('btn-browser').classList.toggle('active', !isCli);
+      document.getElementById('cli-path').classList.toggle('visible', isCli);
+      document.getElementById('browser-path').style.display = isCli ? 'none' : '';
+    }
+
+    // ---- Copy terminal command ----
+    function copyCmd(btn) {
+      const pre = btn.closest('.cmd-block').querySelector('pre');
+      // Extract text, stripping the non-selectable prompt characters
+      const text = Array.from(pre.childNodes)
+        .filter(n => !n.classList?.contains('prompt'))
+        .map(n => n.textContent)
+        .join('')
+        .trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
     const TOTAL = 5;
     const CHECKS = {
       1: ['chk-github', 'chk-supabase', 'chk-vercel'],
