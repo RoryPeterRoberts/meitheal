@@ -100,15 +100,28 @@ The wizard will:
 
 ---
 
-## After setup — your first three moves
+## After setup — before you invite anyone
 
-You've signed in. Your community's platform is live. Here's what to do next:
+**Personalise your invite email first.** When you invite a member, they receive a magic link email sent by Supabase. By default it has no community name and no explanation — just a generic "Your magic link" subject line. A non-technical person receiving that has no idea who sent it or why.
+
+Fix it in two minutes:
+
+1. Go to your Supabase dashboard → **Authentication → Email Templates → Magic Link**
+2. Change the subject line — e.g. *"You've been invited to join Blackwater"*
+3. Edit the body to explain what they've been invited to — one or two sentences is enough
+4. Optionally set a custom sender name under **Authentication → SMTP Settings** so it comes from your own email address rather than Supabase's
+
+The setup wizard shows you this step and gives you a direct link to the right page.
+
+---
+
+## After setup — your first moves
 
 1. **Invite your first members** — Admin panel → Members → enter their name and email → Send invite. They'll get a magic link.
-2. **Post a welcome notice** — Go to the community home → Noticeboard → write something welcoming.
-3. **Submit your own first idea** — Tap the button on any page and share something you'd like. This shows members how the feedback loop works.
+2. **Submit your own first idea** — Tap the feedback button on any page and share something you'd like to build. This seeds the queue and shows members how the loop works when they join.
+3. **Triage incoming ideas** — when members submit feedback, it lands in Triage. Promote the good ones to proposals, approve them when ready, and the AI builds them.
 
-When ideas come in, you'll see them in **Triage**. Promote the good ones to proposals, approve them when ready, and the AI builds them. Every build is logged in the changelog with credit to the member who suggested it.
+Every build is logged in the changelog with credit to the member who suggested it.
 
 ---
 
