@@ -2282,20 +2282,21 @@
       }
       grid.innerHTML = features.map(f => {
         const existing = libProposals.get(f.title.toLowerCase());
-        let btnLabel, btnExtra = '', btnDisabled = false;
+        let btnLabel, btnClass = 'lib-add-btn', btnStyle = '', btnOnclick = '', btnDisabled = false;
         if (!existing) {
-          btnLabel = '+ Add to build queue';
+          btnLabel   = '+ Add to build queue';
+          btnOnclick = `onclick="addLibraryFeature('${f.id}', this)"`;
         } else if (existing.status === 'building') {
-          btnLabel = '⚠️ Reset & retry →';
-          btnExtra = ` style="background:var(--color-status-hold)" onclick="retryBuild('${existing.id}', ${JSON.stringify(f.title)})"`;
-          btnDisabled = false;
+          btnLabel   = '⚠️ Reset &amp; retry →';
+          btnStyle   = 'background:var(--color-status-hold);color:#fff;';
+          btnOnclick = `onclick="retryBuild('${existing.id}', ${JSON.stringify(f.title)})"`;
         } else if (existing.status === 'done') {
-          btnLabel = '✓ Built';
-          btnExtra = ' class="lib-add-btn queued"';
+          btnLabel    = '✓ Built';
+          btnClass   += ' queued';
           btnDisabled = true;
         } else {
-          btnLabel = '✓ In queue';
-          btnExtra = ' class="lib-add-btn queued"';
+          btnLabel    = '✓ In queue';
+          btnClass   += ' queued';
           btnDisabled = true;
         }
         return `
@@ -2308,7 +2309,7 @@
               </div>
             </div>
             <div class="lib-card-desc">${escHtml(f.desc)}</div>
-            <button class="lib-add-btn"${btnExtra} ${btnDisabled ? 'disabled' : `onclick="addLibraryFeature('${f.id}', this)"`}>
+            <button class="${btnClass}" style="${btnStyle}" ${btnOnclick} ${btnDisabled ? 'disabled' : ''}>
               ${btnLabel}
             </button>
           </div>`;
