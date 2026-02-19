@@ -2328,16 +2328,16 @@
       btn.disabled = true;
       btn.textContent = 'Adding…';
       try {
-        const { error } = await getSupabase().from('proposals').insert([{
+        const { data, error } = await getSupabase().from('proposals').insert([{
           feedback_id:  null,
           title:        feature.title,
           description:  feature.brief,
           promoted_by:  currentAdmin.id,
           approved_by:  currentAdmin.id,
           status:       'approved',
-        }]);
+        }]).select();
         if (error) throw error;
-        libProposals.set(feature.title.toLowerCase(), { status: 'approved', id: data[0]?.id });
+        libProposals.set(feature.title.toLowerCase(), { status: 'approved', id: data?.[0]?.id });
         btn.textContent = '✓ In queue';
         btn.classList.add('queued');
         // Refresh build badge
