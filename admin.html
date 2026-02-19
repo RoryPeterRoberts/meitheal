@@ -2285,9 +2285,9 @@
           btnLabel   = '+ Add to build queue';
           btnOnclick = `onclick="addLibraryFeature('${f.id}', this)"`;
         } else if (existing.status === 'building') {
-          btnLabel   = '⚠️ Reset &amp; retry →';
+          btnLabel   = '⚠️ Reset & retry →';
           btnStyle   = 'background:var(--color-status-hold);color:#fff;';
-          btnOnclick = `onclick="retryBuild('${existing.id}', ${JSON.stringify(f.title)})"`;
+          btnOnclick = `data-id="${existing.id}" data-title="${escHtml(f.title)}" onclick="retryBuild(this.dataset.id, this.dataset.title)"`;
         } else if (existing.status === 'done') {
           btnLabel    = '✓ Built';
           btnClass   += ' queued';
