@@ -1424,6 +1424,7 @@
         const newFeedback  = allFeedback.filter(f => f.status === 'new');
         const proposed     = allProposals.filter(p => p.status === 'proposed');
         const approved     = allProposals.filter(p => p.status === 'approved');
+        const stuck        = allProposals.filter(p => p.status === 'building');
         const done         = allProposals.filter(p => p.status === 'done');
 
         // Stats
@@ -1447,7 +1448,7 @@
 
         renderFeedbackPreview(newFeedback);
         renderKanban(allProposals);
-        renderApprovedQueue(approved);
+        renderApprovedQueue(approved, stuck);
 
       } catch (e) {
         console.error('Overview error:', e);
@@ -1526,13 +1527,26 @@
 
     // ---- Build queue ----
 
-    function renderApprovedQueue(approved) {
+    function renderApprovedQueue(approved, stuck = []) {
       const el = document.getElementById('approved-queue');
-      if (approved.length === 0) {
+      if (approved.length === 0 && stuck.length === 0) {
         el.innerHTML = '<div class="empty-state">No approved proposals ready to build. Approve a proposal in the Overview to add it here.</div>';
         return;
       }
-      el.innerHTML = approved.map(p => `
+      const stuckHtml = stuck.map(p => `
+        <div class="approved-card" style="border-left-color:var(--color-status-review)">
+          <div class="approved-info">
+            <div class="approved-title">${escHtml(p.title)}</div>
+            <div class="approved-meta" style="color:var(--color-status-review)">⚠️ Build interrupted — reset to retry</div>
+          </div>
+          <div class="approved-actions">
+            <button class="start-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="retryBuild(this.dataset.id, this.dataset.title)">
+              Reset & retry →
+            </button>
+          </div>
+        </div>
+      `).join('');
+      const approvedHtml = approved.map(p => `
         <div class="approved-card">
           <div class="approved-info">
             <div class="approved-title">${escHtml(p.title)}</div>
@@ -1548,6 +1562,12 @@
           </div>
         </div>
       `).join('');
+      el.innerHTML = stuckHtml + approvedHtml;
+    }
+
+    async function retryBuild(proposalId, title) {
+      await resetProposalToApproved(proposalId, null);
+      startBuild(proposalId, title, false);
     }
 
     // ---- Build console ----
@@ -1636,7 +1656,7 @@
         const failRow = document.createElement('div');
         failRow.style.cssText = 'display:flex;gap:var(--space-2);margin-top:var(--space-3);flex-wrap:wrap;';
         failRow.innerHTML = `
-          <button onclick="this.parentElement.remove(); startBuild(${JSON.stringify(proposalId)}, ${JSON.stringify(title)}, false)"
+          <button onclick="this.parentElement.remove(); retryBuild(${JSON.stringify(proposalId)}, ${JSON.stringify(title)})"
             style="padding:var(--space-2) var(--space-4);background:var(--color-primary);color:var(--color-text-inverse);border:none;border-radius:var(--radius-md);font-family:var(--font-family);font-size:var(--font-size-sm);cursor:pointer;">
             Retry build
           </button>
