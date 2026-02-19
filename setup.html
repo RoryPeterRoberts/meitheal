@@ -418,8 +418,10 @@
         to request a new one.
       </div>
       <div class="done-note">
-        Your Supabase Access Token is no longer needed. You can revoke it now at
-        <a href="https://supabase.com/dashboard/account/tokens" target="_blank" style="color:var(--primary)">supabase.com/dashboard/account/tokens ↗</a>
+        Your Supabase Access Token is no longer needed — the database is set up. To revoke it:
+        go to <a href="https://supabase.com/dashboard/account/tokens" target="_blank" style="color:var(--primary)">supabase.com/dashboard/account/tokens ↗</a>,
+        find the token named <em>Meitheal setup</em>, and click <strong>Revoke</strong>.
+        You can also remove <code style="font-size:11px">SUPABASE_ACCESS_TOKEN</code> from your Vercel environment variables.
       </div>
 
       <div style="margin:20px 0;padding:16px;background:var(--bg-muted);border:1px solid var(--border);border-radius:var(--radius);text-align:left">
