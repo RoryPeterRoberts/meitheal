@@ -5,7 +5,8 @@ This file is your persistent memory. Read it before every build. Update it after
 ## Platform structure
 
 ### Member-facing pages
-- `home.html` — landing page: welcome block, nav grid (Members, What we've built, My ideas, Proposals, Charter)
+- `home.html` — landing page: welcome block, nav grid (Noticeboard, Members, What we've built, My ideas, Proposals, Charter)
+- `noticeboard.html` — community announcements, pinned posts, admin/steward posting
 - `directory.html` — member list with role badges and join dates
 - `my-feedback.html` — member's own submissions, linked proposals, validation prompts
 - `proposals.html` — full proposals board (all statuses, clarification notes)
@@ -39,6 +40,7 @@ This file is your persistent memory. Read it before every build. Update it after
 - `settings` — key/value: community_name, community_charter, ai_provider, ai_model, ai_api_key, site_url, initialized, steward_enabled, voting_enabled
 - `votes` — proposal_id→proposals, member_id→members, created_at. UNIQUE(proposal_id, member_id). Used for community voting on proposals.
   Migration: `migrations/09_votes.sql` (must be run in Supabase SQL editor)
+- `notices` — id, title, body, author_id→members, pinned, created_at
 - `ai_usage` — provider, model, prompt_tokens, completion_tokens, cost_usd, ts, conversation_id
 - `conversations` — id, messages (jsonb), updated_at
 
@@ -62,4 +64,4 @@ Never create an orphaned page. If you build something new:
 
 ## What has been built
 
-Nothing yet — this is a fresh install. Every feature this community builds will be listed here.
+- **Noticeboard** (`noticeboard.html`): A space for community announcements. Admins and stewards can post and pin notices. Members have read-only access.
