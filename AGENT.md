@@ -5,9 +5,7 @@ This file is your persistent memory. Read it before every build. Update it after
 ## Platform structure
 
 ### Member-facing pages
-- `home.html` — landing page: welcome block, nav grid (Noticeboard, Events, Members, What we've built, My feedback, Proposals)
-- `noticeboard.html` — community noticeboard for members to post and view updates
-- `events.html` — list of upcoming events with form to add new ones
+- `home.html` — landing page: welcome block, nav grid (Members, What we've built, My ideas, Proposals)
 - `directory.html` — member list with role badges and join dates
 - `my-feedback.html` — member's own submissions, linked proposals, validation prompts
 - `proposals.html` — full proposals board (all statuses, clarification notes)
@@ -23,7 +21,7 @@ This file is your persistent memory. Read it before every build. Update it after
 ### Infrastructure
 - `feedback-widget.js` — floating button on any page; members submit feedback without leaving
 - `js/auth.js` — `requireAuthAsync()` used on every member-facing page
-- `supabase.js` — shared data helpers (feedback, proposals, changelog, members, settings, notices, events)
+- `supabase.js` — shared data helpers (feedback, proposals, changelog, members, settings)
 - `theme.css` — design system: all CSS variables (colors, spacing, typography, shadows)
 - `api/agent.js` — this agent (never modify)
 - `api/link-auth.js` — links Supabase auth_id to member row on first sign-in
@@ -39,8 +37,6 @@ This file is your persistent memory. Read it before every build. Update it after
 - `settings` — key/value: community_name, ai_provider, ai_model, ai_api_key, site_url, initialized, steward_enabled, voting_enabled
 - `ai_usage` — provider, model, prompt_tokens, completion_tokens, cost_usd, ts, conversation_id
 - `conversations` — id, messages (jsonb), updated_at
-- `notices` — id, author_id→members, content, created_at
-- `events` — id, title, description, start_time, end_time, location, created_by→members, created_at
 
 ## Code conventions
 
@@ -62,5 +58,4 @@ Never create an orphaned page. If you build something new:
 
 ## What has been built
 
-- **Noticeboard** (`noticeboard.html`): A place for members to post text notices. Includes author attribution and ability for authors to delete their own posts. Linked from `home.html`.
-- **Events** (`events.html`): A simple events listing and creation page. Allows members to post upcoming events with date, time, and location. Linked from `home.html`.
+Nothing yet — this is a fresh install. Every feature this community builds will be listed here.
