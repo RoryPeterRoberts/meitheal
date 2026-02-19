@@ -705,6 +705,14 @@
               <div class="key-hint">Another long string — keep this one private</div>
             </div>
           </div>
+          <div class="instructions" style="margin-top:var(--space-4)">
+            While you're in the Supabase dashboard, also get an <strong>Access Token</strong> — this lets the setup wizard create your database automatically, so you don't have to run any SQL manually.
+            <ol>
+              <li>Go to <a href="https://supabase.com/dashboard/account/tokens" target="_blank">supabase.com/dashboard/account/tokens ↗</a></li>
+              <li>Click <strong>Generate new token</strong></li>
+              <li>Give it a name like <em>Meitheal setup</em> and copy it</li>
+            </ol>
+          </div>
           <div class="checklist">
             <div class="check-item">
               <input type="checkbox" id="chk-sb-project" onchange="updateBtn(2)">
@@ -713,6 +721,10 @@
             <div class="check-item">
               <input type="checkbox" id="chk-sb-keys" onchange="updateBtn(2)">
               <label for="chk-sb-keys">I've copied and saved my Project URL, anon key, and service_role key</label>
+            </div>
+            <div class="check-item">
+              <input type="checkbox" id="chk-sb-token" onchange="updateBtn(2)">
+              <label for="chk-sb-token">I've generated and saved my <a href="https://supabase.com/dashboard/account/tokens" target="_blank">Supabase Access Token ↗</a></label>
             </div>
           </div>
           <button class="confirm-btn" id="btn-2" onclick="completeStep(2)" disabled>
@@ -779,7 +791,7 @@
             Nothing is installed on your computer. Everything runs in the cloud.
           </div>
           <div class="deploy-wrap">
-            <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FRoryPeterRoberts%2Fmeitheal&env=SUPABASE_URL,SUPABASE_ANON_KEY,SUPABASE_SERVICE_KEY,GITHUB_TOKEN,GITHUB_REPO,GITHUB_BRANCH,AI_API_KEY&envDescription=You%27ll%20need%20your%20Supabase%20keys%20and%20a%20GitHub%20token.%20See%20the%20setup%20guide%20for%20each%20one.&envLink=https%3A%2F%2Fgithub.com%2FRoryPeterRoberts%2Fmeitheal%2Fblob%2Fmain%2FSETUP.md&project-name=my-community&repository-name=my-community" target="_blank">
+            <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FRoryPeterRoberts%2Fmeitheal&env=SUPABASE_URL,SUPABASE_ANON_KEY,SUPABASE_SERVICE_KEY,SUPABASE_ACCESS_TOKEN,GITHUB_TOKEN,GITHUB_REPO,GITHUB_BRANCH,AI_API_KEY&envDescription=You%27ll%20need%20your%20Supabase%20keys%20and%20a%20GitHub%20token.%20See%20the%20setup%20guide%20for%20each%20one.&envLink=https%3A%2F%2Fgithub.com%2FRoryPeterRoberts%2Fmeitheal%2Fblob%2Fmain%2FSETUP.md&project-name=my-community&repository-name=my-community" target="_blank">
               <img src="https://vercel.com/button" alt="Deploy with Vercel" style="height:36px">
             </a>
           </div>
@@ -795,6 +807,7 @@
               <tr><td>GITHUB_TOKEN</td><td>Your GitHub token from Step 3</td></tr>
               <tr><td>GITHUB_REPO</td><td>Your GitHub username + <code>/my-community</code> — e.g. <code>janesmith/my-community</code></td></tr>
               <tr><td>GITHUB_BRANCH</td><td>Type <code>main</code></td></tr>
+              <tr><td>SUPABASE_ACCESS_TOKEN</td><td>Your Supabase Access Token from Step 2 — lets the setup wizard create your database automatically</td></tr>
               <tr><td>AI_API_KEY</td><td>Your AI provider key — get this from the provider you choose below</td></tr>
             </tbody>
           </table>
@@ -914,7 +927,7 @@
     const TOTAL = 5;
     const CHECKS = {
       1: ['chk-github', 'chk-supabase', 'chk-vercel'],
-      2: ['chk-sb-project', 'chk-sb-keys'],
+      2: ['chk-sb-project', 'chk-sb-keys', 'chk-sb-token'],
       3: ['chk-token'],
       4: ['chk-deployed'],
       5: ['chk-wizard', 'chk-signin'],

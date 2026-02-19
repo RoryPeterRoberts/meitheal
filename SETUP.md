@@ -60,6 +60,7 @@ When you're ready, here's what each field means:
 | `SUPABASE_URL` | From Step 2 below |
 | `SUPABASE_ANON_KEY` | From Step 2 below |
 | `SUPABASE_SERVICE_KEY` | From Step 2 below |
+| `SUPABASE_ACCESS_TOKEN` | From Step 2 below — enables automatic database setup |
 | `GITHUB_TOKEN` | From Step 3 below |
 | `GITHUB_REPO` | Your GitHub username + `/my-community` — e.g. `janesmith/my-community` |
 | `GITHUB_BRANCH` | Type `main` |
@@ -86,6 +87,14 @@ Once the project is ready:
    - **Project URL** (looks like `https://abcdefgh.supabase.co`)
    - **anon / public key** (long string starting with `eyJ…`)
    - **service_role key** (another long string — keep this secret)
+
+### Get a Supabase Access Token
+
+This allows the setup wizard to create your database tables automatically — no manual SQL needed.
+
+1. Go to [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens)
+2. Click **Generate new token**
+3. Name it *Meitheal setup* and copy it — you'll add it as `SUPABASE_ACCESS_TOKEN` in Vercel
 
 ### Run the database migrations
 
@@ -137,6 +146,7 @@ In the Vercel project setup screen, find **Environment Variables** and add each 
 | `SUPABASE_URL` | Your Supabase Project URL from Step 2 |
 | `SUPABASE_ANON_KEY` | Your Supabase anon/public key from Step 2 |
 | `SUPABASE_SERVICE_KEY` | Your Supabase service_role key from Step 2 |
+| `SUPABASE_ACCESS_TOKEN` | Your Supabase Access Token from Step 2 |
 | `GITHUB_TOKEN` | See below |
 | `GITHUB_REPO` | Your forked repo, e.g. `your-username/your-community` |
 | `GITHUB_BRANCH` | `main` |

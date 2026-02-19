@@ -366,32 +366,42 @@
     <!-- Step 3: Database setup -->
     <div class="step" id="step-3">
       <div class="step-label">Step 3 of 4</div>
-      <div class="step-title">Set up the database</div>
-      <div class="step-desc">
-        Copy this SQL and run it in your Supabase SQL editor. It creates the tables your community needs — you can read exactly what it does.
+      <div class="step-title" id="s3-title">Setting up the database…</div>
+      <div class="step-desc" id="s3-desc">Creating the tables your community needs. This takes a few seconds.</div>
+
+      <!-- Auto-migration UI (shown by default) -->
+      <div id="s3-auto">
+        <div style="text-align:center;padding:32px 0">
+          <div class="spinner" style="margin:0 auto 16px"></div>
+          <div id="s3-status" style="font-size:13px;color:var(--text-2)">Running migrations…</div>
+        </div>
+        <div id="db-check-pill" style="display:none"></div>
+        <div class="err" id="err-3"></div>
+        <button class="btn btn-primary" id="btn-verify" style="display:none" onclick="submitSetup()">Continue →</button>
+        <button class="btn btn-ghost" style="display:none" id="btn-retry-migrate" onclick="runAutoMigrate()">Try again →</button>
       </div>
 
-      <div class="sql-wrap">
-        <pre class="sql-block" id="sql-block">Loading migrations…</pre>
-        <button class="sql-copy" id="sql-copy-btn" onclick="copySql()">Copy</button>
+      <!-- Manual fallback UI (shown if SUPABASE_ACCESS_TOKEN not set) -->
+      <div id="s3-manual" style="display:none">
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;line-height:1.5;">
+          Copy this SQL and run it in your Supabase SQL editor. It creates the tables your community needs.
+        </p>
+        <div class="sql-wrap">
+          <pre class="sql-block" id="sql-block">Loading migrations…</pre>
+          <button class="sql-copy" id="sql-copy-btn" onclick="copySql()">Copy</button>
+        </div>
+        <div class="btn-row" style="margin-bottom:16px">
+          <a class="btn btn-ghost" id="sql-editor-link" href="https://supabase.com/dashboard" target="_blank"
+             style="text-decoration:none;display:flex;align-items:center;justify-content:center;flex:1">
+            Open SQL Editor ↗
+          </a>
+        </div>
+        <div id="db-check-pill-manual" style="display:none"></div>
+        <div class="err" id="err-3-manual"></div>
+        <button class="btn btn-primary" id="btn-verify-manual" onclick="s3VerifyManual()">I've run the SQL → Verify &amp; continue</button>
       </div>
 
-      <div class="btn-row" style="margin-bottom:16px">
-        <a class="btn btn-ghost" id="sql-editor-link" href="https://supabase.com/dashboard" target="_blank"
-           style="text-decoration:none;display:flex;align-items:center;justify-content:center;flex:1">
-          Open SQL Editor ↗
-        </a>
-      </div>
-
-      <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;line-height:1.5;">
-        Once you've run the SQL, click the button below. The wizard will verify the database is ready.
-      </p>
-
-      <div id="db-check-pill" style="display:none"></div>
-
-      <div class="err" id="err-3"></div>
-      <button class="btn btn-primary" id="btn-verify" onclick="s3Verify()">I've run the SQL → Verify &amp; continue</button>
-      <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+      <button class="btn btn-ghost" onclick="goStep(2)" style="margin-top:8px">← Back</button>
     </div>
 
     <!-- Step 4: Done -->
@@ -597,38 +607,99 @@
       goStep(3);
     }
 
-    // ---- Step 3: SQL ----
+    // ---- Step 3: Database setup ----
+
+    async function loadSql() {
+      if (sqlText) return sqlText;
+      try {
+        const parts = await Promise.all(
+          MIGRATIONS.map(async (path) => {
+            const r = await fetch(path);
+            if (!r.ok) throw new Error(`Could not load ${path}`);
+            return await r.text();
+          })
+        );
+        sqlText = parts.join('\n\n');
+      } catch (e) {
+        sqlText = '-- Error loading migrations: ' + e.message;
+      }
+      return sqlText;
+    }
 
     async function initSqlStep() {
-      // Load and combine all migrations if not already done
-      if (!sqlText) {
-        try {
-          const parts = await Promise.all(
-            MIGRATIONS.map(async (path) => {
-              const r = await fetch(path);
-              if (!r.ok) throw new Error(`Could not load ${path}`);
-              return `-- ============================================================\n-- ${path}\n-- ============================================================\n` + await r.text();
-            })
-          );
-          sqlText = parts.join('\n\n');
-        } catch (e) {
-          sqlText = '-- Error loading migrations: ' + e.message + '\n-- Fetch the files manually from the migrations/ folder.';
-        }
+      if (form._dbReady) {
+        // DB already confirmed — skip straight to submit
+        document.getElementById('s3-title').textContent = 'Database ready';
+        document.getElementById('s3-desc').textContent  = 'The database is already set up.';
+        document.getElementById('s3-status').textContent = '✓ Database already set up';
+        document.getElementById('s3-status').style.color = 'var(--green)';
+        document.querySelector('#s3-auto .spinner').style.display = 'none';
+        document.getElementById('btn-verify').style.display = '';
+        return;
       }
+      await runAutoMigrate();
+    }
 
-      document.getElementById('sql-block').textContent = sqlText;
+    async function runAutoMigrate() {
+      document.getElementById('s3-auto').style.display   = '';
+      document.getElementById('s3-manual').style.display = 'none';
+      document.getElementById('s3-title').textContent    = 'Setting up the database…';
+      document.getElementById('s3-desc').textContent     = 'Creating the tables your community needs.';
+      document.getElementById('s3-status').textContent   = 'Running migrations…';
+      document.getElementById('s3-status').style.color   = '';
+      document.querySelector('#s3-auto .spinner').style.display = '';
+      document.getElementById('btn-verify').style.display        = 'none';
+      document.getElementById('btn-retry-migrate').style.display = 'none';
+      document.getElementById('db-check-pill').style.display     = 'none';
+      clearErr('err-3');
 
-      // Set deep link to their Supabase SQL editor
+      const sql = await loadSql();
+
+      try {
+        const r = await fetch('/api/setup', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ action: 'migrate', sql }),
+        });
+        const json = await r.json();
+
+        // Server says SUPABASE_ACCESS_TOKEN not set — fall back to manual
+        if (json.fallback) {
+          showManualFallback();
+          return;
+        }
+
+        if (!r.ok || !json.ok) throw new Error(json.error || 'Migration failed');
+
+        // Success
+        document.querySelector('#s3-auto .spinner').style.display = 'none';
+        document.getElementById('s3-status').textContent = `✓ Database ready (${json.ran} statements run)`;
+        document.getElementById('s3-status').style.color = 'var(--green)';
+        document.getElementById('s3-title').textContent  = 'Database ready';
+        document.getElementById('s3-desc').textContent   = 'Tables created. Finishing setup…';
+        form._dbReady = true;
+        // Auto-advance
+        await submitSetup();
+
+      } catch (e) {
+        document.querySelector('#s3-auto .spinner').style.display = 'none';
+        err('err-3', `Migration error: ${e.message}`);
+        document.getElementById('btn-retry-migrate').style.display = '';
+      }
+    }
+
+    function showManualFallback() {
+      document.getElementById('s3-auto').style.display   = 'none';
+      document.getElementById('s3-manual').style.display = '';
+      document.getElementById('s3-title').textContent    = 'Set up the database';
+      document.getElementById('s3-desc').textContent     = 'Copy this SQL and run it in your Supabase SQL editor.';
+
+      document.getElementById('sql-block').textContent = sqlText || 'Loading…';
+
       const ref = (window._SUPABASE_URL || '').replace('https://', '').split('.')[0];
       if (ref && ref !== 'YOUR_PROJECT') {
         document.getElementById('sql-editor-link').href =
           `https://supabase.com/dashboard/project/${ref}/sql/new`;
-      }
-
-      // If DB was already ready on boot, skip verification UI
-      if (form._dbReady) {
-        showDbPill('ok', '✓ Database already set up');
-        document.getElementById('btn-verify').textContent = 'Continue →';
       }
     }
 
@@ -642,40 +713,35 @@
         setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2500);
       } catch {
         btn.textContent = 'Select + copy manually';
-        document.getElementById('sql-block').select?.();
       }
     }
 
-    async function s3Verify() {
-      clearErr('err-3');
-      const btn = document.getElementById('btn-verify');
-
-      // If already confirmed, just submit
-      if (form._dbReady) {
-        return submitSetup();
-      }
-
-      btn.disabled = true;
+    async function s3VerifyManual() {
+      clearErr('err-3-manual');
+      const btn = document.getElementById('btn-verify-manual');
+      btn.disabled    = true;
       btn.textContent = 'Checking…';
-      showDbPill('checking', 'Checking database…');
+
+      const pill = document.getElementById('db-check-pill-manual');
+      pill.style.display = 'block';
+      pill.innerHTML = '<span class="check-pill checking">Checking database…</span>';
 
       try {
-        const r = await fetch('/api/setup', {
-          method: 'POST',
+        const r    = await fetch('/api/setup', {
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check' }),
+          body:    JSON.stringify({ action: 'check' }),
         });
         const json = await r.json();
-
         if (!r.ok || !json.ok) throw new Error(json.error || 'Database not ready');
 
-        form._dbReady = true;
-        showDbPill('ok', '✓ Database ready');
+        pill.innerHTML = '<span class="check-pill ok">✓ Database ready</span>';
+        form._dbReady  = true;
         await submitSetup();
       } catch (e) {
-        showDbPill('fail', '✗ Tables not found');
-        err('err-3', 'The database tables weren\'t found. Make sure you copied and ran the full SQL block above, then try again.');
-        btn.disabled = false;
+        pill.innerHTML = '<span class="check-pill fail">✗ Tables not found</span>';
+        err('err-3-manual', 'The database tables weren\'t found. Make sure you copied and ran the full SQL block, then try again.');
+        btn.disabled    = false;
         btn.textContent = 'Try again →';
       }
     }
@@ -689,9 +755,11 @@
     // ---- Submit to /api/setup ----
 
     async function submitSetup() {
-      const btn = document.getElementById('btn-verify');
-      btn.disabled = true;
-      btn.textContent = 'Saving…';
+      // Disable whichever verify button is visible
+      ['btn-verify', 'btn-verify-manual'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.disabled = true; el.textContent = 'Saving…'; }
+      });
 
       const siteUrl = window.location.origin;
 
@@ -731,9 +799,14 @@
 
         goStep(4);
       } catch (e) {
-        btn.disabled = false;
-        btn.textContent = 'I\'ve run the SQL → Verify & continue';
+        ['btn-verify', 'btn-verify-manual'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el && el.style.display !== 'none') {
+            el.disabled = false; el.textContent = 'Try again →';
+          }
+        });
         err('err-3', e.message);
+        err('err-3-manual', e.message);
       }
     }
 
