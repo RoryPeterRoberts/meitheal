@@ -152,7 +152,7 @@ const TOOLS = [
 ];
 
 // ---- Tool execution -----------------------------------------
-async function executeTool(name, args, env) {
+async function executeTool(name, args, env, planOnly) {
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY, GITHUB_TOKEN, GITHUB_REPO, GITHUB_BRANCH } = env;
   const branch = GITHUB_BRANCH || 'main';
   const sbHeaders = {
@@ -210,14 +210,44 @@ async function executeTool(name, args, env) {
       if (escapedNL > 10 && realNL === 0) {
         content = content.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\'/g, "'");
       }
+
+      // ---- Post-write validation (Hook pattern) ----
+      // Inspect the content after normalisation. Return warnings in the tool
+      // result so the agent sees them and can self-correct without the broken
+      // file ever reaching the live site.
+      const postNL      = (content.match(/\n/g)  || []).length;
+      const postEscNL   = (content.match(/\\n/g) || []).length;
+      const valWarnings = [];
+      if (!content.trim()) {
+        valWarnings.push('Content is empty');
+      } else if (content.length > 500 && postNL < 5) {
+        valWarnings.push(`Only ${postNL} newlines for ${content.length} chars — file may still be single-line`);
+      }
+      if (postEscNL > 5) {
+        valWarnings.push(`Still contains ${postEscNL} literal \\n sequences after normalisation`);
+      }
+      if (args.path.endsWith('.html') && !content.includes('<html') && !content.toLowerCase().includes('<!doctype')) {
+        valWarnings.push('HTML file is missing an <html> root element');
+      }
+      // ------------------------------------------------
+
+      if (planOnly) {
+        return { planned: true, action: 'write_file', path: args.path, description: args.commit_message, chars: content.length, ...(valWarnings.length ? { warnings: valWarnings } : {}) };
+      }
+
       // Capture pre-build SHA for rollback (null if file is new)
       let sha = null;
       try { const f = await ghGet(args.path); sha = f.sha; } catch {}
       await ghPut(args.path, content, args.commit_message, sha);
-      return { written: args.path, message: args.commit_message, _pre_sha: sha };
+      const result = { written: args.path, message: args.commit_message, _pre_sha: sha };
+      if (valWarnings.length > 0) result.warning = valWarnings.join(' | ');
+      return result;
     }
 
     case 'delete_file': {
+      if (planOnly) {
+        return { planned: true, action: 'delete_file', path: args.path };
+      }
       // Capture pre-build SHA before deleting (for rollback restore)
       const file = await ghGet(args.path);
       const preSha = file.sha;
@@ -243,6 +273,10 @@ async function executeTool(name, args, env) {
     }
 
     case 'run_sql': {
+      if (planOnly) {
+        const statements = (args.sql || '').split(/;/).map(s => s.trim()).filter(s => s);
+        return { planned: true, action: 'run_sql', statements };
+      }
       // Calls a SECURITY DEFINER Postgres function (migration 05) via the service key.
       // Locked to service_role only — see migrations/05_run_sql_function.sql.
       // EXECUTE in PL/pgSQL runs one statement at a time, so we split on semicolons
@@ -423,7 +457,7 @@ async function callOpenAI(messages, systemPrompt, model, apiKey, baseUrl, maxTok
 
 // ---- Main agent loop ----------------------------------------
 
-async function runAgent(userMessage, conversationId, env) {
+async function runAgent(userMessage, conversationId, env, planOnly) {
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = env;
   const sbHeaders = {
     'apikey': SUPABASE_SERVICE_KEY,
@@ -477,8 +511,11 @@ async function runAgent(userMessage, conversationId, env) {
   const history = conversation.messages || [];
   let messages = buildMessages(history, provider);
 
-  // Add user message
-  const userMsg = { role: 'user', content: userMessage };
+  // Add user message (inject planning-mode instructions if needed)
+  const agentUserMessage = planOnly
+    ? userMessage + '\n\n---\nPLANNING MODE: You are in planning-only mode. The write_file, delete_file, and run_sql tools will NOT execute — they return plan stubs. Read the files you need, then call the tools as if you were building. After all tool calls, end your response with a clear plan summary: list each file you plan to create or modify, any files to delete, and any SQL you will run. The admin will review this plan before triggering the actual build.'
+    : userMessage;
+  const userMsg = { role: 'user', content: agentUserMessage };
   messages.push(userMsg);
   const historyEntry = { role: 'user', content: userMessage, ts: new Date().toISOString() };
 
@@ -527,7 +564,7 @@ async function runAgent(userMessage, conversationId, env) {
     for (const tc of response.toolCalls) {
       let result;
       try {
-        result = await executeTool(tc.name, tc.args, env);
+        result = await executeTool(tc.name, tc.args, env, planOnly);
       } catch (e) {
         result = { error: e.message };
       }
@@ -714,7 +751,7 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Admin or steward access required' });
   }
 
-  const { message, conversationId, proposal_id } = req.body;
+  const { message, conversationId, proposal_id, plan_only } = req.body;
   if (!message && !proposal_id) return res.status(400).json({ error: 'message or proposal_id required' });
 
   const env = {
@@ -774,24 +811,29 @@ export default async function handler(req, res) {
         approved_at:   proposal.updated_at,
       };
 
-      agentMessage = `You have been given an approved proposal to build.\n\nProposal brief:\n${JSON.stringify(brief, null, 2)}\n\nBuild this feature now. Be efficient: read only what you need (home.html for nav structure, supabase.js for data helpers). Do NOT read theme.css — trust the conventions already in AGENT.md. Do NOT narrate or plan — just build. When files are written and wired in, report what was built.`;
+      const buildInstruction = plan_only
+        ? `You have been given a proposal to plan (not yet build).\n\nProposal brief:\n${JSON.stringify(brief, null, 2)}\n\nRead the files you need to understand the current state (home.html for nav, supabase.js for helpers), then call write_file, delete_file, and run_sql as if you were building — they will record your plan without writing anything. End your response with a clear summary of everything you plan to create, modify, delete, and any SQL you will run. The admin will review this and trigger the real build when ready.`
+        : `You have been given an approved proposal to build.\n\nProposal brief:\n${JSON.stringify(brief, null, 2)}\n\nBuild this feature now. Be efficient: read only what you need (home.html for nav structure, supabase.js for data helpers). Do NOT read theme.css — trust the conventions already in AGENT.md. Do NOT narrate or plan — just build. When files are written and wired in, report what was built.`;
+      agentMessage = buildInstruction;
       buildProposalId      = proposal_id;
       buildTitle           = proposal.title;
       buildSuggestedById   = origFeedback?.author_id || null;
       buildSuggestedByName = (suggestedBy !== 'a community member') ? suggestedBy : null;
 
-      // Mark proposal as 'building'
-      await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${proposal_id}`, {
-        method: 'PATCH',
-        headers: { ...sbHeaders, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'building', build_started_at: new Date().toISOString() }),
-      });
+      // Mark proposal as 'building' (skip in plan-only mode)
+      if (!plan_only) {
+        await fetch(`${SUPABASE_URL}/rest/v1/proposals?id=eq.${proposal_id}`, {
+          method: 'PATCH',
+          headers: { ...sbHeaders, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'building', build_started_at: new Date().toISOString() }),
+        });
+      }
     }
 
-    const result = await runAgent(agentMessage, conversationId, env);
+    const result = await runAgent(agentMessage, conversationId, env, !!plan_only);
 
-    // If this was a proposal build, mark as done and write changelog
-    if (buildProposalId) {
+    // If this was a proposal build (and not a dry-run plan), mark as done and write changelog
+    if (buildProposalId && !plan_only) {
       const sbHeaders = {
         'apikey': SUPABASE_SERVICE_KEY,
         'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
@@ -836,7 +878,8 @@ export default async function handler(req, res) {
     res.json({
       text:           result.text,
       conversationId: result.conversationId,
-      usage:          result.usage
+      usage:          result.usage,
+      plan_mode:      !!plan_only
     });
   } catch (e) {
     console.error('Agent error:', e);

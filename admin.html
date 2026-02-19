@@ -399,6 +399,24 @@
       color: var(--color-text-light);
     }
 
+    .approved-actions { display: flex; gap: var(--space-2); align-items: center; flex-shrink: 0; }
+
+    .preview-build-btn {
+      padding: var(--space-2) var(--space-4);
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-muted);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .preview-build-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
     .start-build-btn {
       padding: var(--space-2) var(--space-4);
       background: var(--color-primary);
@@ -414,6 +432,22 @@
     }
 
     .start-build-btn:hover { background: var(--color-primary-dark); }
+
+    .console-execute-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-status-accepted);
+      border: none;
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: opacity var(--transition-fast);
+      margin-left: auto;
+    }
+
+    .console-execute-btn:hover { opacity: 0.85; }
 
     /* Build console */
     .build-console {
@@ -1280,27 +1314,37 @@
             <div class="approved-title">${escHtml(p.title)}</div>
             <div class="approved-meta">Approved · ${timeAgo(p.created_at)}</div>
           </div>
-          <button class="start-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="startBuild(this.dataset.id, this.dataset.title)">
-            Start build
-          </button>
+          <div class="approved-actions">
+            <button class="preview-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="startBuild(this.dataset.id, this.dataset.title, true)" title="See what the agent plans to do before building">
+              Preview
+            </button>
+            <button class="start-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="startBuild(this.dataset.id, this.dataset.title, false)">
+              Build →
+            </button>
+          </div>
         </div>
       `).join('');
     }
 
     // ---- Build console ----
 
-    async function startBuild(proposalId, title) {
+    async function startBuild(proposalId, title, planOnly) {
       const console_ = document.getElementById('build-console');
       const msgs     = document.getElementById('console-messages');
       const spinner  = document.getElementById('console-spinner');
       const status   = document.getElementById('console-status-text');
       const conTitle = document.getElementById('console-title');
 
-      conTitle.textContent = title;
+      conTitle.textContent = planOnly ? `Plan preview: ${title}` : title;
       msgs.textContent     = '';
       spinner.classList.add('active');
-      status.textContent   = 'Sending proposal to agent…';
+      status.textContent   = planOnly ? 'Generating build plan…' : 'Sending proposal to agent…';
       document.getElementById('console-links').style.display = 'none';
+
+      // Remove any leftover execute button from a previous plan
+      const prevExec = console_.querySelector('.console-execute-btn');
+      if (prevExec) prevExec.remove();
+
       console_.classList.add('open');
       console_.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
@@ -1308,13 +1352,16 @@
         const sb = getSupabase();
         const { data: { session } } = await sb.auth.getSession();
 
+        const body = { proposal_id: proposalId };
+        if (planOnly) body.plan_only = true;
+
         const r = await fetch('/api/agent', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ proposal_id: proposalId }),
+          body: JSON.stringify(body),
         });
 
         if (!r.ok) {
@@ -1324,25 +1371,39 @@
 
         const result = await r.json();
         msgs.textContent = result.text || '(No response)';
-        status.textContent = 'Build complete';
         spinner.classList.remove('active');
 
-        // Extract URLs from agent response and make them clickable
-        const urls = (result.text || '').match(/https?:\/\/[^\s)]+/g);
-        const linksEl = document.getElementById('console-links');
-        if (urls && urls.length > 0) {
-          linksEl.innerHTML = urls.map(url =>
-            `<a class="console-link" href="${url}" target="_blank">↗ ${url}</a>`
-          ).join('');
-          linksEl.style.display = 'flex';
-        }
+        if (result.plan_mode) {
+          // Planning pass — show plan and offer execute button
+          status.textContent = 'Plan ready — review above, then execute';
+          conTitle.textContent = `Plan: ${title}`;
+          const execBtn = document.createElement('button');
+          execBtn.className = 'console-execute-btn';
+          execBtn.textContent = 'Execute build →';
+          execBtn.onclick = () => { execBtn.remove(); startBuild(proposalId, title, false); };
+          status.parentElement.appendChild(execBtn);
+        } else {
+          // Real build — show links and reload
+          status.textContent = 'Build complete';
+          conTitle.textContent = title;
 
-        // Reload to show updated status
-        await loadOverview();
+          // Extract URLs from agent response and make them clickable
+          const urls = (result.text || '').match(/https?:\/\/[^\s)]+/g);
+          const linksEl = document.getElementById('console-links');
+          if (urls && urls.length > 0) {
+            linksEl.innerHTML = urls.map(url =>
+              `<a class="console-link" href="${url}" target="_blank">↗ ${url}</a>`
+            ).join('');
+            linksEl.style.display = 'flex';
+          }
+
+          // Reload to show updated proposal status
+          await loadOverview();
+        }
 
       } catch (e) {
         msgs.textContent = `Error: ${e.message}`;
-        status.textContent = 'Build failed';
+        status.textContent = 'Failed';
         spinner.classList.remove('active');
       }
     }
