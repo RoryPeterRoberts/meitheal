@@ -1584,6 +1584,7 @@
     }
 
     async function retryBuild(proposalId, title) {
+      libLoaded = false; // force library to re-check statuses
       await resetProposalToApproved(proposalId, null);
       startBuild(proposalId, title, false);
     }
@@ -2251,14 +2252,14 @@
 
     const CAT_LABELS = { general: 'General', neighbourhood: 'Neighbourhood', mutual_aid: 'Mutual Aid', sports: 'Sports', housing: 'Housing' };
     let libCurrentCat = 'all';
-    let libQueuedTitles = new Set();
+    let libProposals = new Map(); // title.toLowerCase() → {status, id}
     let libLoaded = false;
 
     async function loadLibrary() {
       if (libLoaded) return;
       try {
-        const { data } = await getSupabase().from('proposals').select('title');
-        libQueuedTitles = new Set((data || []).map(p => p.title.toLowerCase()));
+        const { data } = await getSupabase().from('proposals').select('id, title, status');
+        libProposals = new Map((data || []).map(p => [p.title.toLowerCase(), { status: p.status, id: p.id }]));
       } catch (e) { /* non-fatal */ }
       libLoaded = true;
       renderLibrary();
@@ -2280,7 +2281,23 @@
         return;
       }
       grid.innerHTML = features.map(f => {
-        const queued = libQueuedTitles.has(f.title.toLowerCase());
+        const existing = libProposals.get(f.title.toLowerCase());
+        let btnLabel, btnExtra = '', btnDisabled = false;
+        if (!existing) {
+          btnLabel = '+ Add to build queue';
+        } else if (existing.status === 'building') {
+          btnLabel = '⚠️ Reset & retry →';
+          btnExtra = ` style="background:var(--color-status-hold)" onclick="retryBuild('${existing.id}', ${JSON.stringify(f.title)})"`;
+          btnDisabled = false;
+        } else if (existing.status === 'done') {
+          btnLabel = '✓ Built';
+          btnExtra = ' class="lib-add-btn queued"';
+          btnDisabled = true;
+        } else {
+          btnLabel = '✓ In queue';
+          btnExtra = ' class="lib-add-btn queued"';
+          btnDisabled = true;
+        }
         return `
           <div class="lib-card">
             <div class="lib-card-top">
@@ -2291,8 +2308,8 @@
               </div>
             </div>
             <div class="lib-card-desc">${escHtml(f.desc)}</div>
-            <button class="lib-add-btn${queued ? ' queued' : ''}" ${queued ? 'disabled' : ''} onclick="addLibraryFeature('${f.id}', this)">
-              ${queued ? '✓ In queue' : '+ Add to build queue'}
+            <button class="lib-add-btn"${btnExtra} ${btnDisabled ? 'disabled' : `onclick="addLibraryFeature('${f.id}', this)"`}>
+              ${btnLabel}
             </button>
           </div>`;
       }).join('');
@@ -2313,7 +2330,7 @@
           status:       'approved',
         }]);
         if (error) throw error;
-        libQueuedTitles.add(feature.title.toLowerCase());
+        libProposals.set(feature.title.toLowerCase(), { status: 'approved', id: data[0]?.id });
         btn.textContent = '✓ In queue';
         btn.classList.add('queued');
         // Refresh build badge
