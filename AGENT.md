@@ -5,8 +5,9 @@ This file is your persistent memory. Read it before every build. Update it after
 ## Platform structure
 
 ### Member-facing pages
-- `home.html` — landing page: welcome block, nav grid (Noticeboard, Members, What we've built, My ideas, Proposals, Charter)
+- `home.html` — landing page: welcome block, nav grid (Noticeboard, Events, Members, What we've built, My ideas, Proposals, Charter)
 - `noticeboard.html` — community announcements, pinned posts, admin/steward posting
+- `events.html` — community events page with month grouping and past events toggle
 - `directory.html` — member list with role badges and join dates
 - `my-feedback.html` — member's own submissions, linked proposals, validation prompts
 - `proposals.html` — full proposals board (all statuses, clarification notes)
@@ -41,6 +42,7 @@ This file is your persistent memory. Read it before every build. Update it after
 - `votes` — proposal_id→proposals, member_id→members, created_at. UNIQUE(proposal_id, member_id). Used for community voting on proposals.
   Migration: `migrations/09_votes.sql` (must be run in Supabase SQL editor)
 - `notices` — id, title, body, author_id→members, pinned, created_at
+- `events` — id, title, description, location, event_date, event_time, author_id→members, created_at
 - `ai_usage` — provider, model, prompt_tokens, completion_tokens, cost_usd, ts, conversation_id
 - `conversations` — id, messages (jsonb), updated_at
 
@@ -65,3 +67,4 @@ Never create an orphaned page. If you build something new:
 ## What has been built
 
 - **Noticeboard** (`noticeboard.html`): A space for community announcements. Admins and stewards can post and pin notices. Members have read-only access.
+- **Events** (`events.html`): A community calendar. Admins and stewards can post upcoming events. Members can view them grouped by month.
