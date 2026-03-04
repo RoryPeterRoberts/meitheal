@@ -3,1217 +3,2367 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — BuildMySite</title>
-  <meta name="robots" content="noindex, nofollow">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <title>Admin — Meitheal</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --navy: #1B2A4A;
-      --navy-light: #243558;
-      --teal: #2A7F7F;
-      --teal-dark: #1F6363;
-      --gold: #C5A55A;
-      --bg: #F8F7F4;
-      --white: #FFFFFF;
-      --text: #2C2C2C;
-      --text-light: #5A5A5A;
-      --text-muted: #8A8A8A;
-      --border: #E2E0DC;
-      --radius: 8px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
-    }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      height: 100dvh;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      overflow: hidden;
     }
 
-    /* --- Header --- */
-    .header {
-      background: var(--navy);
-      color: var(--white);
-      padding: 16px 24px;
+    /* ---- Sidebar ----------------------------------------- */
+    .sidebar {
+      background: var(--color-bg-card);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: var(--space-5) var(--space-4) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .sidebar-logo {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      font-style: italic;
+      color: var(--color-primary);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar-community {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-light);
+      margin-top: var(--space-1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-nav {
+      padding: var(--space-3) var(--space-2);
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-3);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover { background: var(--color-bg-muted); color: var(--color-text); }
+
+    .nav-item.active {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-text-light);
+      padding: var(--space-3) var(--space-3) var(--space-1);
+      margin-top: var(--space-2);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--color-status-hold);
+      color: white;
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      min-width: 18px;
+      height: 18px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 var(--space-1);
+    }
+
+    .sidebar-footer {
+      padding: var(--space-3) var(--space-2);
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* ---- Main area --------------------------------------- */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--color-bg);
+    }
+
+    .main-header {
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg-card);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      flex-shrink: 0;
     }
-    .header__brand {
-      font-size: 1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .header__badge {
-      background: var(--teal);
-      color: var(--white);
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 99px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .header__actions { display: flex; gap: 12px; align-items: center; }
-    .header__btn {
-      background: rgba(255,255,255,0.1);
-      color: var(--white);
-      border: 1px solid rgba(255,255,255,0.15);
-      padding: 6px 14px;
-      border-radius: var(--radius);
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .header__btn:hover { background: rgba(255,255,255,0.2); }
 
-    /* --- Login --- */
-    .login {
-      flex: 1;
+    .main-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      font-style: italic;
+      color: var(--color-text);
+    }
+
+    .header-actions { display: flex; gap: var(--space-2); }
+
+    .btn-sm {
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-card);
+      color: var(--color-text-muted);
+      font-family: var(--font-family);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-sm:hover {
+      color: var(--color-text);
+      border-color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+
+    /* ---- Panels ------------------------------------------ */
+    .panel { display: none; flex: 1; overflow-y: auto; padding: var(--space-6); }
+    .panel.active {
+      display: block;
+      animation: panelIn 200ms ease-out both;
+    }
+
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Overview panel ---------------------------------- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-top: 3px solid var(--color-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: left;
+      cursor: pointer;
+      transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+
+    .stat-number {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-primary);
+      line-height: 1;
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--color-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: var(--font-weight-bold);
+      font-family: var(--font-family);
+    }
+
+    .section-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 24px;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
     }
-    .login__card {
-      background: var(--white);
-      border-radius: 12px;
-      padding: 40px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: var(--shadow);
-      text-align: center;
+
+    .section-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text);
     }
-    .login__title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--navy);
-      margin-bottom: 8px;
+
+    .section-link {
+      font-size: var(--font-size-xs);
+      color: var(--color-primary);
+      text-decoration: none;
     }
-    .login__subtitle {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 28px;
+
+    .section-link:hover { text-decoration: underline; }
+
+    .overview-section { margin-bottom: var(--space-6); }
+
+    /* Feedback preview */
+    .feedback-preview-list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .preview-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-accent);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
     }
-    .login__input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 1rem;
-      margin-bottom: 16px;
-      text-align: center;
-      font-family: monospace;
+
+    .preview-emoji { font-size: 16px; flex-shrink: 0; }
+
+    .preview-body { flex: 1; min-width: 0; }
+
+    .preview-message {
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: 2px;
+    }
+
+    /* Proposals board */
+    .proposals-kanban {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    @media (max-width: 1100px) {
+      .proposals-kanban { grid-template-columns: 1fr 1fr; }
+    }
+
+    .kanban-col {
+      background: var(--color-bg-muted);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3);
+    }
+
+    .kanban-header {
+      font-family: var(--font-family);
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
       letter-spacing: 0.1em;
+      color: var(--color-text-light);
+      margin-bottom: var(--space-3);
+      padding: 0 var(--space-1);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
     }
-    .login__input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42,127,127,0.12); }
-    .login__btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--teal);
-      color: var(--white);
-      border: none;
-      border-radius: var(--radius);
-      font-size: 1rem;
-      font-weight: 600;
+
+    .kanban-item {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-tight);
+    }
+
+    .kanban-item-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: var(--space-2);
+    }
+
+    .kanban-empty {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      text-align: center;
+      padding: var(--space-4);
+    }
+
+    /* Approve button in kanban */
+    .kanban-approve-btn {
+      display: inline-block;
+      margin-top: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      background: var(--color-primary-bg);
+      border: 1px solid var(--color-primary-lighter);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all var(--transition-fast);
     }
-    .login__btn:hover { background: var(--teal-dark); }
-    .login__error {
-      color: #C62828;
-      font-size: 0.85rem;
-      margin-top: 12px;
+
+    .kanban-approve-btn:hover {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+
+    /* ---- Build panel ------------------------------------- */
+    .build-panel {
+      max-width: 720px;
+    }
+
+    .build-intro {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-5);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-relaxed);
+    }
+
+    .build-intro strong { color: var(--color-text); }
+
+    .approved-queue {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .approved-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-status-accepted);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .approved-info { flex: 1; min-width: 0; }
+
+    .approved-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: 2px;
+    }
+
+    .approved-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+    }
+
+    .approved-actions { display: flex; gap: var(--space-2); align-items: center; flex-shrink: 0; }
+
+    .preview-build-btn {
+      padding: var(--space-2) var(--space-4);
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-muted);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .preview-build-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+    .start-build-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--color-text-inverse);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .start-build-btn:hover { background: var(--color-primary-dark); }
+
+    .console-execute-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-status-accepted);
+      border: none;
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: opacity var(--transition-fast);
+      margin-left: auto;
+    }
+
+    .console-execute-btn:hover { opacity: 0.85; }
+
+    /* Build console */
+    .build-console {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
       display: none;
     }
 
-    /* --- Main Layout --- */
-    .main { flex: 1; display: none; flex-direction: column; max-height: calc(100vh - 56px); }
-    .main.active { display: flex; }
+    .build-console.open { display: flex; flex-direction: column; }
 
-    /* --- Build History --- */
-    .history {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
-    }
-    .history__empty {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 80px 24px;
-    }
-    .history__empty-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.3; }
-    .history__empty-text { font-size: 0.95rem; }
-
-    /* --- Build Entry --- */
-    .build-entry {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .build-entry__header {
+    .console-header {
+      background: var(--color-bg-card);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
     }
-    .build-entry__prompt {
-      font-weight: 600;
-      color: var(--navy);
-      font-size: 0.95rem;
-      flex: 1;
-      margin-right: 12px;
+
+    .console-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
     }
-    .build-entry__time {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      white-space: nowrap;
-    }
-    .build-entry__response {
-      color: var(--text-light);
-      font-size: 0.9rem;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-    .build-entry__files {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-    .build-entry__file {
-      background: var(--bg);
-      color: var(--text-light);
-      font-size: 0.75rem;
-      font-family: monospace;
-      padding: 3px 10px;
-      border-radius: 99px;
-      border: 1px solid var(--border);
-    }
-    .build-entry__file--success { border-color: #A5D6A7; background: #E8F5E9; color: #2E7D32; }
-    .build-entry__file--error { border-color: #EF9A9A; background: #FFEBEE; color: #C62828; }
-    .build-entry__cost {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-    .build-entry__undo {
+
+    .console-btns { display: flex; gap: var(--space-2); align-items: center; }
+
+    .console-copy {
       background: none;
-      border: 1px solid var(--border);
-      color: var(--text-light);
-      padding: 4px 12px;
-      border-radius: var(--radius);
-      font-size: 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
       cursor: pointer;
-      transition: all 0.2s;
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      padding: 2px var(--space-2);
+      transition: all var(--transition-fast);
     }
-    .build-entry__undo:hover { border-color: #C62828; color: #C62828; }
-    .build-entry__enhanced { margin-bottom: 12px; }
-    .build-entry__enhanced summary {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+    .console-copy:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+    .console-close {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
       cursor: pointer;
-      user-select: none;
+      font-size: 18px;
+      line-height: 1;
     }
-    .build-entry__enhanced-text {
-      font-family: monospace;
-      font-size: 0.78rem;
-      line-height: 1.5;
-      color: var(--text-light);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px;
-      margin-top: 8px;
-      max-height: 200px;
+
+    .console-messages {
+      padding: var(--space-4);
+      background: var(--color-bg);
+      min-height: 160px;
+      max-height: 320px;
       overflow-y: auto;
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-relaxed);
+      font-family: var(--font-family-mono);
       white-space: pre-wrap;
-      word-break: break-word;
     }
-    .build-entry__footer {
-      display: flex;
-      justify-content: space-between;
+
+    .console-links {
+      display: none;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-primary-bg);
+      border-top: 1px solid var(--color-primary-lighter);
+      gap: var(--space-3);
+      flex-wrap: wrap;
       align-items: center;
     }
 
-    /* --- Status Badge --- */
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      padding: 4px 12px;
-      border-radius: 99px;
+    .console-link {
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      text-decoration: none;
     }
-    .status--building { background: #FFF3E0; color: #E65100; }
-    .status--success { background: #E8F5E9; color: #2E7D32; }
-    .status--error { background: #FFEBEE; color: #C62828; }
-    .status__dot {
-      width: 6px;
-      height: 6px;
+
+    .console-link:hover { text-decoration: underline; }
+
+    .console-status {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-bg-muted);
+      border-top: 1px solid var(--color-border);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .console-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--color-border);
+      border-top-color: var(--color-primary);
       border-radius: 50%;
-      background: currentColor;
-    }
-    .status--building .status__dot { animation: pulse 1s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    /* --- Input Area --- */
-    .input-area {
-      border-top: 1px solid var(--border);
-      padding: 16px 24px;
-      background: var(--white);
-    }
-    .input-area__form {
-      display: flex;
-      gap: 12px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .input-area__field {
-      flex: 1;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 1rem;
-      resize: none;
-      min-height: 48px;
-      max-height: 120px;
-      font-family: inherit;
-    }
-    .input-area__field:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42,127,127,0.12); }
-    .input-area__btn {
-      padding: 12px 24px;
-      background: var(--teal);
-      color: var(--white);
-      border: none;
-      border-radius: var(--radius);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-      align-self: flex-end;
-    }
-    .input-area__btn:hover { background: var(--teal-dark); }
-    .input-area__btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* --- Feature Templates Panel --- */
-    .features {
-      padding: 16px 24px 0;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
-    }
-    .features__header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      padding-bottom: 12px;
-      user-select: none;
-    }
-    .features__title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-    }
-    .features__chevron {
-      transition: transform 0.2s;
-      color: var(--text-muted);
-    }
-    .features--collapsed .features__chevron { transform: rotate(-90deg); }
-    .features--collapsed .features__grid { display: none; }
-    .features__grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding-bottom: 16px;
-    }
-    .feature-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      text-align: center;
-      transition: border-color 0.2s;
-    }
-    .feature-card:hover { border-color: var(--teal); }
-    .feature-card__icon { color: var(--teal); margin-bottom: 6px; }
-    .feature-card__name {
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: var(--navy);
-      margin-bottom: 2px;
-    }
-    .feature-card__desc {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      margin-bottom: 10px;
-    }
-    .feature-card__btn {
-      display: inline-block;
-      padding: 5px 14px;
-      background: var(--teal);
-      color: var(--white);
-      border: none;
-      border-radius: var(--radius);
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .feature-card__btn:hover { background: var(--teal-dark); }
-    .feature-card__btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .feature-card__btn--done {
-      background: #E8F5E9;
-      color: #2E7D32;
-      pointer-events: none;
+      animation: spin 0.8s linear infinite;
+      display: none;
     }
 
-    /* --- Images Panel --- */
-    .images {
-      padding: 16px 24px 0;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
+    .console-spinner.active { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- First-run checklist ----------------------------- */
+    .first-run {
+      background: var(--color-primary-bg);
+      border: 1px solid var(--color-primary-lighter);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
     }
-    .images__header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      padding-bottom: 12px;
-      user-select: none;
+
+    .first-run-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-primary);
+      margin-bottom: var(--space-1);
     }
-    .images__title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
+
+    .first-run-sub {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-4);
+      line-height: var(--line-height-normal);
     }
-    .images__chevron {
-      transition: transform 0.2s;
-      color: var(--text-muted);
-    }
-    .images--collapsed .images__chevron { transform: rotate(-90deg); }
-    .images--collapsed .images__body { display: none; }
-    .images__body {
-      display: flex;
-      gap: 16px;
-      padding-bottom: 16px;
-    }
-    .upload-slot {
-      flex: 1;
+
+    .first-run-steps {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--space-2);
     }
-    .upload-slot__label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--navy);
-    }
-    .upload-zone {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      background: var(--white);
-      padding: 24px 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      position: relative;
-      min-height: 120px;
+
+    .first-run-step {
       display: flex;
-      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-3);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      line-height: var(--line-height-normal);
+    }
+
+    .first-run-num {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: white;
+      font-size: 11px;
+      font-weight: var(--font-weight-bold);
+      display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .upload-zone:hover, .upload-zone--drag {
-      border-color: var(--teal);
-      background: rgba(42,127,127,0.04);
-    }
-    .upload-zone--uploading {
-      pointer-events: none;
-      opacity: 0.6;
-    }
-    .upload-zone__icon { color: var(--text-muted); margin-bottom: 8px; }
-    .upload-zone__text {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-    .upload-zone__preview {
-      width: 100%;
-      max-height: 100px;
-      object-fit: contain;
-      border-radius: 4px;
-    }
-    .upload-zone__status {
-      font-size: 0.72rem;
-      color: var(--teal);
-      margin-top: 6px;
-      font-weight: 500;
-    }
-    .upload-zone__error {
-      font-size: 0.72rem;
-      color: #C62828;
-      margin-top: 6px;
+      flex-shrink: 0;
+      margin-top: 1px;
     }
 
-    /* --- Responsive --- */
-    @media (max-width: 640px) {
-      .history { padding: 16px; }
-      .input-area { padding: 12px 16px; }
-      .input-area__form { flex-direction: column; }
-      .input-area__btn { width: 100%; }
-      .build-entry { padding: 16px; }
-      .build-entry__header { flex-direction: column; gap: 4px; }
-      .login__card { padding: 28px 20px; }
-      .features { padding: 12px 16px 0; }
-      .features__grid { grid-template-columns: repeat(2, 1fr); }
-      .images { padding: 12px 16px 0; }
-      .images__body { flex-direction: column; }
+    .first-run-action {
+      color: var(--color-primary);
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      padding: 0;
+    }
+
+    /* ---- Misc -------------------------------------------- */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+    }
+
+    .cost-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+      font-size: var(--font-size-xs);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .cost-row:last-child { border-bottom: none; }
+    .cost-label { color: var(--color-text-muted); }
+    .cost-value { font-family: var(--font-family-mono); font-weight: var(--font-weight-semibold); }
+
+    /* ---- Build history ---------------------------------- */
+    .build-history {
+      margin-top: var(--space-8);
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-6);
+    }
+
+    .build-history-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-4);
+    }
+
+    .build-history-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .build-history-item:last-child { border-bottom: none; }
+
+    .build-history-info { flex: 1; min-width: 0; }
+
+    .build-history-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .build-history-meta {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .build-history-tag {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    .build-history-tag.rolled-back {
+      background: var(--color-status-hold-bg);
+      color: var(--color-status-hold);
+    }
+
+    .rollback-btn {
+      font-size: 11px;
+      font-weight: var(--font-weight-semibold);
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all var(--transition-fast);
+    }
+
+    .rollback-btn:hover:not(:disabled) {
+      border-color: var(--color-status-hold);
+      color: var(--color-status-hold);
+    }
+
+    .rollback-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ---- Members panel ---------------------------------- */
+    .members-panel { max-width: 760px; }
+
+    .invite-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+
+    .invite-card-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+    }
+
+    .invite-form { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+    .invite-input, .invite-select {
+      flex: 1;
+      min-width: 160px;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      background: var(--color-bg);
+      outline: none;
+    }
+
+    .invite-input:focus, .invite-select:focus { border-color: var(--color-primary); }
+    .invite-select { flex: 0 0 130px; }
+
+    .invite-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--color-text-inverse);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+    }
+
+    .invite-btn:hover { background: var(--color-primary-dark); }
+    .invite-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .invite-status {
+      margin-top: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+    }
+
+    .invite-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .invite-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .members-list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    .member-row {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .member-row.member-inactive { opacity: 0.55; }
+
+    .member-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: var(--font-weight-bold);
+      flex-shrink: 0;
+    }
+
+    .member-avatar-admin   { background: #ede9fe; color: #5b21b6; }
+    .member-avatar-steward { background: #ccfbf1; color: #0f766e; }
+    .member-avatar-member  { background: var(--color-primary-bg); color: var(--color-primary); }
+
+    .member-info { flex: 1; min-width: 0; }
+
+    .member-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .member-email {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .member-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-shrink: 0;
+    }
+
+    .role-badge {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-full);
+    }
+
+    .role-admin   { background: #ede9fe; color: #5b21b6; }
+    .role-steward { background: #ccfbf1; color: #0f766e; }
+    .role-member  { background: var(--color-primary-bg); color: var(--color-primary); }
+
+    .status-badge {
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold);
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-full);
+    }
+
+    .status-invited  { background: #fef9c3; color: #854d0e; }
+    .status-inactive { background: #f3f4f6; color: #6b7280; }
+
+    .member-date { font-size: var(--font-size-xs); color: var(--color-text-light); }
+    .member-actions { display: flex; gap: var(--space-1); flex-shrink: 0; }
+
+    .member-action-btn {
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+    }
+
+    .member-action-btn:hover { background: var(--color-bg-muted); color: var(--color-text); }
+    .member-action-btn.danger { color: #dc2626; border-color: #fecaca; }
+    .member-action-btn.danger:hover { background: #fef2f2; }
+
+    /* Agent memory section */
+    .memory-textarea {
+      width: 100%;
+      min-height: 320px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      color: var(--color-text);
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .memory-hint {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* Settings panel */
+    .settings-form { max-width: 520px; }
+    .settings-section { margin-bottom: var(--space-8); }
+    .settings-section-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-light);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .field-row { margin-bottom: var(--space-4); }
+    .field-label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+    .field-input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      box-sizing: border-box;
+      transition: border-color var(--transition-fast);
+    }
+    .field-input:focus { outline: none; border-color: var(--color-primary); }
+    .settings-hint {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-light);
+      margin-top: var(--space-2);
+    }
+    .settings-save-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .settings-save-btn {
+      padding: var(--space-2) var(--space-6);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+    .settings-save-btn:hover { background: var(--color-primary-dark); }
+    .settings-saved-msg {
+      font-size: var(--font-size-sm);
+      color: var(--color-status-accepted);
+    }
+
+    /* ---- Library panel --------------------------------- */
+    .library-panel { max-width: 760px; }
+
+    .library-filters {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-5);
+    }
+
+    .lib-filter-btn {
+      padding: var(--space-1) var(--space-3);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .lib-filter-btn:hover { border-color: var(--color-primary-lighter); color: var(--color-text); }
+    .lib-filter-btn.active { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-text-inverse); }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .lib-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .lib-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .lib-card-emoji { font-size: 24px; flex-shrink: 0; line-height: 1; padding-top: 2px; }
+
+    .lib-card-title {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text);
+      line-height: var(--line-height-tight);
+      margin-bottom: 2px;
+    }
+
+    .lib-card-category {
+      font-size: 10px;
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-light);
+    }
+
+    .lib-card-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      line-height: var(--line-height-relaxed);
+      flex: 1;
+    }
+
+    .lib-add-btn {
+      width: 100%;
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      margin-top: auto;
+    }
+
+    .lib-add-btn:hover:not(:disabled) { background: var(--color-primary-dark); }
+    .lib-add-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .lib-add-btn.queued { background: var(--color-status-accepted); }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .proposals-kanban { grid-template-columns: 1fr 1fr; }
+      .invite-form { flex-direction: column; }
+      .invite-select { flex: unset; }
+      .member-meta, .member-actions { display: none; }
     }
   </style>
 </head>
 <body>
+  <script src="/api/init"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="js/auth.js"></script>
 
-  <!-- Login Screen -->
-  <div id="login-screen" class="login">
-    <div class="login__card">
-      <div class="login__title">BuildMySite Admin</div>
-      <div class="login__subtitle">Enter your admin token to manage your website.</div>
-      <input type="password" id="token-input" class="login__input" placeholder="Admin token" autocomplete="current-password">
-      <button type="button" id="login-btn" class="login__btn">Sign In</button>
-      <div id="login-error" class="login__error">Invalid token. Please try again.</div>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Meitheal</div>
+      <div class="sidebar-community" id="community-name">Loading…</div>
     </div>
-  </div>
 
-  <!-- Main Panel (hidden until authenticated) -->
-  <header class="header" id="main-header" style="display:none">
-    <div class="header__brand">
-      BuildMySite <span class="header__badge">Admin</span>
-    </div>
-    <div class="header__actions">
-      <a href="/" class="header__btn" target="_blank">View Site</a>
-      <button type="button" class="header__btn" id="logout-btn">Sign Out</button>
-    </div>
-  </header>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-panel="overview" onclick="showPanel('overview', this)">
+        <span class="nav-icon">🏠</span> Overview
+      </button>
+      <button class="nav-item" data-panel="build" onclick="showPanel('build', this)">
+        <span class="nav-icon">🔨</span> Build queue
+        <span class="nav-badge" id="build-badge" style="display:none"></span>
+      </button>
+      <button class="nav-item" data-panel="members" onclick="showPanel('members', this)">
+        <span class="nav-icon">👥</span> Members
+      </button>
+      <button class="nav-item" data-panel="settings" onclick="showPanel('settings', this)">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+      <button class="nav-item" data-panel="library" onclick="showPanel('library', this)">
+        <span class="nav-icon">📚</span> Feature library
+      </button>
 
-  <div id="main-panel" class="main">
-    <div class="images" id="images-panel">
-      <div class="images__header" id="images-toggle">
-        <span class="images__title">Images</span>
-        <svg class="images__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <div class="nav-section-label">Navigate to</div>
+
+      <a class="nav-item" href="triage.html">
+        <span class="nav-icon">📥</span> Triage
+        <span class="nav-badge" id="triage-badge" style="display:none"></span>
+        <span style="margin-left:auto;font-size:11px;opacity:0.5">↗</span>
+      </a>
+      <a class="nav-item" href="proposals.html">
+        <span class="nav-icon">💡</span> All proposals
+        <span style="margin-left:auto;font-size:11px;opacity:0.5">↗</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="nav-item" href="home.html" style="margin-bottom:2px">
+        <span class="nav-icon">←</span> Community
+      </a>
+      <button class="nav-item" onclick="doSignOut()">
+        <span class="nav-icon">↩</span> Sign out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="main-header">
+      <div class="main-title" id="main-title">Overview</div>
+      <div class="header-actions">
+        <span style="font-size:var(--font-size-xs);color:var(--color-text-muted)" id="admin-name"></span>
       </div>
-      <div class="images__body">
-        <div class="upload-slot">
-          <span class="upload-slot__label">Logo</span>
-          <div class="upload-zone" id="upload-logo" data-type="logo">
-            <input type="file" accept="image/*" style="display:none">
-            <div class="upload-zone__icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-            </div>
-            <div class="upload-zone__text">Drop logo here or click to browse</div>
+    </header>
+
+    <!-- Overview panel -->
+    <div class="panel active" id="panel-overview">
+
+      <!-- First-run guide (shown until members exist) -->
+      <div class="first-run" id="first-run-checklist" style="display:none">
+        <div class="first-run-title">Your community is live — here's how to get started</div>
+        <div class="first-run-sub">You're the only member right now. Three things to do first:</div>
+        <div class="first-run-steps">
+          <div class="first-run-step">
+            <span class="first-run-num">1</span>
+            <span><strong>Invite your first members</strong> — go to <button class="first-run-action" onclick="showPanel('members', document.querySelector('[data-panel=\'members\']'))">Members</button> and send invite emails. They'll receive a magic link to join.</span>
+          </div>
+          <div class="first-run-step">
+            <span class="first-run-num">2</span>
+            <span><strong>Submit a first idea yourself</strong> — visit the <a href="home.html" class="first-run-action">community home</a> and tap the feedback button. Share something you'd like to build. This seeds the triage queue and shows members how the loop works when they join.</span>
+          </div>
+          <div class="first-run-step">
+            <span class="first-run-num">3</span>
+            <span><strong>Triage incoming ideas</strong> — when members submit feedback, it lands in <a href="triage.html" class="first-run-action">Triage</a>. Review it, add context, and promote the good ones to proposals. Approved proposals get built by the AI.</span>
           </div>
         </div>
-        <div class="upload-slot">
-          <span class="upload-slot__label">Hero Banner</span>
-          <div class="upload-zone" id="upload-hero" data-type="hero">
-            <input type="file" accept="image/*" style="display:none">
-            <div class="upload-zone__icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 14l5-5 4 4 3-3 6 6"/><circle cx="15.5" cy="8.5" r="1.5"/></svg>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card" onclick="window.location.href='triage.html'" title="Go to triage">
+          <div class="stat-number" id="stat-new-feedback">—</div>
+          <div class="stat-label">New feedback</div>
+        </div>
+        <div class="stat-card" onclick="window.location.href='proposals.html'" title="View all proposals">
+          <div class="stat-number" id="stat-proposals">—</div>
+          <div class="stat-label">Proposed</div>
+        </div>
+        <div class="stat-card" onclick="showPanel('build', document.querySelector('[data-panel=\'build\']'))" title="Go to build queue">
+          <div class="stat-number" id="stat-approved">—</div>
+          <div class="stat-label">Ready to build</div>
+        </div>
+        <div class="stat-card" onclick="window.location.href='changelog.html'" title="View changelog">
+          <div class="stat-number" id="stat-done">—</div>
+          <div class="stat-label">Built</div>
+        </div>
+      </div>
+
+      <div class="overview-section">
+        <div class="section-header">
+          <div class="section-title">New feedback</div>
+          <a href="triage.html" class="section-link">Open triage →</a>
+        </div>
+        <div class="feedback-preview-list" id="feedback-preview">
+          <div class="empty-state">Loading…</div>
+        </div>
+      </div>
+
+      <div class="overview-section">
+        <div class="section-header">
+          <div class="section-title">Proposals board</div>
+          <a href="proposals.html" class="section-link">View all →</a>
+        </div>
+        <div class="proposals-kanban" id="proposals-kanban">
+          <div class="kanban-col">
+            <div class="kanban-header">Proposed</div>
+            <div id="kanban-proposed"><div class="kanban-empty">Loading…</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">Approved</div>
+            <div id="kanban-approved"><div class="kanban-empty">Loading…</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">Building</div>
+            <div id="kanban-building"><div class="kanban-empty">Loading…</div></div>
+          </div>
+          <div class="kanban-col">
+            <div class="kanban-header">Done</div>
+            <div id="kanban-done"><div class="kanban-empty">Loading…</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-section">
+        <div class="section-header">
+          <div class="section-title">AI cost</div>
+        </div>
+        <div id="cost-section" style="background:var(--color-bg-card);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4)">
+          <div class="cost-row"><span class="cost-label">This month</span><span class="cost-value" id="cost-month">—</span></div>
+          <div class="cost-row"><span class="cost-label">All time</span><span class="cost-value" id="cost-alltime">—</span></div>
+          <div class="cost-row"><span class="cost-label">Model</span><span class="cost-value" id="provider-badge">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members panel -->
+    <div class="panel" id="panel-members">
+      <div class="members-panel">
+
+        <div class="invite-card">
+          <div class="invite-card-title">Invite a member</div>
+          <div class="invite-form">
+            <input type="text"  id="invite-name"  class="invite-input" placeholder="Full name">
+            <input type="email" id="invite-email" class="invite-input" placeholder="Email address">
+            <select id="invite-role" class="invite-select">
+              <option value="member">Member</option>
+              <option value="steward">Steward</option>
+            </select>
+            <textarea id="invite-note" class="invite-input" rows="2" placeholder="Personal note (optional) — e.g. 'Hi Mary, I'm inviting you to our residents' platform…'" style="resize:none;font-family:var(--font-family);font-size:var(--font-size-sm)"></textarea>
+            <button class="invite-btn" onclick="sendInvite()">Send invite</button>
+          </div>
+          <div id="invite-status" class="invite-status" style="display:none"></div>
+          <div id="invite-followup" style="display:none;margin-top:var(--space-3);background:var(--color-bg-muted);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-4)">
+            <div style="font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-2)">Send this to them alongside the magic link:</div>
+            <div id="invite-followup-text" style="font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:var(--line-height-relaxed);white-space:pre-wrap;margin-bottom:var(--space-3)"></div>
+            <button onclick="copyFollowup()" style="padding:var(--space-1) var(--space-3);background:var(--color-primary);color:var(--color-text-inverse);border:none;border-radius:var(--radius-sm);font-family:var(--font-family);font-size:var(--font-size-xs);cursor:pointer;" id="copy-followup-btn">Copy message</button>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title">All members</div>
+          <span id="members-count" style="font-size:var(--font-size-xs);color:var(--color-text-muted)"></span>
+        </div>
+        <div id="members-list" class="members-list">
+          <div class="empty-state">Loading…</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Build queue panel -->
+    <div class="panel" id="panel-build">
+      <div class="build-panel">
+        <div class="build-intro">
+          <strong>Build queue</strong> — these proposals have been approved and are ready to be built.
+          Selecting one sends a structured brief to the AI agent. The agent can only build what's
+          in the approved queue — it cannot modify this governance system.
+        </div>
+
+        <div class="approved-queue" id="approved-queue">
+          <div class="empty-state">Loading…</div>
+        </div>
+
+        <div class="build-history" id="build-history" style="display:none">
+          <div class="build-history-title">Recent builds</div>
+          <div id="build-history-list"></div>
+        </div>
+
+        <div class="build-console" id="build-console">
+          <div class="console-header">
+            <span class="console-title" id="console-title">Building…</span>
+            <div class="console-btns">
+              <button class="console-copy" onclick="copyConsole()" title="Copy output">Copy</button>
+              <button class="console-close" onclick="closeBuildConsole()" title="Close">×</button>
             </div>
-            <div class="upload-zone__text">Drop hero image here or click to browse</div>
+          </div>
+          <div class="console-messages" id="console-messages"></div>
+          <div class="console-links" id="console-links"></div>
+          <div class="console-status">
+            <div class="console-spinner" id="console-spinner"></div>
+            <span id="console-status-text">Waiting</span>
           </div>
         </div>
       </div>
     </div>
-    <div class="features" id="features-panel">
-      <div class="features__header" id="features-toggle">
-        <span class="features__title">Add Pages</span>
-        <svg class="features__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-      <div class="features__grid" id="features-grid"></div>
-    </div>
-    <div class="history" id="history">
-      <div class="history__empty" id="empty-state">
-        <div class="history__empty-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10"/></svg>
+
+    <div class="panel" id="panel-settings">
+      <div class="settings-form">
+
+        <div class="settings-section">
+          <div class="settings-section-title">Community</div>
+          <div class="field-row">
+            <label class="field-label">Community name</label>
+            <input class="field-input" type="text" id="s-community-name" placeholder="e.g. Blackwater Residents">
+          </div>
+          <div class="field-row">
+            <label class="field-label">Community charter</label>
+            <textarea class="field-input" id="s-community-charter" rows="6" placeholder="Write your community's values, rules, and purpose here. Members will see this on the Charter page." style="resize:vertical;font-family:var(--font-family);font-size:var(--font-size-sm);line-height:var(--line-height-relaxed)"></textarea>
+            <p class="settings-hint">Plain text. Shown on the Charter page — visible to all members.</p>
+          </div>
         </div>
-        <div class="history__empty-text">No builds yet. Tell the AI what you'd like to change.</div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">AI Agent</div>
+          <div class="field-row">
+            <label class="field-label">Provider</label>
+            <select class="field-input" id="s-ai-provider" onchange="updateModelPlaceholder()">
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI (GPT)</option>
+              <option value="gemini">Google Gemini</option>
+              <option value="qwen">Qwen (Alibaba)</option>
+              <option value="kimi">Kimi K2 (Moonshot)</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="groq">Groq</option>
+              <option value="ollama">Ollama (local)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <label class="field-label">Model</label>
+            <input class="field-input" type="text" id="s-ai-model" placeholder="e.g. gpt-4o-mini">
+          </div>
+          <div class="field-row">
+            <label class="field-label">API key</label>
+            <input class="field-input" type="password" id="s-ai-api-key" placeholder="Paste your API key" autocomplete="off">
+          </div>
+          <p class="settings-hint">The key is stored in your own Supabase project and never leaves it.</p>
+        </div>
+
+        <div class="settings-save-row">
+          <button class="settings-save-btn" onclick="saveSettings()">Save settings</button>
+          <span class="settings-saved-msg" id="settings-saved-msg"></span>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Agent memory</div>
+          <textarea class="memory-textarea" id="agent-memory-input" placeholder="Loading…" spellcheck="false" oninput="checkMemorySize()"></textarea>
+          <div id="memory-size-warn" style="display:none;margin-top:var(--space-2);padding:var(--space-2) var(--space-3);background:#fff8e6;border:1px solid #f0c040;border-radius:var(--radius-sm);font-size:var(--font-size-xs);color:#7a5c00;">
+            ⚠️ Agent memory is getting large (<span id="memory-char-count">0</span> characters). Consider trimming completed build notes — a large AGENT.md can reduce the agent's effective context window.
+          </div>
+          <p class="memory-hint">This is AGENT.md — the agent reads it before every build. Edit it to correct mistakes, add context, or guide future builds. Changes commit directly to the repo.</p>
+          <div class="settings-save-row" style="margin-top:var(--space-3)">
+            <button class="settings-save-btn" onclick="saveAgentMemory()">Save memory</button>
+            <span class="settings-saved-msg" id="memory-saved-msg"></span>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <div class="input-area">
-      <form class="input-area__form" id="build-form">
-        <textarea class="input-area__field" id="build-input" placeholder="What would you like to change?" rows="1"></textarea>
-        <button type="submit" class="input-area__btn" id="build-btn">Build</button>
-      </form>
+    <!-- Feature library panel -->
+    <div class="panel" id="panel-library">
+      <div class="library-panel">
+        <h2 class="section-title">Feature library</h2>
+        <p class="section-sub" style="margin-bottom:var(--space-5);font-size:var(--font-size-sm);color:var(--color-text-muted)">Pre-written features ready to build. Add any to your build queue — the agent will build them from there.</p>
+        <div class="library-filters">
+          <button class="lib-filter-btn active" onclick="filterLibrary('all', this)">All</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('general', this)">General</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('neighbourhood', this)">Neighbourhood</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('mutual_aid', this)">Mutual Aid</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('sports', this)">Sports</button>
+          <button class="lib-filter-btn" onclick="filterLibrary('housing', this)">Housing</button>
+        </div>
+        <div class="library-grid" id="library-grid">
+          <div style="color:var(--color-text-muted);font-size:var(--font-size-sm)">Loading…</div>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </main>
 
   <script>
-    // --- State ---
-    let token = sessionStorage.getItem('admin_token') || '';
-    let buildHistory = JSON.parse(localStorage.getItem('build_history') || '[]');
+    let currentAdmin = null;
+    let allProposals = [];
+    let allFeedback  = [];
 
-    const loginScreen = document.getElementById('login-screen');
-    const mainHeader = document.getElementById('main-header');
-    const mainPanel = document.getElementById('main-panel');
-    const tokenInput = document.getElementById('token-input');
-    const loginBtn = document.getElementById('login-btn');
-    const loginError = document.getElementById('login-error');
-    const logoutBtn = document.getElementById('logout-btn');
-    const historyEl = document.getElementById('history');
-    const emptyState = document.getElementById('empty-state');
-    const buildForm = document.getElementById('build-form');
-    const buildInput = document.getElementById('build-input');
-    const buildBtn = document.getElementById('build-btn');
+    // ---- Init ----
 
-    // --- Auth ---
-    function showMain() {
-      loginScreen.style.display = 'none';
-      mainHeader.style.display = 'flex';
-      mainPanel.classList.add('active');
-      renderHistory();
-      buildInput.focus();
-    }
+    async function init() {
+      const member = await requireAuthAsync();
+      if (!member) return;
 
-    function showLogin() {
-      loginScreen.style.display = 'flex';
-      mainHeader.style.display = 'none';
-      mainPanel.classList.remove('active');
-      loginError.style.display = 'none';
-    }
-
-    async function verifyToken(t) {
-      // Verify by making a lightweight agent call
-      try {
-        const r = await fetch('/api/agent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${t}` },
-          body: JSON.stringify({ message: '' })
-        });
-        // 400 means token is valid but message is empty — that's fine
-        // 401 means token is invalid
-        return r.status !== 401;
-      } catch {
-        // Network error — assume token might be valid, let them try
-        return true;
-      }
-    }
-
-    loginBtn.addEventListener('click', async () => {
-      const t = tokenInput.value.trim();
-      if (!t) return;
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Verifying...';
-      const valid = await verifyToken(t);
-      if (valid) {
-        token = t;
-        sessionStorage.setItem('admin_token', token);
-        showMain();
-      } else {
-        loginError.style.display = 'block';
-      }
-      loginBtn.disabled = false;
-      loginBtn.textContent = 'Sign In';
-    });
-
-    tokenInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') loginBtn.click();
-    });
-
-    logoutBtn.addEventListener('click', () => {
-      token = '';
-      sessionStorage.removeItem('admin_token');
-      tokenInput.value = '';
-      showLogin();
-    });
-
-    // Auto-login if token exists
-    if (token) {
-      showMain();
-    }
-
-    // --- Build History Rendering ---
-    function formatTime(ts) {
-      const d = new Date(ts);
-      const now = new Date();
-      const diff = now - d;
-      if (diff < 60000) return 'just now';
-      if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-      if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-      return d.toLocaleDateString('en-IE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    }
-
-    function renderHistory() {
-      // Remove all build entries (keep empty state)
-      historyEl.querySelectorAll('.build-entry').forEach(el => el.remove());
-
-      if (buildHistory.length === 0) {
-        emptyState.style.display = 'block';
+      if (member.role !== 'admin' && member.role !== 'steward') {
+        document.querySelector('.main').innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:var(--space-3);color:var(--color-text-muted);font-family:var(--font-family-heading)"><span style="font-size:40px">🔒</span><span>Admin access only.</span></div>';
         return;
       }
 
-      emptyState.style.display = 'none';
+      currentAdmin = member;
+      document.getElementById('admin-name').textContent = member.display_name || '';
 
-      // Render newest first
-      for (let i = buildHistory.length - 1; i >= 0; i--) {
-        const entry = buildHistory[i];
-        const el = document.createElement('div');
-        el.className = 'build-entry';
-        el.dataset.index = i;
+      const communityName = await getCommunityName();
+      document.getElementById('community-name').textContent = communityName;
 
-        const filesHtml = (entry.buildLog || []).map(f => {
-          const cls = f.success ? 'build-entry__file--success' : 'build-entry__file--error';
-          const label = f.tool === 'write_file' ? f.args.path : `${f.tool}: ${f.args.path || ''}`;
-          return `<span class="build-entry__file ${cls}">${label}</span>`;
-        }).join('');
-
-        const costStr = entry.usage?.costUsd ? `$${entry.usage.costUsd.toFixed(4)}` : '';
-        const modelStr = entry.usage?.model || '';
-
-        const enhancedHtml = entry.enhancedPrompt ? `
-          <details class="build-entry__enhanced">
-            <summary>Enhanced prompt</summary>
-            <pre class="build-entry__enhanced-text">${escapeHtml(entry.enhancedPrompt)}</pre>
-          </details>` : '';
-
-        el.innerHTML = `
-          <div class="build-entry__header">
-            <div class="build-entry__prompt">${escapeHtml(entry.prompt)}</div>
-            <div class="build-entry__time">${formatTime(entry.timestamp)}</div>
-          </div>
-          ${enhancedHtml}
-          ${entry.response ? `<div class="build-entry__response">${escapeHtml(entry.response)}</div>` : ''}
-          ${filesHtml ? `<div class="build-entry__files">${filesHtml}</div>` : ''}
-          <div class="build-entry__footer">
-            <span class="build-entry__cost">${[modelStr, costStr].filter(Boolean).join(' — ')}</span>
-            ${entry.buildLog?.length ? `<button type="button" class="build-entry__undo" data-index="${i}">Undo</button>` : ''}
-          </div>
-        `;
-
-        historyEl.appendChild(el);
-      }
-
-      // Scroll to top (newest)
-      historyEl.scrollTop = 0;
+      await Promise.all([
+        loadOverview(),
+        loadCosts(),
+      ]);
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    // --- Prompt Enhancement ---
-    async function enhancePrompt(message) {
+    async function loadOverview() {
       try {
-        const r = await fetch('/api/enhance-prompt', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ message })
-        });
-        if (!r.ok) return null;
-        return await r.json();
-      } catch {
-        return null;
-      }
-    }
+        const [feedbackRes, proposalsRes, membersRes] = await Promise.all([
+          getAllFeedback(),
+          getAllProposals(),
+          getSupabase().from('members').select('id, role').eq('status', 'active'),
+        ]);
+        allFeedback  = feedbackRes;
+        allProposals = proposalsRes;
 
-    // --- Build Submission ---
-    buildForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const message = buildInput.value.trim();
-      if (!message) return;
+        // Show first-run checklist until the community has members beyond the admin
+        const members    = membersRes.data || [];
+        const nonAdmins  = members.filter(m => m.role !== 'admin');
+        document.getElementById('first-run-checklist').style.display =
+          nonAdmins.length === 0 ? 'block' : 'none';
 
-      buildBtn.disabled = true;
-      buildBtn.textContent = 'Enhancing...';
-      buildInput.disabled = true;
+        const newFeedback  = allFeedback.filter(f => f.status === 'new');
+        const proposed     = allProposals.filter(p => p.status === 'proposed');
+        const approved     = allProposals.filter(p => p.status === 'approved');
+        const stuck        = allProposals.filter(p => p.status === 'building');
+        const done         = allProposals.filter(p => p.status === 'done');
 
-      // Add a "building" entry
-      const tempEntry = {
-        prompt: message,
-        timestamp: Date.now(),
-        status: 'building'
-      };
-      buildHistory.push(tempEntry);
-      renderHistory();
+        // Stats
+        document.getElementById('stat-new-feedback').textContent = newFeedback.length;
+        document.getElementById('stat-proposals').textContent    = proposed.length;
+        document.getElementById('stat-approved').textContent     = approved.length;
+        document.getElementById('stat-done').textContent         = done.length;
 
-      try {
-        // Step 1: Enhance the prompt
-        let agentMessage = message;
-        let enhanceCost = 0;
-        const enhanced = await enhancePrompt(message);
-        if (enhanced && enhanced.enhancedPrompt) {
-          agentMessage = enhanced.enhancedPrompt;
-          enhanceCost = enhanced.costUsd || 0;
-          tempEntry.enhancedPrompt = enhanced.enhancedPrompt;
+        // Badges
+        const triageBadge = document.getElementById('triage-badge');
+        if (newFeedback.length > 0) {
+          triageBadge.textContent = newFeedback.length;
+          triageBadge.style.display = 'inline-flex';
         }
 
-        // Step 2: Send to agent
-        buildBtn.textContent = 'Building...';
+        const buildBadge = document.getElementById('build-badge');
+        if (approved.length > 0) {
+          buildBadge.textContent = approved.length;
+          buildBadge.style.display = 'inline-flex';
+        }
+
+        renderFeedbackPreview(newFeedback);
+        renderKanban(allProposals);
+        renderApprovedQueue(approved, stuck);
+
+      } catch (e) {
+        console.error('Overview error:', e);
+      }
+    }
+
+    // ---- Feedback preview ----
+
+    const TYPE_EMOJI = { idea: '💡', bug: '🔧', question: '❓', other: '💬' };
+
+    function renderFeedbackPreview(items) {
+      const el = document.getElementById('feedback-preview');
+      if (items.length === 0) {
+        el.innerHTML = '<div class="empty-state">No new feedback — the queue is clear.</div>';
+        return;
+      }
+      const preview = items.slice(0, 4);
+      el.innerHTML = preview.map(f => {
+        const author = f.members?.display_name || 'A member';
+        const ago    = timeAgo(f.created_at);
+        return `<div class="preview-card">
+          <span class="preview-emoji">${TYPE_EMOJI[f.type] || '💬'}</span>
+          <div class="preview-body">
+            <div class="preview-message">${escHtml(f.message)}</div>
+            <div class="preview-meta">from ${escHtml(author)} · ${ago}</div>
+          </div>
+        </div>`;
+      }).join('') + (items.length > 4
+        ? `<div style="font-size:var(--font-size-xs);color:var(--color-text-light);padding:var(--space-2) 0">+${items.length - 4} more in triage</div>`
+        : '');
+    }
+
+    // ---- Kanban ----
+
+    function renderKanban(proposals) {
+      const grouped = {
+        proposed: proposals.filter(p => p.status === 'proposed'),
+        approved:  proposals.filter(p => p.status === 'approved'),
+        building:  proposals.filter(p => p.status === 'building'),
+        done:      proposals.filter(p => p.status === 'done'),
+      };
+
+      const cols = {
+        proposed: 'kanban-proposed',
+        approved:  'kanban-approved',
+        building:  'kanban-building',
+        done:      'kanban-done',
+      };
+
+      for (const [key, elId] of Object.entries(cols)) {
+        const el = document.getElementById(elId);
+        const items = grouped[key];
+        if (items.length === 0) {
+          el.innerHTML = '<div class="kanban-empty">Empty</div>';
+        } else {
+          el.innerHTML = items.map(p => {
+            const approveBtn = key === 'proposed'
+              ? `<button class="kanban-approve-btn" onclick="approveProposal('${p.id}')">Approve →</button>`
+              : '';
+            const validatedTag = key === 'done' && p.member_validated
+              ? `<div class="kanban-item-meta" style="color:var(--color-status-accepted)">✓ Member validated</div>`
+              : '';
+            return `<div class="kanban-item">
+              ${escHtml(p.title)}
+              <div class="kanban-item-meta">${timeAgo(p.created_at)}</div>
+              ${approveBtn}${validatedTag}
+            </div>`;
+          }).join('');
+        }
+      }
+    }
+
+    async function approveProposal(id) {
+      try {
+        const { error } = await getSupabase()
+          .from('proposals')
+          .update({ status: 'approved', approved_by: currentAdmin.id })
+          .eq('id', id);
+        if (error) throw error;
+        await loadOverview();
+        showPanel('build', document.querySelector('[data-panel="build"]'));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ---- Build queue ----
+
+    function renderApprovedQueue(approved, stuck = []) {
+      const el = document.getElementById('approved-queue');
+      if (approved.length === 0 && stuck.length === 0) {
+        el.innerHTML = '<div class="empty-state">No approved proposals ready to build. Approve a proposal in the Overview to add it here.</div>';
+        return;
+      }
+      const stuckHtml = stuck.map(p => `
+        <div class="approved-card" style="border-left-color:var(--color-status-review)">
+          <div class="approved-info">
+            <div class="approved-title">${escHtml(p.title)}</div>
+            <div class="approved-meta" style="color:var(--color-status-review)">⚠️ Build interrupted — reset to retry</div>
+          </div>
+          <div class="approved-actions">
+            <button class="start-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="retryBuild(this.dataset.id, this.dataset.title)">
+              Reset & retry →
+            </button>
+          </div>
+        </div>
+      `).join('');
+      const approvedHtml = approved.map(p => `
+        <div class="approved-card">
+          <div class="approved-info">
+            <div class="approved-title">${escHtml(p.title)}</div>
+            <div class="approved-meta">Approved · ${timeAgo(p.created_at)}</div>
+          </div>
+          <div class="approved-actions">
+            <button class="preview-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="startBuild(this.dataset.id, this.dataset.title, true)" title="See what the agent plans to do before building">
+              Preview
+            </button>
+            <button class="start-build-btn" data-id="${p.id}" data-title="${escHtml(p.title)}" onclick="startBuild(this.dataset.id, this.dataset.title, false)">
+              Build →
+            </button>
+          </div>
+        </div>
+      `).join('');
+      el.innerHTML = stuckHtml + approvedHtml;
+    }
+
+    async function retryBuild(proposalId, title) {
+      await resetProposalToApproved(proposalId, null);
+      startBuild(proposalId, title, false);
+    }
+
+    // Used by Feature Library — resets to approved without auto-starting the build
+    async function resetLibraryProposal(proposalId, btn) {
+      btn.disabled = true;
+      btn.textContent = 'Resetting…';
+      await resetProposalToApproved(proposalId, null);
+      showPanel('build', document.querySelector('[data-panel="build"]'));
+    }
+
+    // ---- Build console ----
+
+    async function startBuild(proposalId, title, planOnly) {
+      const console_ = document.getElementById('build-console');
+      const msgs     = document.getElementById('console-messages');
+      const spinner  = document.getElementById('console-spinner');
+      const status   = document.getElementById('console-status-text');
+      const conTitle = document.getElementById('console-title');
+
+      conTitle.textContent = planOnly ? `Plan preview: ${title}` : title;
+      msgs.textContent     = '';
+      spinner.classList.add('active');
+      status.textContent   = planOnly ? 'Generating build plan…' : 'Sending proposal to agent…';
+      document.getElementById('console-links').style.display = 'none';
+
+      // Remove any leftover buttons from a previous run
+      const prevExec   = console_.querySelector('.console-execute-btn');
+      const prevFail   = document.getElementById('console-status')?.querySelector('div[style*="display:flex"]');
+      if (prevExec) prevExec.remove();
+      if (prevFail) prevFail.remove();
+
+      console_.classList.add('open');
+      console_.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const body = { proposal_id: proposalId };
+        if (planOnly) body.plan_only = true;
+
         const r = await fetch('/api/agent', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ message: agentMessage })
+          body: JSON.stringify(body),
         });
 
-        if (r.status === 401) {
-          token = '';
-          sessionStorage.removeItem('admin_token');
-          showLogin();
-          buildHistory.pop();
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.error || `Agent error ${r.status}`);
+        }
+
+        const result = await r.json();
+        msgs.textContent = result.text || '(No response)';
+        spinner.classList.remove('active');
+
+        if (result.plan_mode) {
+          // Planning pass — show plan and offer execute button
+          status.textContent = 'Plan ready — review above, then execute';
+          conTitle.textContent = `Plan: ${title}`;
+          const execBtn = document.createElement('button');
+          execBtn.className = 'console-execute-btn';
+          execBtn.textContent = 'Execute build →';
+          execBtn.onclick = () => { execBtn.remove(); startBuild(proposalId, title, false); };
+          status.parentElement.appendChild(execBtn);
+        } else {
+          // Real build — show links and reload
+          status.textContent = 'Build complete';
+          conTitle.textContent = title;
+
+          // Extract URLs from agent response and make them clickable
+          const urls = (result.text || '').match(/https?:\/\/[^\s)]+/g);
+          const linksEl = document.getElementById('console-links');
+          if (urls && urls.length > 0) {
+            linksEl.innerHTML = urls.map(url =>
+              `<a class="console-link" href="${url}" target="_blank">↗ ${url}</a>`
+            ).join('');
+            linksEl.style.display = 'flex';
+          }
+
+          // Reload to show updated proposal status
+          await loadOverview();
+        }
+
+      } catch (e) {
+        msgs.textContent = `Error: ${e.message}`;
+        status.textContent = 'Failed';
+        spinner.classList.remove('active');
+
+        // Show retry + reset buttons on failure
+        const failRow = document.createElement('div');
+        failRow.style.cssText = 'display:flex;gap:var(--space-2);margin-top:var(--space-3);flex-wrap:wrap;';
+        failRow.innerHTML = `
+          <button onclick="this.parentElement.remove(); retryBuild(${JSON.stringify(proposalId)}, ${JSON.stringify(title)})"
+            style="padding:var(--space-2) var(--space-4);background:var(--color-primary);color:var(--color-text-inverse);border:none;border-radius:var(--radius-md);font-family:var(--font-family);font-size:var(--font-size-sm);cursor:pointer;">
+            Retry build
+          </button>
+          <button onclick="resetProposalToApproved(${JSON.stringify(proposalId)}, this.parentElement)"
+            style="padding:var(--space-2) var(--space-4);background:none;color:var(--color-text-muted);border:1px solid var(--color-border);border-radius:var(--radius-md);font-family:var(--font-family);font-size:var(--font-size-sm);cursor:pointer;"
+            title="If this proposal got stuck in 'building' status, this resets it so you can try again">
+            Reset to approved
+          </button>`;
+        document.getElementById('console-status').appendChild(failRow);
+      }
+    }
+
+    async function resetProposalToApproved(proposalId, btnParent) {
+      try {
+        const { error } = await getSupabase()
+          .from('proposals')
+          .update({ status: 'approved', build_started_at: null })
+          .eq('id', proposalId);
+        if (error) throw error;
+        if (btnParent) btnParent.remove();
+        document.getElementById('console-status-text').textContent = 'Reset — ready to retry';
+        // Reload overview data so the queue reflects the reset proposal
+        await loadOverview();
+      } catch (e) {
+        alert('Reset failed: ' + e.message);
+      }
+    }
+
+    function closeBuildConsole() {
+      document.getElementById('build-console').classList.remove('open');
+      document.getElementById('console-links').style.display = 'none';
+    }
+
+    function copyConsole() {
+      const text = document.getElementById('console-messages').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.console-copy');
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      });
+    }
+
+    // ---- Build history + rollback ----
+
+    async function loadBuildHistory() {
+      const sb = getSupabase();
+      const { data: entries } = await sb
+        .from('changelog')
+        .select('id, description, ts, files_changed, rollback_snapshots, rolled_back')
+        .order('ts', { ascending: false })
+        .limit(8);
+
+      const container = document.getElementById('build-history');
+      const list      = document.getElementById('build-history-list');
+
+      if (!entries || entries.length === 0) return;
+
+      list.innerHTML = entries.map(entry => {
+        const filesCount = entry.files_changed?.length || 0;
+        const canRollback = entry.rollback_snapshots?.length > 0 && !entry.rolled_back;
+        const rolledBack  = entry.rolled_back;
+        const date = new Date(entry.ts).toLocaleDateString('en-IE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        return `
+          <div class="build-history-item" id="bh-${entry.id}">
+            <div class="build-history-info">
+              <div class="build-history-name">${escHtml(entry.description || 'Unnamed build')}</div>
+              <div class="build-history-meta">${date}${filesCount ? ` · ${filesCount} file${filesCount !== 1 ? 's' : ''}` : ''}</div>
+            </div>
+            ${rolledBack
+              ? '<span class="build-history-tag rolled-back">Rolled back</span>'
+              : canRollback
+                ? `<button class="rollback-btn" onclick="rollbackBuild('${entry.id}', this)">Roll back</button>`
+                : '<span style="font-size:11px;color:var(--color-text-light)">No snapshot</span>'
+            }
+          </div>
+        `;
+      }).join('');
+
+      container.style.display = 'block';
+    }
+
+    async function rollbackBuild(changelogId, btn) {
+      if (!confirm('Roll back this build? This will restore the previous file versions and trigger a new deployment (~30s).')) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Rolling back…';
+
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/rollback', {
+          method: 'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ changelog_id: changelogId }),
+        });
+
+        const result = await r.json();
+
+        if (!r.ok) throw new Error(result.error || `Rollback failed ${r.status}`);
+
+        // Replace button with status
+        const row = document.getElementById(`bh-${changelogId}`);
+        if (row) {
+          const btnEl = row.querySelector('.rollback-btn');
+          if (btnEl) {
+            const tag = document.createElement('span');
+            tag.className = 'build-history-tag rolled-back';
+            tag.textContent = 'Rolled back';
+            btnEl.replaceWith(tag);
+          }
+        }
+
+        alert(result.message);
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Roll back';
+        alert('Rollback error: ' + e.message);
+      }
+    }
+
+    // ---- Costs ----
+
+    async function loadCosts() {
+      try {
+        const sb = getSupabase();
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const [{ data: monthRows }, { data: allRows }, { data: settingsRows }] = await Promise.all([
+          sb.from('ai_usage').select('cost_usd').gte('ts', monthStart),
+          sb.from('ai_usage').select('cost_usd'),
+          sb.from('settings').select('key,value'),
+        ]);
+        const settings   = Object.fromEntries((settingsRows || []).map(r => [r.key, r.value]));
+        const monthTotal = (monthRows || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
+        const allTotal   = (allRows   || []).reduce((s, r) => s + parseFloat(r.cost_usd || 0), 0);
+        document.getElementById('cost-month').textContent   = `$${monthTotal.toFixed(4)}`;
+        document.getElementById('cost-alltime').textContent = `$${allTotal.toFixed(4)}`;
+        document.getElementById('provider-badge').textContent =
+          `${settings.ai_provider || 'anthropic'} / ${(settings.ai_model || 'claude-sonnet-4-6').split('-').slice(-2).join('-')}`;
+      } catch (e) {
+        console.error('Cost load error:', e);
+      }
+    }
+
+    // ---- Members ----
+
+    let allMembers    = [];
+    let membersLoaded = false;
+
+    async function loadMembers() {
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action: 'list' }),
+        });
+
+        if (!r.ok) {
+          document.getElementById('members-list').innerHTML =
+            '<div class="empty-state">Could not load members.</div>';
           return;
         }
+
+        const { members } = await r.json();
+        allMembers    = members || [];
+        membersLoaded = true;
+        renderMembers(allMembers);
+
+      } catch (e) {
+        document.getElementById('members-list').innerHTML =
+          `<div class="empty-state">Error: ${escHtml(e.message)}</div>`;
+      }
+    }
+
+    function renderMembers(members) {
+      const el = document.getElementById('members-list');
+      const countEl = document.getElementById('members-count');
+      const active  = members.filter(m => m.status !== 'inactive');
+      countEl.textContent = `${active.length} active`;
+
+      if (!members.length) {
+        el.innerHTML = '<div class="empty-state">No members yet. Send an invite above.</div>';
+        return;
+      }
+
+      el.innerHTML = members.map(m => {
+        const initials = (m.display_name || m.email || '?')
+          .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const isPending  = !m.auth_id;
+        const isInactive = m.status === 'inactive';
+        const isSelf     = m.id === currentAdmin?.id;
+
+        const roleBadge = `<span class="role-badge role-${m.role}">${m.role}</span>`;
+        const statusBadge = isPending
+          ? '<span class="status-badge status-invited">Invited</span>'
+          : isInactive
+            ? '<span class="status-badge status-inactive">Inactive</span>'
+            : '';
+
+        const actions = [];
+        if (!isSelf && m.role !== 'admin') {
+          if (m.role === 'member') {
+            actions.push(`<button class="member-action-btn" onclick="setMemberRole('${m.id}','steward')">Make steward</button>`);
+          } else if (m.role === 'steward') {
+            actions.push(`<button class="member-action-btn" onclick="setMemberRole('${m.id}','member')">Remove steward</button>`);
+          }
+          if (!isInactive) {
+            actions.push(`<button class="member-action-btn danger" onclick="deactivateMember('${m.id}',${JSON.stringify(m.display_name || m.email)})">Deactivate</button>`);
+          }
+        }
+
+        const dateStr = new Date(m.created_at).toLocaleDateString('en-IE', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
+
+        return `<div class="member-row${isInactive ? ' member-inactive' : ''}">
+          <div class="member-avatar member-avatar-${m.role}">${escHtml(initials)}</div>
+          <div class="member-info">
+            <div class="member-name">${escHtml(m.display_name || '—')}</div>
+            <div class="member-email">${escHtml(m.email)}</div>
+          </div>
+          <div class="member-meta">
+            ${roleBadge}
+            ${statusBadge}
+            <span class="member-date">${dateStr}</span>
+          </div>
+          <div class="member-actions">${actions.join('')}</div>
+        </div>`;
+      }).join('');
+    }
+
+    async function sendInvite() {
+      const nameEl   = document.getElementById('invite-name');
+      const emailEl  = document.getElementById('invite-email');
+      const roleEl   = document.getElementById('invite-role');
+      const noteEl   = document.getElementById('invite-note');
+      const btn      = document.querySelector('.invite-btn');
+      const name     = nameEl.value.trim();
+      const email    = emailEl.value.trim();
+      const note     = noteEl?.value.trim() || '';
+
+      if (!name || !email) {
+        showInviteStatus('Please enter both name and email.', false);
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.textContent = 'Sending…';
+
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+
+        const communityName = document.getElementById('community-name')?.textContent || 'the community';
+
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action: 'invite', email, display_name: name, role: roleEl.value }),
+        });
 
         const data = await r.json();
 
         if (!r.ok) {
-          tempEntry.status = 'error';
-          tempEntry.response = data.error || 'Something went wrong.';
+          showInviteStatus(data.error || 'Invite failed.', false);
         } else {
-          tempEntry.status = 'success';
-          tempEntry.response = data.text || '';
-          tempEntry.buildLog = data.buildLog || [];
-          tempEntry.usage = data.usage || {};
-          tempEntry.commitSha = data.commit?.sha || null;
-          // Sum enhance + agent costs
-          if (enhanceCost && tempEntry.usage.costUsd) {
-            tempEntry.usage.enhanceCostUsd = enhanceCost;
-            tempEntry.usage.costUsd = Math.round((tempEntry.usage.costUsd + enhanceCost) * 10000) / 10000;
-          }
+          showInviteStatus(
+            data.warning || `Invite sent to ${email}.`,
+            !data.warning
+          );
+          // Show a follow-up message the admin can copy alongside the magic link
+          const firstName = name.split(' ')[0];
+          const followupParts = [
+            note || `Hi ${firstName}, I've invited you to join ${communityName} — our community platform where members share ideas and help shape what we build together.`,
+            `\nYou should receive a sign-in link by email shortly. Click it to join — no password needed.`,
+          ];
+          document.getElementById('invite-followup-text').textContent = followupParts.join('');
+          document.getElementById('invite-followup').style.display = 'block';
+
+          nameEl.value = '';
+          emailEl.value = '';
+          if (noteEl) noteEl.value = '';
+          membersLoaded = false;
+          await loadMembers();
         }
-      } catch (err) {
-        tempEntry.status = 'error';
-        tempEntry.response = `Network error: ${err.message}`;
+
+      } catch (e) {
+        showInviteStatus(e.message, false);
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Send invite';
       }
+    }
 
-      localStorage.setItem('build_history', JSON.stringify(buildHistory));
-      renderHistory();
+    function copyFollowup() {
+      const text = document.getElementById('invite-followup-text').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copy-followup-btn');
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => { btn.textContent = 'Copy message'; }, 2000);
+      });
+    }
 
-      buildInput.value = '';
-      buildBtn.disabled = false;
-      buildBtn.textContent = 'Build';
-      buildInput.disabled = false;
-      buildInput.focus();
-    });
+    function showInviteStatus(msg, success) {
+      const el = document.getElementById('invite-status');
+      el.textContent = msg;
+      el.className   = `invite-status ${success ? 'invite-success' : 'invite-error'}`;
+      el.style.display = 'block';
+      if (success) setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
 
-    // --- Undo (deterministic git revert via /api/revert) ---
-    historyEl.addEventListener('click', async (e) => {
-      const undoBtn = e.target.closest('.build-entry__undo');
-      if (!undoBtn) return;
+    async function setMemberRole(memberId, role) {
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
 
-      const idx = parseInt(undoBtn.dataset.index);
-      const entry = buildHistory[idx];
-      if (!entry?.buildLog) return;
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+          body: JSON.stringify({ action: 'set_role', member_id: memberId, role }),
+        });
 
-      if (!entry.commitSha) {
-        alert('Cannot undo: no commit SHA recorded for this build. Only builds from this session onwards support deterministic revert.');
-        return;
-      }
+        const data = await r.json();
+        if (!r.ok) { alert(data.error || 'Failed to update role.'); return; }
 
-      if (!confirm('Undo this change? This will restore each file to its exact state before this commit.')) return;
+        membersLoaded = false;
+        await loadMembers();
 
-      undoBtn.disabled = true;
-      undoBtn.textContent = 'Reverting...';
+      } catch (e) { alert(e.message); }
+    }
 
-      let revertedCount = 0;
-      let failedFiles = [];
+    async function deactivateMember(memberId, name) {
+      if (!confirm(`Deactivate ${name}?\n\nThey will no longer be able to sign in.`)) return;
 
-      for (const log of entry.buildLog) {
-        if (!log.success || log.tool !== 'write_file' || !log.args.path) continue;
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
 
-        try {
-          const r = await fetch('/api/revert', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              filePath: log.args.path,
-              commitSha: entry.commitSha
-            })
-          });
+        const r = await fetch('/api/invite', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+          body: JSON.stringify({ action: 'deactivate', member_id: memberId }),
+        });
 
-          if (!r.ok) {
-            const data = await r.json().catch(() => ({}));
-            throw new Error(data.error || `HTTP ${r.status}`);
-          }
-          revertedCount++;
-        } catch (err) {
-          console.error('Revert failed for', log.args.path, err);
-          failedFiles.push(log.args.path);
-        }
-      }
+        const data = await r.json();
+        if (!r.ok) { alert(data.error || 'Failed to deactivate.'); return; }
 
-      if (failedFiles.length > 0) {
-        alert(`Reverted ${revertedCount} file(s) but failed on: ${failedFiles.join(', ')}`);
-      }
+        membersLoaded = false;
+        await loadMembers();
 
-      entry.undone = true;
-      localStorage.setItem('build_history', JSON.stringify(buildHistory));
-      renderHistory();
-    });
+      } catch (e) { alert(e.message); }
+    }
 
-    // --- Feature Templates (Add Pages) ---
-    const PAGE_TEMPLATES = {
-      gallery: {
-        name: 'Gallery',
-        file: 'gallery.html',
-        desc: 'Image grid with captions',
-        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
-        prompt: `Add a Gallery page to my site.
+    // ---- Nav ----
 
-Follow these exact steps:
-1. Read index.html to learn the business name, branding, and current nav links.
-2. Read gallery.html — it is a pre-built template with the correct CSS grid structure. Do NOT write a gallery page from scratch.
-3. Rewrite gallery.html with content customised for this business:
-   - Match the nav and footer exactly to index.html (same business name, same links, plus a new Gallery link)
-   - Update the hero section title and description for this business
-   - Write real, specific gallery item captions relevant to this business
-   - Keep every CSS class exactly as-is: gallery-grid, gallery-item, gallery-item__placeholder, gallery-item__caption, nav, hero--compact, footer
-   - Keep all SVG placeholder icons exactly as-is
-   - You may add or remove gallery-item blocks
-4. Use list_files to find all other .html pages. Read each one, add a "Gallery" nav link pointing to gallery.html, and write the updated file.
-5. Write all updated files.`
-      },
-      menu: {
-        name: 'Menu',
-        file: 'menu.html',
-        desc: 'Categorised items with prices',
-        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="8" cy="6" r="1" fill="currentColor"/><circle cx="8" cy="12" r="1" fill="currentColor"/><circle cx="8" cy="18" r="1" fill="currentColor"/></svg>',
-        prompt: `Add a Menu / Pricing page to my site.
+    function showPanel(panelId, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item[data-panel]').forEach(b => b.classList.remove('active'));
+      document.getElementById(`panel-${panelId}`).classList.add('active');
+      if (btn) btn.classList.add('active');
+      const titles = { overview: 'Overview', build: 'Build queue', members: 'Members', settings: 'Settings', library: 'Feature library' };
+      document.getElementById('main-title').textContent = titles[panelId] || panelId;
+      if (panelId === 'members' && !membersLoaded) loadMembers();
+      if (panelId === 'settings') loadSettings();
+      if (panelId === 'build') loadBuildHistory();
+      if (panelId === 'library') loadLibrary();
+    }
 
-Follow these exact steps:
-1. Read index.html to learn the business name, branding, and current nav links.
-2. Read menu.html — it is a pre-built template with the correct menu layout. Do NOT write a menu page from scratch.
-3. Rewrite menu.html with content customised for this business:
-   - Match the nav and footer exactly to index.html (same business name, same links, plus a new Menu link)
-   - Update the hero section title and description
-   - Create menu categories and items relevant to this business with realistic EUR prices
-   - Keep every CSS class exactly as-is: menu-category, menu-category__title, menu-item, menu-item__header, menu-item__name, menu-item__price, menu-item__desc, nav, hero--compact, footer, container-narrow
-   - You may add or remove menu-category and menu-item blocks
-4. Use list_files to find all other .html pages. Read each one, add a "Menu" nav link pointing to menu.html, and write the updated file.
-5. Write all updated files.`
-      },
-      testimonials: {
-        name: 'Testimonials',
-        file: 'testimonials.html',
-        desc: 'Customer quote cards',
-        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 5v3c0 1 0 1 1 1z"/></svg>',
-        prompt: `Add a Testimonials page to my site.
+    // ---- Settings ----
 
-Follow these exact steps:
-1. Read index.html to learn the business name, branding, and current nav links.
-2. Read testimonials.html — it is a pre-built template with the correct card layout. Do NOT write a testimonials page from scratch.
-3. Rewrite testimonials.html with content customised for this business:
-   - Match the nav and footer exactly to index.html (same business name, same links, plus a new Testimonials link)
-   - Update the hero section title and description
-   - Write realistic, believable testimonials with Irish names relevant to this business type
-   - Keep every CSS class exactly as-is: testimonial-card, testimonial-card__quote, testimonial-card__author, testimonial-card__role, grid, grid-2, nav, hero--compact, footer
-   - You may add or remove testimonial-card blocks (keep them in a grid-2 layout)
-4. Use list_files to find all other .html pages. Read each one, add a "Testimonials" nav link pointing to testimonials.html, and write the updated file.
-5. Write all updated files.`
-      },
-      faq: {
-        name: 'FAQ',
-        file: 'faq.html',
-        desc: 'Accordion Q&A section',
-        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>',
-        prompt: `Add a FAQ page to my site.
-
-Follow these exact steps:
-1. Read index.html to learn the business name, branding, and current nav links.
-2. Read faq.html — it is a pre-built template with the correct accordion structure using details/summary elements. Do NOT write a FAQ page from scratch.
-3. Rewrite faq.html with content customised for this business:
-   - Match the nav and footer exactly to index.html (same business name, same links, plus a new FAQ link)
-   - Update the hero section title and description
-   - Write 6-10 relevant FAQs for this specific type of business
-   - Keep the details/summary structure exactly as-is
-   - Keep the first details element open (has the "open" attribute)
-   - Keep every CSS class exactly as-is: faq-item, faq-item__question, faq-item__answer, container-narrow, nav, hero--compact, footer
-   - You may add or remove faq-item blocks
-4. Use list_files to find all other .html pages. Read each one, add a "FAQ" nav link pointing to faq.html, and write the updated file.
-5. Write all updated files.`
-      }
+    const MODEL_DEFAULTS = {
+      anthropic: 'claude-sonnet-4-6',
+      openai:    'gpt-4o-mini',
+      gemini:    'gemini-3-flash-preview',
+      qwen:      'qwen3-max',
+      kimi:      'kimi-k2.5',
+      deepseek:  'deepseek-chat',
+      groq:      'llama3-8b-8192',
+      ollama:    'llama3',
     };
 
-    // Render feature cards
-    const featuresGrid = document.getElementById('features-grid');
-    const featuresPanel = document.getElementById('features-panel');
-    const featuresToggle = document.getElementById('features-toggle');
+    async function loadSettings() {
+      const sb = getSupabase();
+      const { data } = await sb.from('settings').select('key,value');
+      if (!data) return;
+      const s = Object.fromEntries(data.map(r => [r.key, r.value]));
+      if (s.community_name)    document.getElementById('s-community-name').value    = s.community_name;
+      if (s.community_charter) document.getElementById('s-community-charter').value = s.community_charter;
+      if (s.ai_provider)       document.getElementById('s-ai-provider').value       = s.ai_provider;
+      if (s.ai_model)          document.getElementById('s-ai-model').value          = s.ai_model;
+      if (s.ai_api_key)        document.getElementById('s-ai-api-key').value        = s.ai_api_key;
+      loadAgentMemory();
+    }
 
-    function renderFeatureCards() {
-      featuresGrid.innerHTML = '';
-      for (const [key, tpl] of Object.entries(PAGE_TEMPLATES)) {
-        const card = document.createElement('div');
-        card.className = 'feature-card';
-        card.innerHTML = `
-          <div class="feature-card__icon">${tpl.icon}</div>
-          <div class="feature-card__name">${tpl.name}</div>
-          <div class="feature-card__desc">${tpl.desc}</div>
-          <button type="button" class="feature-card__btn" data-page="${key}">Add to site</button>
-        `;
-        featuresGrid.appendChild(card);
+    function updateModelPlaceholder() {
+      const provider = document.getElementById('s-ai-provider').value;
+      const modelInput = document.getElementById('s-ai-model');
+      if (!modelInput.value || Object.values(MODEL_DEFAULTS).includes(modelInput.value)) {
+        modelInput.value = MODEL_DEFAULTS[provider] || '';
       }
     }
 
-    // Toggle collapse
-    if (localStorage.getItem('features_collapsed') === 'true') {
-      featuresPanel.classList.add('features--collapsed');
-    }
-    featuresToggle.addEventListener('click', () => {
-      featuresPanel.classList.toggle('features--collapsed');
-      localStorage.setItem('features_collapsed', featuresPanel.classList.contains('features--collapsed'));
-    });
+    async function saveSettings() {
+      const sb = getSupabase();
+      const updates = [
+        { key: 'community_name',    value: document.getElementById('s-community-name').value.trim() },
+        { key: 'community_charter', value: document.getElementById('s-community-charter').value.trim() },
+        { key: 'ai_provider',       value: document.getElementById('s-ai-provider').value },
+        { key: 'ai_model',          value: document.getElementById('s-ai-model').value.trim() },
+        { key: 'ai_api_key',        value: document.getElementById('s-ai-api-key').value.trim() },
+      ].filter(u => u.value !== undefined && u.value !== null);
 
-    // Handle "Add to site" clicks
-    featuresGrid.addEventListener('click', async (e) => {
-      const btn = e.target.closest('.feature-card__btn');
-      if (!btn || btn.disabled) return;
-
-      const pageKey = btn.dataset.page;
-      const tpl = PAGE_TEMPLATES[pageKey];
-      if (!tpl) return;
-
-      // Disable all feature buttons while building
-      featuresGrid.querySelectorAll('.feature-card__btn').forEach(b => b.disabled = true);
-      btn.textContent = 'Building...';
-
-      // Add a build entry
-      const tempEntry = {
-        prompt: `Add page: ${tpl.name}`,
-        timestamp: Date.now(),
-        status: 'building'
-      };
-      buildHistory.push(tempEntry);
-      renderHistory();
-
+      const msg = document.getElementById('settings-saved-msg');
+      msg.style.color = '';
       try {
-        const r = await fetch('/api/agent', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ message: tpl.prompt })
-        });
-
-        if (r.status === 401) {
-          token = '';
-          sessionStorage.removeItem('admin_token');
-          showLogin();
-          buildHistory.pop();
-          return;
+        for (const u of updates) {
+          const { error } = await sb.from('settings')
+            .upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+          if (error) throw new Error(`${u.key}: ${error.message}`);
         }
+        msg.textContent = 'Saved ✓';
+        setTimeout(() => msg.textContent = '', 3000);
+        const name = document.getElementById('s-community-name').value.trim();
+        if (name) document.getElementById('community-name').textContent = name;
+      } catch (e) {
+        msg.style.color = 'var(--color-status-hold)';
+        msg.textContent = 'Error — ' + e.message;
+      }
+    }
 
-        const data = await r.json();
+    // ---- Agent memory ----
 
-        if (!r.ok) {
-          tempEntry.status = 'error';
-          tempEntry.response = data.error || 'Something went wrong.';
-          btn.textContent = 'Add to site';
+    function checkMemorySize() {
+      const ta    = document.getElementById('agent-memory-input');
+      const warn  = document.getElementById('memory-size-warn');
+      const count = document.getElementById('memory-char-count');
+      const len   = ta.value.length;
+      count.textContent = len.toLocaleString();
+      warn.style.display = len > 6000 ? 'block' : 'none';
+    }
+
+    async function loadAgentMemory() {
+      const ta = document.getElementById('agent-memory-input');
+      ta.placeholder = 'Loading…';
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+        const r = await fetch('/api/memory', {
+          headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
+        if (!r.ok) throw new Error(`${r.status}`);
+        const { content } = await r.json();
+        ta.value = content;
+        checkMemorySize();
+      } catch (e) {
+        ta.placeholder = 'Could not load AGENT.md — ' + e.message;
+      }
+    }
+
+    async function saveAgentMemory() {
+      const ta  = document.getElementById('agent-memory-input');
+      const msg = document.getElementById('memory-saved-msg');
+      msg.style.color = '';
+      msg.textContent = 'Saving…';
+      try {
+        const sb = getSupabase();
+        const { data: { session } } = await sb.auth.getSession();
+        const r = await fetch('/api/memory', {
+          method:  'POST',
+          headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ content: ta.value })
+        });
+        if (!r.ok) { const e = await r.json(); throw new Error(e.error || r.status); }
+        msg.textContent = 'Saved ✓';
+        setTimeout(() => msg.textContent = '', 3000);
+      } catch (e) {
+        msg.style.color = 'var(--color-status-hold)';
+        msg.textContent = 'Error — ' + e.message;
+      }
+    }
+
+    // ---- Utils ----
+
+    function timeAgo(ts) {
+      const diff = Date.now() - new Date(ts).getTime();
+      const mins  = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days  = Math.floor(diff / 86400000);
+      if (mins  < 1)  return 'just now';
+      if (mins  < 60) return `${mins}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      if (days  < 30) return `${days}d ago`;
+      return new Date(ts).toLocaleDateString('en-IE', { day: 'numeric', month: 'short' });
+    }
+
+    // ---- Feature Library ----
+
+    const FEATURE_LIBRARY = [
+      {
+        id: 'noticeboard', emoji: '📌', title: 'Noticeboard', category: 'general',
+        desc: 'Admins post announcements and notices. Members see a chronological feed.',
+        brief: `Build a community noticeboard page (noticeboard.html).\n\nAdmins and stewards can post notices. Members read only.\n\nDatabase: Create a \`notices\` table: id uuid pk, title text not null, body text, author_id uuid refs members, pinned boolean default false, created_at timestamptz default now(). RLS: all authenticated can read; admin/steward can insert/update/delete.\n\nPage: standard member page (auth, back button to home, feedback widget). Title "Noticeboard", subtitle "Announcements from your community". If admin/steward: inline form at top (title input, body textarea, pinned checkbox, post button). List notices newest first, pinned always at top with a pin indicator. Each card: title bold, body, date, author name. Admin sees delete button. Empty state: "No notices yet."\n\nAdd nav card to home.html (emoji 📌, title "Noticeboard", desc "Announcements from your community"). Update AGENT.md.`,
+      },
+      {
+        id: 'events', emoji: '📅', title: 'Events', category: 'general',
+        desc: 'Upcoming community events. Admins add events; members browse.',
+        brief: `Build a community events page (events.html).\n\nAdmins/stewards post events. Members view.\n\nDatabase: Create an \`events\` table: id uuid pk, title text not null, description text, location text, event_date date not null, event_time text, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Events". If admin/steward: inline form (title, date, time optional, location optional, description). Events in date order grouped by month for large lists. Past events hidden with show toggle. Each card: date displayed prominently (large day number, month text), title, time, location, description. Admin delete button. Empty state: "No upcoming events."\n\nAdd nav card to home.html (emoji 📅, title "Events", desc "What's coming up"). Update AGENT.md.`,
+      },
+      {
+        id: 'faq', emoji: '❓', title: 'FAQ', category: 'general',
+        desc: 'Frequently asked questions and answers that admins manage. Accordion UI.',
+        brief: `Build a FAQ page (faq.html).\n\nAdmins manage Q&A pairs. Members read.\n\nDatabase: Create a \`faqs\` table: id uuid pk, question text not null, answer text not null, sort_order int default 0, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "FAQ", subtitle "Common questions answered". If admin/steward: inline add form (question, answer textarea). FAQs as accordion: question is header, click to expand answer, one open at a time. Admin delete button on each item. Empty state: "No FAQs yet. Admins can add common questions."\n\nAdd nav card to home.html (emoji ❓, title "FAQ", desc "Common questions answered"). Update AGENT.md.`,
+      },
+      {
+        id: 'resources', emoji: '📋', title: 'Resource Library', category: 'general',
+        desc: 'Curated links and documents for members. Admins manage; members browse by category.',
+        brief: `Build a resource library page (resources.html).\n\nAdmins curate useful links and documents. Members browse.\n\nDatabase: Create a \`resources\` table: id uuid pk, title text not null, url text, description text, category text default 'general', author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Resources", subtitle "Useful links and information". If admin/steward: inline form (title, URL, category dropdown [General/Documents/Contacts/External], description). Resources grouped by category with section headers. Each item: title as link (opens new tab), description, category chip, admin delete button. Empty state: "No resources yet."\n\nAdd nav card to home.html (emoji 📋, title "Resources", desc "Useful links and documents"). Update AGENT.md.`,
+      },
+      {
+        id: 'poll', emoji: '🗳️', title: 'Community Poll', category: 'general',
+        desc: 'Admins post polls with 2–4 options. Members vote once. Results shown after voting.',
+        brief: `Build a community polls page (polls.html).\n\nAdmins create polls. Each member votes once per poll. Results shown after voting.\n\nDatabase: Create a \`polls\` table: id uuid pk, question text not null, options jsonb not null (array of strings), status text default 'open', author_id uuid refs members, closes_at timestamptz, created_at timestamptz default now(). Create a \`poll_votes\` table: id uuid pk, poll_id uuid refs polls on delete cascade, member_id uuid refs members, option_index int not null, created_at timestamptz default now(), UNIQUE(poll_id, member_id). RLS: all authenticated read both tables; member inserts own vote; admin/steward insert/update/delete polls.\n\nPage: standard member page. Title "Polls", subtitle "Have your say". If admin/steward: inline form (question, 2–4 option inputs, optional close date). Each poll: if member hasn't voted, show option buttons; after voting show results as percentage bars with counts. Winning option highlighted. Closed polls show results to all. Admin sees close poll button. Empty state: "No polls yet."\n\nAdd nav card to home.html (emoji 🗳️, title "Polls", desc "Have your say"). Update AGENT.md.`,
+      },
+      {
+        id: 'lost-found', emoji: '🔍', title: 'Lost & Found', category: 'neighbourhood',
+        desc: 'Members post lost or found items. Open until marked resolved.',
+        brief: `Build a lost & found page (lost-found.html).\n\nAny member can post a lost or found item.\n\nDatabase: Create a \`lost_found\` table: id uuid pk, type text check in ('lost','found'), title text not null, description text, location text, contact text, status text default 'open', author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; member inserts own; author or admin updates status.\n\nPage: standard member page. Title "Lost & Found". Inline post form (type toggle Lost/Found, title, description, location optional, contact optional). Filter tabs: All / Lost / Found. Cards: type badge (red=Lost, green=Found), title, description, location, date, posted by name. "Mark resolved" button for author or admin. Resolved posts faded at bottom. Empty state: "Nothing reported yet."\n\nAdd nav card to home.html (emoji 🔍, title "Lost & Found", desc "Lost something? Found something?"). Update AGENT.md.`,
+      },
+      {
+        id: 'neighbours', emoji: '🏘️', title: 'Neighbour Help', category: 'neighbourhood',
+        desc: 'Members post help requests or offers. Simple board to match people who need with people who can.',
+        brief: `Build a neighbour help page (help.html).\n\nMembers post requests for help or offers to help.\n\nDatabase: Create a \`help_posts\` table: id uuid pk, type text check in ('request','offer'), title text not null, description text, member_id uuid refs members, status text default 'open', created_at timestamptz default now(). RLS: all authenticated read; member inserts own; author or admin updates.\n\nPage: standard member page. Title "Neighbour Help", subtitle "Ask for or offer a hand". Post button opens inline form (type toggle Need Help / Can Help, title, description). Filter tabs: All / Needing Help / Offering Help. Cards: type badge (amber=Need Help, green=Can Help), title, description, posted by name, date. "Mark done" for own post or admin. Resolved posts grayed at bottom. Empty state: "Nothing posted yet."\n\nAdd nav card to home.html (emoji 🏘️, title "Neighbour Help", desc "Ask for or offer a hand"). Update AGENT.md.`,
+      },
+      {
+        id: 'skills', emoji: '🤝', title: 'Skills Exchange', category: 'mutual_aid',
+        desc: 'Members list skills they offer or need. Browse and connect.',
+        brief: `Build a skills exchange page (skills.html).\n\nMembers list skills to offer or skills they need.\n\nDatabase: Create a \`skills\` table: id uuid pk, type text check in ('offer','need'), skill text not null, description text, member_id uuid refs members, active boolean default true, created_at timestamptz default now(). RLS: all authenticated read active skills; member inserts/updates/deletes own.\n\nPage: standard member page. Title "Skills Exchange", subtitle "Offer or find skills in your community". Inline add form (type toggle Offering/Needed, skill name, description optional). Filter tabs: All / Offering / Needed. Cards: type badge (green=Offering, amber=Needed), skill name, description, member name. Remove button on own posts. My Skills section at top for member's own listings. Empty state: "No skills listed yet."\n\nAdd nav card to home.html (emoji 🤝, title "Skills", desc "Offer or find skills in your community"). Update AGENT.md.`,
+      },
+      {
+        id: 'sharing', emoji: '📦', title: 'Items to Share', category: 'mutual_aid',
+        desc: 'Members post items to lend or give away. Browse what\'s available.',
+        brief: `Build an items-to-share page (sharing.html).\n\nMembers post items to lend or give away.\n\nDatabase: Create a \`sharing\` table: id uuid pk, type text check in ('lend','give'), title text not null, description text, condition text, member_id uuid refs members, available boolean default true, created_at timestamptz default now(). RLS: all authenticated read; member inserts/updates/deletes own.\n\nPage: standard member page. Title "Sharing", subtitle "Borrow, lend, and share in the community". Inline form (type toggle Lending / Giving Away, item name, description, condition optional). Filter tabs: All / Lending / Giving Away. Cards: type badge (blue=Lending, green=Giving), item title, description, condition, posted by name, date. Mark unavailable button for own posts or admin. My Listings section at top. Empty state: "Nothing listed yet."\n\nAdd nav card to home.html (emoji 📦, title "Sharing", desc "Borrow, lend, and share"). Update AGENT.md.`,
+      },
+      {
+        id: 'fixtures', emoji: '⚽', title: 'Fixtures & Results', category: 'sports',
+        desc: 'Upcoming matches and recorded results. Win/draw/loss calculated automatically.',
+        brief: `Build a fixtures and results page (fixtures.html).\n\nAdmins post upcoming fixtures and record results after matches.\n\nDatabase: Create a \`fixtures\` table: id uuid pk, opponent text not null, venue text, fixture_date date not null, fixture_time text, home_away text check in ('home','away','neutral') default 'home', score_us int, score_them int, notes text, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Fixtures & Results". If admin/steward: inline form to add fixture (opponent, date, time optional, home/away/neutral, venue optional). Edit button on each card for admin to add scores. Upcoming section: no scores, in date order. Results section: scores recorded, newest first, W/D/L badge colour-coded calculated from scores. Cards show date, opponent, home/away badge, venue, time, notes, score if recorded. Empty state: "No fixtures added yet."\n\nAdd nav card to home.html (emoji ⚽, title "Fixtures", desc "Upcoming matches and results"). Update AGENT.md.`,
+      },
+      {
+        id: 'maintenance', emoji: '🔧', title: 'Maintenance Log', category: 'housing',
+        desc: 'Members submit maintenance requests. Admins track and update status.',
+        brief: `Build a maintenance request log (maintenance.html).\n\nMembers submit issues; admins update status.\n\nDatabase: Create a \`maintenance\` table: id uuid pk, title text not null, description text, location text, priority text check in ('low','medium','high') default 'medium', status text check in ('open','in_progress','done') default 'open', submitted_by uuid refs members, assigned_note text, created_at timestamptz default now(), updated_at timestamptz default now(). RLS: all authenticated read; member inserts own; admin/steward updates.\n\nPage: standard member page. Title "Maintenance", subtitle "Report and track maintenance issues". Report button opens inline form (title, description, location, priority). Filter tabs: All / Open / In Progress / Done. Stat at top showing count of open issues. Cards: status badge colour-coded, priority indicator, title, description, location, submitted by, date, admin note if set. Admin/steward: inline status dropdown and note field on each card. Empty state: "No issues reported."\n\nAdd nav card to home.html (emoji 🔧, title "Maintenance", desc "Report and track maintenance issues"). Update AGENT.md.`,
+      },
+      {
+        id: 'minutes', emoji: '📝', title: 'Meeting Minutes', category: 'housing',
+        desc: 'Archive of meeting minutes. Admins post after each meeting; members browse the record.',
+        brief: `Build a meeting minutes archive page (minutes.html).\n\nAdmins post minutes after meetings. All members can read the archive.\n\nDatabase: Create a \`meeting_minutes\` table: id uuid pk, meeting_date date not null, title text not null, body text not null, author_id uuid refs members, created_at timestamptz default now(). RLS: all authenticated read; admin/steward insert/update/delete.\n\nPage: standard member page. Title "Meeting Minutes", subtitle "A record of every meeting". If admin/steward: inline form (meeting date, title e.g. "AGM January 2026", body textarea). Minutes listed newest first. Each entry: date prominent, title, body text preserving line breaks (show first 200 chars with expand button for longer entries), posted by name. Admin delete button. Empty state: "No minutes posted yet."\n\nAdd nav card to home.html (emoji 📝, title "Meeting Minutes", desc "A record of every meeting"). Update AGENT.md.`,
+      },
+    ];
+
+    const CAT_LABELS = { general: 'General', neighbourhood: 'Neighbourhood', mutual_aid: 'Mutual Aid', sports: 'Sports', housing: 'Housing' };
+    let libCurrentCat = 'all';
+    let libProposals = new Map(); // title.toLowerCase() → {status, id}
+
+    async function loadLibrary() {
+      try {
+        const { data } = await getSupabase().from('proposals').select('id, title, status');
+        libProposals = new Map((data || []).map(p => [p.title.toLowerCase(), { status: p.status, id: p.id }]));
+      } catch (e) { /* non-fatal */ }
+      renderLibrary();
+    }
+
+    function filterLibrary(cat, btn) {
+      libCurrentCat = cat;
+      document.querySelectorAll('.lib-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderLibrary();
+    }
+
+    function renderLibrary() {
+      const grid = document.getElementById('library-grid');
+      if (!grid) return;
+      const features = libCurrentCat === 'all' ? FEATURE_LIBRARY : FEATURE_LIBRARY.filter(f => f.category === libCurrentCat);
+      if (features.length === 0) {
+        grid.innerHTML = '<div style="color:var(--color-text-muted);font-size:var(--font-size-sm)">No features in this category.</div>';
+        return;
+      }
+      grid.innerHTML = features.map(f => {
+        const existing = libProposals.get(f.title.toLowerCase());
+        let btnLabel, btnClass = 'lib-add-btn', btnStyle = '', btnOnclick = '', btnDisabled = false;
+        if (!existing) {
+          btnLabel   = '+ Add to build queue';
+          btnOnclick = `onclick="addLibraryFeature('${f.id}', this)"`;
+        } else if (existing.status === 'building') {
+          btnLabel   = '⚠️ Reset & retry →';
+          btnStyle   = 'background:var(--color-status-hold);color:#fff;';
+          btnOnclick = `data-id="${existing.id}" onclick="resetLibraryProposal(this.dataset.id, this)"`;
+        } else if (existing.status === 'done') {
+          btnLabel    = '✓ Built';
+          btnClass   += ' queued';
+          btnDisabled = true;
         } else {
-          tempEntry.status = 'success';
-          tempEntry.response = data.text || '';
-          tempEntry.buildLog = data.buildLog || [];
-          tempEntry.usage = data.usage || {};
-          tempEntry.commitSha = data.commit?.sha || null;
-          btn.textContent = 'Added';
-          btn.classList.add('feature-card__btn--done');
+          btnLabel    = '✓ In queue';
+          btnClass   += ' queued';
+          btnDisabled = true;
         }
-      } catch (err) {
-        tempEntry.status = 'error';
-        tempEntry.response = `Network error: ${err.message}`;
-        btn.textContent = 'Add to site';
-      }
-
-      // Re-enable other buttons
-      featuresGrid.querySelectorAll('.feature-card__btn').forEach(b => {
-        if (!b.classList.contains('feature-card__btn--done')) b.disabled = false;
-      });
-
-      localStorage.setItem('build_history', JSON.stringify(buildHistory));
-      renderHistory();
-    });
-
-    renderFeatureCards();
-
-    // --- Images Panel ---
-    const imagesPanel = document.getElementById('images-panel');
-    const imagesToggle = document.getElementById('images-toggle');
-
-    if (localStorage.getItem('images_collapsed') === 'true') {
-      imagesPanel.classList.add('images--collapsed');
-    }
-    imagesToggle.addEventListener('click', () => {
-      imagesPanel.classList.toggle('images--collapsed');
-      localStorage.setItem('images_collapsed', imagesPanel.classList.contains('images--collapsed'));
-    });
-
-    // Restore previews from localStorage
-    function restoreUploadPreviews() {
-      ['logo', 'hero'].forEach(type => {
-        const url = localStorage.getItem(`site_${type}_url`);
-        if (url) showUploadPreview(document.getElementById(`upload-${type}`), url);
-      });
+        return `
+          <div class="lib-card">
+            <div class="lib-card-top">
+              <span class="lib-card-emoji">${f.emoji}</span>
+              <div>
+                <div class="lib-card-title">${escHtml(f.title)}</div>
+                <div class="lib-card-category">${CAT_LABELS[f.category] || f.category}</div>
+              </div>
+            </div>
+            <div class="lib-card-desc">${escHtml(f.desc)}</div>
+            <button class="${btnClass}" style="${btnStyle}" ${btnOnclick} ${btnDisabled ? 'disabled' : ''}>
+              ${btnLabel}
+            </button>
+          </div>`;
+      }).join('');
     }
 
-    function showUploadPreview(zone, url) {
-      zone.innerHTML = `
-        <img class="upload-zone__preview" src="${escapeHtml(url)}" alt="Uploaded">
-        <div class="upload-zone__status">Uploaded</div>
-        <input type="file" accept="image/*" style="display:none">
-      `;
-    }
-
-    async function handleUpload(file, type) {
-      const zone = document.getElementById(`upload-${type}`);
-
-      // Validate client-side
-      if (!file.type.match(/^image\/(jpeg|png|webp|svg\+xml)$/)) {
-        zone.querySelector('.upload-zone__text')?.remove();
-        const err = document.createElement('div');
-        err.className = 'upload-zone__error';
-        err.textContent = 'Only JPG, PNG, WebP, or SVG allowed.';
-        zone.appendChild(err);
-        setTimeout(() => err.remove(), 3000);
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        zone.querySelector('.upload-zone__text')?.remove();
-        const err = document.createElement('div');
-        err.className = 'upload-zone__error';
-        err.textContent = 'File too large (max 5MB).';
-        zone.appendChild(err);
-        setTimeout(() => err.remove(), 3000);
-        return;
-      }
-
-      zone.classList.add('upload-zone--uploading');
-      const oldHtml = zone.innerHTML;
-      zone.innerHTML = `
-        <div class="upload-zone__icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M2 12h20"/></svg>
-        </div>
-        <div class="upload-zone__text">Uploading...</div>
-      `;
-
-      const ext = file.name.split('.').pop() || 'png';
-      const filename = `${type}-${Date.now()}.${ext}`;
-
+    async function addLibraryFeature(featureId, btn) {
+      const feature = FEATURE_LIBRARY.find(f => f.id === featureId);
+      if (!feature || !currentAdmin) return;
+      btn.disabled = true;
+      btn.textContent = 'Adding…';
       try {
-        const r = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': file.type,
-            'Authorization': `Bearer ${token}`
-          },
-          body: file
-        });
-
-        if (r.status === 401) {
-          token = '';
-          sessionStorage.removeItem('admin_token');
-          showLogin();
-          return;
+        const { data, error } = await getSupabase().from('proposals').insert([{
+          feedback_id:  null,
+          title:        feature.title,
+          description:  feature.brief,
+          promoted_by:  currentAdmin.id,
+          approved_by:  currentAdmin.id,
+          status:       'approved',
+        }]).select();
+        if (error) throw error;
+        libProposals.set(feature.title.toLowerCase(), { status: 'approved', id: data?.[0]?.id });
+        btn.textContent = '✓ In queue';
+        btn.classList.add('queued');
+        // Refresh build badge
+        const buildBadge = document.getElementById('build-badge');
+        if (buildBadge) {
+          const count = parseInt(buildBadge.textContent || '0') + 1;
+          buildBadge.textContent = count;
+          buildBadge.style.display = 'inline-flex';
         }
-
-        const data = await r.json();
-        if (!r.ok) throw new Error(data.error || 'Upload failed');
-
-        // Store URL and show preview
-        localStorage.setItem(`site_${type}_url`, data.url);
-        showUploadPreview(zone, data.url);
-        zone.classList.remove('upload-zone--uploading');
-
-        // Auto-fire agent prompt
-        const prompt = type === 'logo'
-          ? `Update the site logo. Use this image URL as the logo in the nav on all pages: ${data.url}. Add <link rel="icon" href="${data.url}"> to every page. Do NOT change nav structure or CSS class names.`
-          : `Update the hero section background image on index.html. Use this image URL: ${data.url}. Apply it as a CSS background-image on the hero section. Do NOT change nav structure, footer structure, or CSS class names.`;
-
-        buildInput.value = prompt;
-        buildForm.dispatchEvent(new Event('submit'));
-      } catch (err) {
-        zone.innerHTML = oldHtml;
-        zone.classList.remove('upload-zone--uploading');
-        const errEl = document.createElement('div');
-        errEl.className = 'upload-zone__error';
-        errEl.textContent = err.message;
-        zone.appendChild(errEl);
-        setTimeout(() => errEl.remove(), 4000);
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = '+ Add to build queue';
+        alert('Could not add to queue: ' + e.message);
       }
     }
 
-    // Drag/drop + click-to-browse handlers
-    document.querySelectorAll('.upload-zone').forEach(zone => {
-      const fileInput = zone.querySelector('input[type="file"]');
-      const type = zone.dataset.type;
+    function escHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
 
-      zone.addEventListener('click', (e) => {
-        if (e.target.closest('input')) return;
-        fileInput.click();
-      });
+    async function doSignOut() {
+      await getSupabase().auth.signOut();
+      window.location.href = 'auth.html';
+    }
 
-      fileInput.addEventListener('change', () => {
-        if (fileInput.files[0]) handleUpload(fileInput.files[0], type);
-        fileInput.value = '';
-      });
-
-      zone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        zone.classList.add('upload-zone--drag');
-      });
-
-      zone.addEventListener('dragleave', () => {
-        zone.classList.remove('upload-zone--drag');
-      });
-
-      zone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        zone.classList.remove('upload-zone--drag');
-        const file = e.dataTransfer.files[0];
-        if (file) handleUpload(file, type);
-      });
-    });
-
-    restoreUploadPreviews();
-
-    // --- Auto-resize textarea ---
-    buildInput.addEventListener('input', () => {
-      buildInput.style.height = 'auto';
-      buildInput.style.height = Math.min(buildInput.scrollHeight, 120) + 'px';
-    });
-
-    // --- Submit on Enter (Shift+Enter for newline) ---
-    buildInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        buildForm.dispatchEvent(new Event('submit'));
-      }
-    });
+    init();
   </script>
 </body>
 </html>
